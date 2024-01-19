@@ -64,7 +64,7 @@ farm.add(chicken, 6)
 The TA gave us useful feedback that is summarized below:
 1. The focus of the project should be on designing and implementing the DSL. If our program has complex functionality (for e.g. space optimization algorithms) we should ideally make use of an external graphing library for it. 
 2. That implementing a complex graphical output will look nice but might have the consequence of using up too much of our time which would be better spent on implementing the DSL itself.
-3. Clarified the concept of a DSL feature to us. Some of our suggested features were declarative and needed to be dynamic for e.g. by incorporating control flow like Loops/IF statements. 
+3. Clarified the concept of a DSL feature to us. All of our suggested features were declarative and we need to add some features that are dynamic for e.g. by incorporating control flow like Loops/IF statements. 
 
 ### Note any planned follow-up tasks or features still to design.
 Our first feature which provides a data structure for crop/animals was accepted. We need to design two additional features that will need to be more complex, specifrically not declarative but dynamic. We will also add more detail to our proposal including code examples of the two new features we are designing.
