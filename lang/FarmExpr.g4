@@ -8,3 +8,5 @@ expr:   expr op=('*'|'/') expr
 
 INT : [0-9]+ ;
 WS : [ \t\r\n]+ -> skip ;
+
+LINE_COMMENT : '//' ~[\r\n]* -> skip ;
