@@ -1,0 +1,26 @@
+{
+    "name": "Group12Project1",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "git@github.students.cs.ubc.ca:CPSC410-2023W-T2/Group12Project1.git",
+    "author": "Group",
+    "license": "MIT",
+    "type": "module",
+    "dependencies": {
+        "antlr4ts": "^0.5.0-alpha.4",
+        "antlr4ts-cli": "^0.5.0-alpha.4"
+    },
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^6.19.1",
+        "@typescript-eslint/parser": "^6.19.1",
+        "eslint": "^8.56.0",
+        "typescript": "^5.3.3"
+    },
+    "scripts": {
+        "cover": "nyc --reporter text --reporter html yarn run test",
+        "build": "tsc && yarn lint",
+        "lint": "eslint src test --ext .ts",
+        "fix": "yarn lint --fix",
+        "start": "ts-node src/Parse.ts"
+    }
+}

@@ -1,0 +1,23 @@
+{
+    // "extends": "@tsconfig/node/tsconfig.json",
+    "compilerOptions": {
+        "outDir": "dist",
+        "target": "esnext",
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "typeRoots": [
+            "./node_modules/@types"
+        ]
+    },
+    "include": [
+        "src/**/*.ts",
+        "test/**/*.ts",
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
