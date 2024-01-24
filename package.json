@@ -28,6 +28,6 @@
         "build": "tsc && yarn lint",
         "lint": "eslint src test --ext .ts",
         "fix": "yarn lint --fix",
-        "start": "tsx src/App.ts"
+        "start": "tsx src/Main.ts"
     }
 }
