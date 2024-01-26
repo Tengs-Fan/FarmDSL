@@ -1,13 +1,13 @@
 import * as fs from 'fs';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { parseStatement } from './Parse';
+import { parseProgram } from './Parse';
 import { runRepl } from './Repl';
 
 function executeFile(filename: string, verbose: boolean = false) 
 {
     const content = fs.readFileSync(filename, 'utf-8');
-    parseStatement(content, verbose);
+    parseProgram(content, verbose);
 }
 
 interface MyArguments extends yargs.Arguments {
@@ -54,7 +54,7 @@ yargs(hideBin(process.argv))
     .check((argv: MyArguments) => {
         if (argv.execute)
         {
-            parseStatement(argv.execute, argv.verbose);
+            parseProgram(argv.execute, argv.verbose);
             process.exit(0);
         }
         return true;
