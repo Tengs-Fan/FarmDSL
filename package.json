@@ -27,7 +27,7 @@
         "build": "tsc && yarn lint",
         "lint": "eslint src test --ext .ts",
         "fix": "yarn lint --fix",
-        "lang": "antlr -Dlanguage=TypeScript lang/FarmExpr.g4 -visitor -o lang",
+        "lang": "antlr -Dlanguage=TypeScript lang/FarmExpr.g4 -visitor",
         "start": "tsx src/Main.ts"
     }
 }
