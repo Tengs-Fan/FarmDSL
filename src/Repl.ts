@@ -1,25 +1,33 @@
 import * as readline from "readline";
-import { parseExpression } from "./Parse";
+import { parseStatement } from "./Parse";
+import { evalStatement } from "./Eval";
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
 });
 
-export function runRepl() {
+function exit() {
+    console.log("Goodbye!");
+    rl.close();
+    process.exit(0);
+}
+
+export function runRepl(verbose: boolean) {
     rl.question("> ", (input) =>
     {
         switch (input) {
         case "exit":
-            rl.close();
+            exit();
             break;
         default:
             try {
-                parseExpression(input);
+                const tree = parseStatement(input, verbose);
+                const _result = evalStatement(tree);
             } catch (err) {
-                console.error('Error:', err.message);
+                console.error('Error Parsing:', err.message);
             }
-            runRepl();
+            runRepl(verbose);
         }
     });
 }
