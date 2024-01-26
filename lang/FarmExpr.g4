@@ -8,9 +8,9 @@ options {
 prog: stmt+;
 
 stmt: decl_stmt
+    | if_stmt
     | expr_stmt
     | assign_stmt
-    | call_stmt
     ;
 
 // Declarations 
@@ -22,29 +22,38 @@ expr_stmt: expr ';' ;
 // Assign the evaluated value to a variable
 assign_stmt: NAME '=' expr ';' ;
 
-// Function call
-call_stmt: NAME '(' args? ')' ';' ;
+// If statement
+if_stmt: 'if' expr block ('else' block)? ;
 
 // Argument to function call
 args: expr (',' expr)* ;
 
+block: '{' stmt* '}' ;
+
 // Types 
 type: 'num' 
     | 'bool'
+    | 'farm'
     ;
+
+// Function call
+call_expr: NAME '(' args? ')' ;
 
 expr:   expr op=('*'|'/') expr
       | expr op=('+'|'-') expr
-      | expr op=('=='|'>='|'<=') expr
-      | INT
+      | expr op=( '==' | '>=' | '<=' | '<' | '>' ) expr
+      | call_expr
       | BOOL
+      | INT
       | NAME
+      | STRING
       | '(' expr ')'
       ;
 
 END  : ';' ;
 INT  : [0-9]+ ;
 BOOL : 'true' | 'false' ;
+STRING: '"' ( ~["\\] | '\\' . )* '"' ;
 NAME : [a-zA-Z_][a-zA-Z_0-9]*;
 WS   : [ \t\r\n]+ -> skip ;
 

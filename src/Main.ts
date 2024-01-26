@@ -4,10 +4,11 @@ import { hideBin } from 'yargs/helpers';
 import { parseProgram } from './Parse';
 import { runRepl } from './Repl';
 
-function executeFile(filename: string, verbose: boolean = false) 
+function executeFile(filename: string, verbose = false) 
 {
     const content = fs.readFileSync(filename, 'utf-8');
     parseProgram(content, verbose);
+    process.exit(0);
 }
 
 interface MyArguments extends yargs.Arguments {
@@ -22,7 +23,7 @@ yargs(hideBin(process.argv))
     .command('$0', 'The default command', {}, (argv: MyArguments) => {
         if (argv.file) {
             // Execute file if provided
-            executeFile(argv.file);
+            executeFile(argv.file, argv.verbose);
         } else {
             // Run the REPL if no file option is provided
             runRepl(argv.verbose);
