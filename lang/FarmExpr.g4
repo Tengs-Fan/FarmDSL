@@ -14,7 +14,7 @@ stmt: decl_stmt
     ;
 
 // Declarations 
-decl_stmt: type NAME '=' expr ';' ;
+decl_stmt: type NAME '=' (expr | pairs) ';' ;
 
 // Expression, they evaluate to a value
 expr_stmt: expr ';' ;
@@ -28,12 +28,16 @@ if_stmt: 'if' expr block ('else' block)? ;
 // Argument to function call
 args: expr (',' expr)* ;
 
+pairs: '[' pair (',' pair)* ']' ;
+pair:  NAME ':' expr ;
+
 block: '{' stmt* '}' ;
 
 // Types 
-type: 'num' 
-    | 'bool'
-    | 'farm'
+type: 'Num' 
+    | 'Bool'
+    | 'Farm'
+    | 'Crop'
     ;
 
 // Function call
