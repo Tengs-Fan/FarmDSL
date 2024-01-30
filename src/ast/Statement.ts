@@ -24,13 +24,13 @@ export class DeclStatment implements ASTNode {
 
     constructor(type: Type, name: string, expr: Expression) { this.type = type; this.name = name; this.expr = expr; }
     
-    eval(vm: Context): Result {
-        const exprResult = this.expr.eval(vm);
+    eval(ctx: Context): Result {
+        const exprResult = this.expr.eval(ctx);
         const variable: Variable = {
             type: this.type,
             value: exprResult.value 
         };
-        vm.newVariable(this.name, variable);
+        ctx.newVariable(this.name, variable);
 
         // It is totally a side effect to create a new variable in the VM
         return new Result("Null"); 
@@ -43,10 +43,10 @@ export class AssignStatement implements ASTNode {
 
     constructor(name: string, expr: Expression) { this.name = name; this.expr = expr; }
 
-    eval(vm: Context): Result {
-        const exprResult = this.expr.eval(vm);
+    eval(ctx: Context): Result {
+        const exprResult = this.expr.eval(ctx);
         const newValue = exprResult.value;
-        vm.updateVariable(this.name, newValue);
+        ctx.updateVariable(this.name, newValue);
 
         // Update the variable in the VM is a side effect
         return new Result("Null");

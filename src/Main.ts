@@ -8,10 +8,21 @@ import { runRepl } from 'frontend/Repl';
 
 function executeFile(filename: string, verbose = false) 
 {
-    const content = fs.readFileSync(filename, 'utf-8');
-    const parsedProgram = parseProgram(content, verbose);
-    const program = transProgram(parsedProgram);
-    evalProgram(program);
+    const programString = fs.readFileSync(filename, 'utf-8');
+    const parsedProgram = parseProgram(programString, verbose);
+    const program = transProgram(parsedProgram, verbose);
+    const result = evalProgram(program);
+
+    switch (result.type) {
+        case 'Null':
+        case 'Num':
+        case 'Bool':
+        case 'Farm':
+        case 'Crop': result.show(); break;
+        case 'String':
+        case 'Name':
+        default: throw new Error("Unknown result type: " + result.type); 
+    }
     process.exit(0);
 }
 

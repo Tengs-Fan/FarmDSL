@@ -12,21 +12,15 @@ export class Program implements ASTNode {
     addStatements(stmts: Statement[]) { this.stmts.push(...stmts); }
 
     eval(ctx: Context): Result {
+        let lastResult = new Result("Null");
 
-        // Run in repl mode, a program contains only one statement
-        if (this.stmts.length == 1) {
-            return this.stmts[0].eval(ctx);
-        }
-        else // Run in file mode, a program contains multiple statements
-        {
-            this.stmts.forEach(
-                stmt => {
-                    stmt.eval(ctx);
-                }
-            )
-            return new Result("Null");
-        }
+        this.stmts.forEach(
+            stmt => {
+                lastResult = stmt.eval(ctx);
+            }
+        )
 
+        return lastResult;
     }
 }
 
