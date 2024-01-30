@@ -45,17 +45,23 @@ call_expr: NAME '(' args? ')' ;
 
 expr:   expr op=('*'|'/') expr
       | expr op=('+'|'-') expr
-      | expr op=( '==' | '>=' | '<=' | '<' | '>' ) expr
+      | expr op=( '!=' | '==' | '>=' | '<=' | '<' | '>' ) expr
       | call_expr
       | BOOL
       | INT
+      | FLOAT
       | NAME
       | STRING
       | '(' expr ')'
       ;
 
+
+
+// Tokens
+
 END  : ';' ;
 INT  : [0-9]+ ;
+FLOAT: [0-9]+ '.' [0-9]+ ;
 BOOL : 'true' | 'false' ;
 STRING: '"' ( ~["\\] | '\\' . )* '"' ;
 NAME : [a-zA-Z_][a-zA-Z_0-9]*;

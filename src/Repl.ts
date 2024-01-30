@@ -24,7 +24,7 @@ export function runRepl(verbose = false) {
         default:
             try {
                 const parsedTree = parseProgram(input, verbose);
-                const ourTree = transProgram(parsedTree);
+                const ourTree = transProgram(parsedTree, verbose);
                 const result = evalProgram(ourTree);
                 result.show();
             } catch (err) {

@@ -1,29 +1,33 @@
 import { Program } from './ast/Program'
-import { g_vm, VirtualMachine } from './vm/VirtualMachine'
+import { g_context, Context } from './vm/Context'
+import { Type } from './ast/Type'
 
 export type ResultType =
     "Null" |
-    "Expression" | 
-    "Bool"
+    Type   |
+    "String" | "Name"
 ;
 
 export class Result {
-    type : ResultType;
-    value: any;
+    type  : ResultType;
+    value?: any;
 
-    constructor(type : ResultType) { this.type = type; }
+    constructor(type : ResultType, value:any = null) { this.type = type; this.value = value; }
 
     show() {
         switch (this.type) {
-            case "Null": {};
-            default: {
-                console.log("unknown type: ", this.type);
-            }
+            case "Null": break;
+            case "Bool":   
+            case "Num":  
+            case "String":  console.log(this.value); break;
+            case 'Name':
+            default:  throw new Error("Unknown result type: " + this.type);
         }
     }
 }
 
-export function evalProgram(prog: Program, vm = g_vm): Result 
+export function evalProgram(prog: Program): Result 
 {
-    return prog.eval(vm);
+    const result = prog.eval(g_context);
+    return result;
 }

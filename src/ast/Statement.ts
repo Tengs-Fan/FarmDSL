@@ -82,10 +82,7 @@ export class Statement implements ASTNode {
     stmt : Tstatement;
     setStatement(stmt: Tstatement) { this.stmt = stmt; }
 
-    eval(vm: Context): Result {
-        switch (this.stmt.constructor.name) {
-
-        }
-        return new Result();
+    eval(ctx: Context): Result {
+        return this.stmt.eval(ctx);
     }
 }

@@ -1,4 +1,4 @@
-import * as VMErr from './Error';
+import * as VMErr from '../Error';
 import { Variable } from './Variable';
 
 export class Context {

@@ -4,12 +4,14 @@ import { ProgContext,
     BlockContext
 } from "../lang/FarmExprParser";
 import FarmExprVisitor from '../lang/FarmExprVisitor';
+import FarmExprLexer from "../lang/FarmExprLexer";
 import { ASTNode } from './ast/Ast';
 import { Program } from './ast/Program';
 import { Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement } from './ast/Statement';
 import { Block } from './ast/Block';
 import { Type } from './ast/Type';
-import { Expression } from './ast/Expression';
+import { Expression, BinaryExpression, ValueExpression, NameExpression } from './ast/Expression';
+import { assert } from "console";
 
 
 export class TransVisitor extends FarmExprVisitor<ASTNode> {
@@ -107,9 +109,47 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     }
 
     visitExpr = (ctx: ExprContext) => {
-        const expr = new Expression();
-        
-        return expr;
+        switch (ctx.children.length) {
+            // 1. Expr op Expr
+            // 2. ( Expr )
+            case 3: {
+                // ( Expr )
+                if (ctx.children[0].getText() === "(") {
+                    assert(ctx.children[2].getText() === ")", "Expr should be wrapped by ()");
+                    return this.visit(ctx.children[1]) as Expression;
+                }
+
+                // Expr op Expr
+                const left  = this.visit(ctx.children[0]) as Expression;
+                const right = this.visit(ctx.children[2]) as Expression;
+                const op = ctx.children[1].getText();
+                switch (op) {
+                    case "+": return new BinaryExpression("Add", left, right);
+                    case "-": return new BinaryExpression("Sub", left, right);
+                    case "*": return new BinaryExpression("Mul", left, right);
+                    case "/": return new BinaryExpression("Div", left, right);
+                    case ">": return new BinaryExpression("Gt", left, right);
+                    case ">=": return new BinaryExpression("Gte", left, right);
+                    case "<":  return new BinaryExpression("Lt", left, right);
+                    case "<=": return new BinaryExpression("Lte", left, right);
+                    case "==": return new BinaryExpression("Eq", left, right);
+                    case "!=": return new BinaryExpression("Neq", left, right);
+                    default: throw new Error(`Unknown operator ${op}`);
+                }
+            }
+            case 1: {
+                const child = ctx.children[0];
+                switch (child.symbol.type) {
+                    case FarmExprLexer.BOOL:   return new ValueExpression("Bool", child.getText() === "true");
+                    case FarmExprLexer.FLOAT:  return new ValueExpression("Num", parseFloat(child.getText()));
+                    case FarmExprLexer.INT:    return new ValueExpression("Num", parseInt(child.getText()));
+                    case FarmExprLexer.STRING: return new ValueExpression("String", child.getText());
+                    case FarmExprLexer.NAME:   return new NameExpression(child.getText());
+                    default: throw new Error(`Unknown value type ${ctx.getText()}`);
+                }
+            }
+            default: throw new Error(`Unknown expression ${ctx.getText()}`);
+        }
     }
 }
 
@@ -118,7 +158,7 @@ export function transProgram(tree: ProgContext, verbose = false): Program {
     const AST = visitor.visit(tree);
 
     if (verbose) {
-        console.log(AST.toString());
+        console.log(AST);
     }
 
     return AST as Program;
