@@ -14,7 +14,7 @@ stmt: decl_stmt
     ;
 
 // Declarations 
-decl_stmt: type NAME '=' (expr | pairs) ';' ;
+decl_stmt: type NAME ('=' (expr | pairs) )? ';' ;
 
 // Expression, they evaluate to a value
 expr_stmt: expr ';' ;

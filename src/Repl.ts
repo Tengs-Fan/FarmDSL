@@ -1,6 +1,6 @@
 import * as readline from "readline";
 import { parseProgram } from "./Parse";
-import { evalProgram } from "./Eval";
+import { transProgram } from "./Trans";
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -23,7 +23,7 @@ export function runRepl(verbose: boolean) {
         default:
             try {
                 const tree = parseProgram(input, verbose);
-                const _result = evalProgram(tree);
+                const _result = transProgram(tree);
             } catch (err) {
                 console.error('Error Parsing:', err.message);
             }
