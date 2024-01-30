@@ -113,9 +113,13 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     }
 }
 
-export function transProgram(tree: ProgContext): Program {
+export function transProgram(tree: ProgContext, verbose = false): Program {
     const visitor = new TransVisitor();
     const AST = visitor.visit(tree);
+
+    if (verbose) {
+        console.log(AST.toString());
+    }
 
     return AST as Program;
 }

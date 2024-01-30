@@ -1,6 +1,7 @@
 import * as readline from "readline";
 import { parseProgram } from "./Parse";
 import { transProgram } from "./Trans";
+import { evalProgram } from "./Eval";
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -13,7 +14,7 @@ function exit() {
     process.exit(0);
 }
 
-export function runRepl(verbose: boolean) {
+export function runRepl(verbose = false) {
     rl.question("> ", (input) =>
     {
         switch (input) {
@@ -22,10 +23,12 @@ export function runRepl(verbose: boolean) {
             break;
         default:
             try {
-                const tree = parseProgram(input, verbose);
-                const _result = transProgram(tree);
+                const parsedTree = parseProgram(input, verbose);
+                const ourTree = transProgram(parsedTree);
+                const result = evalProgram(ourTree);
+                result.show();
             } catch (err) {
-                console.error('Error Parsing:', err.message);
+                console.error('REPL: ', err.message);
             }
             runRepl(verbose);
         }

@@ -1,7 +1,7 @@
 import * as VMErr from './Error';
 import { Variable } from './Variable';
 
-export class VirtualMachine {
+export class Context {
     private globalVariables: Map<string, Variable>;
 
     constructor() { this.globalVariables = new Map(); }
@@ -33,4 +33,4 @@ export class VirtualMachine {
     }
 }
 
-const vm = new VirtualMachine();
+export const g_context = new Context();

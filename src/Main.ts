@@ -3,6 +3,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { parseProgram } from './Parse';
 import { transProgram } from './Trans';
+import { evalProgram } from './Eval';
 import { runRepl } from './Repl';
 
 function executeFile(filename: string, verbose = false) 
@@ -10,6 +11,7 @@ function executeFile(filename: string, verbose = false)
     const content = fs.readFileSync(filename, 'utf-8');
     const parsedProgram = parseProgram(content, verbose);
     const program = transProgram(parsedProgram);
+    evalProgram(program);
     process.exit(0);
 }
 

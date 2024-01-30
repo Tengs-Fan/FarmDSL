@@ -1,6 +1,6 @@
 import {ASTNode} from "./Ast";
 import {Result} from "../Eval";
-import {VirtualMachine} from "../vm/VirtualMachine";
+import {Context} from '../vm/Context'
 import {Statement} from "./Statement";
 
 export class Block implements ASTNode { 
@@ -10,8 +10,8 @@ export class Block implements ASTNode {
     addStatement(stmt: Statement) { this.stmts.push(stmt); }
     addStatements(stmts: Statement[]) { this.stmts.push(...stmts); }
 
-    eval(node: Block, vm: VirtualMachine): Result {
+    eval(vm: Context): Result {
 
-        return new Result();
+        return new Result("Null");
     }
 }
