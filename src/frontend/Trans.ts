@@ -2,15 +2,15 @@ import { ProgContext,
     StmtContext, Decl_stmtContext, Expr_stmtContext, Assign_stmtContext, If_stmtContext, 
     ExprContext,
     BlockContext
-} from "../lang/FarmExprParser";
-import FarmExprVisitor from '../lang/FarmExprVisitor';
-import FarmExprLexer from "../lang/FarmExprLexer";
-import { ASTNode } from './ast/Ast';
-import { Program } from './ast/Program';
-import { Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement } from './ast/Statement';
-import { Block } from './ast/Block';
-import { Type } from './ast/Type';
-import { Expression, BinaryExpression, ValueExpression, NameExpression } from './ast/Expression';
+} from "lang/FarmExprParser";
+import FarmExprVisitor from 'lang/FarmExprVisitor';
+import FarmExprLexer from "lang/FarmExprLexer";
+import { ASTNode } from 'ast/Ast';
+import { Program } from 'ast/Program';
+import { Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement } from 'ast/Statement';
+import { Block } from 'ast/Block';
+import { Type } from 'ast/Type';
+import { Expression, BinaryExpression, ValueExpression, NameExpression } from 'ast/Expression';
 import { assert } from "console";
 
 

@@ -1,7 +1,7 @@
 {
     "name": "Group12Project1",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "src/Main.js",
     "repository": "git@github.students.cs.ubc.ca:CPSC410-2023W-T2/Group12Project1.git",
     "author": "Group",
     "license": "MIT",

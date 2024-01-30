@@ -1,10 +1,14 @@
 {
     // "extends": "@tsconfig/node/tsconfig.json",
     "compilerOptions": {
-        "outDir": "dist",
-        "target": "esnext",
-        "module": "ESNext",
-        "moduleResolution": "node",
+        "baseUrl": "./", 
+        "paths": {
+            "*": ["src/*", "*"]
+        },
+        "outDir": "dist",     // Compoiled files (javascript) will be in dist folder
+        "target": "esnext",   // Use the newset javascript features
+        "module": "ESNext",   // Use the newset module system
+        "moduleResolution": "node", 
         "esModuleInterop": true,
         "noImplicitAny": true,
         "removeComments": true,

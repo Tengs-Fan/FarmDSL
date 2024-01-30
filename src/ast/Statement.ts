@@ -1,10 +1,11 @@
+import {Result} from "vm/Eval";
+import {Context} from "vm/Context";
 import {ASTNode} from "./Ast";
-import {Result} from "../Eval";
-import {Context} from "../vm/Context";
+import {Variable} from "vm/Variable";
+
 import {Expression} from "./Expression";
 import {Block} from "./Block";
 import {Type} from "./Type";
-import {Variable} from "../vm/Variable";
 
 export class ExprStatement implements ASTNode {
     expr : Expression;

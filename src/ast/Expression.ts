@@ -1,5 +1,5 @@
 import {ASTNode} from "./Ast";
-import {Result} from "../Eval";
+import {Result} from "vm/Eval";
 import {Context} from '../vm/Context'
 import {ExprType} from "./Type";
 import {ExprError} from "../Error";

@@ -1,7 +1,7 @@
-import { Result } from '../Eval'
-import { Context } from '../vm/Context'
+import { Result } from 'vm/Eval'
+import { Context } from 'vm/Context'
 
 export interface ASTNode {
 
-    eval(vm?: Context): Result;
+    eval(ctx?: Context): Result;
 }

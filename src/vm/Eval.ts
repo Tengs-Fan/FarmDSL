@@ -1,6 +1,6 @@
-import { Program } from './ast/Program'
-import { g_context, Context } from './vm/Context'
-import { Type } from './ast/Type'
+import { Program } from 'ast/Program'
+import { g_context, Context } from 'vm/Context'
+import { Type } from 'ast/Type'
 
 export type ResultType =
     "Null" |

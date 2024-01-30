@@ -1,6 +1,6 @@
+import {Result} from "vm/Eval";
+import {Context} from "vm/Context";
 import {ASTNode} from "./Ast";
-import {Result} from "../Eval";
-import {Context} from "../vm/Context";
 import {Statement} from "./Statement";
 
 export class Program implements ASTNode {

@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { parseProgram } from './Parse';
-import { transProgram } from './Trans';
-import { evalProgram } from './Eval';
-import { runRepl } from './Repl';
+import { parseProgram } from 'frontend/Parse';
+import { transProgram } from 'frontend/Trans';
+import { evalProgram } from 'vm/Eval';
+import { runRepl } from 'frontend/Repl';
 
 function executeFile(filename: string, verbose = false) 
 {
