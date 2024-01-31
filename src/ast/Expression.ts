@@ -9,8 +9,8 @@ export class Expression implements ASTNode {
 
     constructor(type: ExprType) { this.type = type; }
 
-    eval(vm: Context): Result {
-        return new Result("Null");
+    eval(_ctx: Context): Result {
+        throw new Error("Should not eval Expression directly, use subtypes");
     }
 }
 
@@ -32,7 +32,7 @@ export class NameExpression extends Expression {
 export class ValueExpression extends Expression {
     value: boolean | number | string;
     constructor(type: ExprType, value: boolean | number | string) { super(type); this.value = value; }
-    eval(vm: Context): Result {
+    eval(_ctx: Context): Result {
         switch (this.type) {
             case "Bool":    return new Result("Bool",  this.value as boolean);
             case "Num":     return new Result("Num",   this.value as number);

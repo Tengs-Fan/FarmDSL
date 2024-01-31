@@ -11,7 +11,7 @@ export class Pair implements ASTNode {
     constructor(name: string, value: Expression) { this.name = name; this.value = value; }
 
     eval(ctx: Context): Result {
-        return new Result("Null");
+        return this.value.eval(ctx);
     }
 }
 
@@ -26,5 +26,4 @@ export class Pairs implements ASTNode {
     eval(ctx: Context): Result {
         return new Result("Null");
     }
-
 }

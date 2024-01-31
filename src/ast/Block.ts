@@ -10,8 +10,15 @@ export class Block implements ASTNode {
     addStatement(stmt: Statement) { this.stmts.push(stmt); }
     addStatements(stmts: Statement[]) { this.stmts.push(...stmts); }
 
-    eval(vm: Context): Result {
+    eval(ctx: Context): Result {
+        let lastResult = new Result("Null");
 
-        return new Result("Null");
+        this.stmts.forEach(
+            stmt => {
+                lastResult = stmt.eval(ctx);
+            }
+        )
+
+        return lastResult;
     }
 }

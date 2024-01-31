@@ -9,7 +9,7 @@ export class Args implements ASTNode {
     addPair(pair: Expression) { this.args.push(pair); }
     addPairs(pairs: Expression[]) { this.args.push(...pairs); }
 
-    eval(ctx: Context): Result {
-        return new Result("Null");
+    eval(_ctx: Context): Result {
+        throw new Error("Should not eval Args");
     }
 }
