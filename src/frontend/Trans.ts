@@ -1,16 +1,21 @@
 import { ProgContext,
     StmtContext, Decl_stmtContext, Expr_stmtContext, Assign_stmtContext, If_stmtContext, 
     ExprContext,
-    BlockContext
+    BlockContext,
+    ArgsContext,
+    PairsContext, PairContext
 } from "lang/FarmExprParser";
 import FarmExprVisitor from 'lang/FarmExprVisitor';
 import FarmExprLexer from "lang/FarmExprLexer";
+import { TerminalNode } from "antlr4/";
 import { ASTNode } from 'ast/Ast';
 import { Program } from 'ast/Program';
-import { Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement } from 'ast/Statement';
+import { Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement, Tstatement } from 'ast/Statement';
 import { Block } from 'ast/Block';
 import { Type } from 'ast/Type';
 import { Expression, BinaryExpression, ValueExpression, NameExpression } from 'ast/Expression';
+import { Args } from 'ast/Args';
+import { Pair, Pairs } from 'ast/Pairs';
 import { assert } from "console";
 
 
@@ -44,7 +49,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         const statement = new Statement();
 
         // Can only have one child
-        const stmt = this.visitChildren(ctx) as unknown as Statement[]
+        const stmt = this.visitChildren(ctx) as unknown as Tstatement[]
         statement.setStatement(stmt[0]);
 
         return statement;
@@ -57,20 +62,30 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         // child0: "Num", child1: "x", child2: "=", child3: "1", child4: ";"
         // Exmaple: Farm y;
         // child0: "Farm", child1: "y", child2: ";"
+        // Example: Farm myFarm = [Name: "myFarm", Area: 1200];
+        // child0: "Farm", child1: "myFarm", child2: "=",  child3: [Name: "myFarm", Area: 1200], child4: ; 
 
         const type = ctx.children[0].getText() as Type;
         const name = ctx.children[1].getText();
 
         // If there is no initialization, expr is Null
-        let expr = new Expression("Null"); 
+        let value = new Expression("Null") as Expression | Args;
 
         // assert(ctx.children.length === 2 || ctx.children.length === 4, "Decl_stmt should have 2 or 5 children");
-
-        if (ctx.children.length > 3) {
-            expr = this.visit(ctx.children[3]) as Expression;
+        switch (ctx.children.length) {
+            // Num x = 1;
+            case 3: break;
+            case 5:
+                if (ctx.children[3] instanceof ExprContext) {
+                    value = this.visit(ctx.children[3]) as Expression;
+                } else {  // instanceof ArgsContext
+                    value = this.visit(ctx.children[3]) as Args; 
+                }
+                break;
+            default: throw new Error(`Decl_stmt should have 3 or 5 children, but got ${ctx.children.length}`);
         }
-        
-        return new DeclStatment(type, name, expr);
+
+        return new DeclStatment(type, name, value);
     }
 
     // Single expression, it does not have any side effect (do not change the virtual machine at all)
@@ -109,7 +124,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     }
 
     visitExpr = (ctx: ExprContext) => {
-        switch (ctx.children.length) {
+        switch (ctx.getChildCount()){
             // 1. Expr op Expr
             // 2. ( Expr )
             case 3: {
@@ -137,8 +152,9 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
                     default: throw new Error(`Unknown operator ${op}`);
                 }
             }
+            // value
             case 1: {
-                const child = ctx.children[0];
+                const child = ctx.children[0] as TerminalNode;
                 switch (child.symbol.type) {
                     case FarmExprLexer.BOOL:   return new ValueExpression("Bool", child.getText() === "true");
                     case FarmExprLexer.FLOAT:  return new ValueExpression("Num", parseFloat(child.getText()));
@@ -150,6 +166,32 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
             }
             default: throw new Error(`Unknown expression ${ctx.getText()}`);
         }
+    }
+
+    // Args: (a, b, c), used in function call
+    // composed of multiple expressions
+    visitArgs = (ctx: ArgsContext) => {
+        const args = new Args();
+        const all_args = this.visitChildren(ctx) as unknown as Expression[];
+        args.addPairs(all_args);
+        return args;
+    }
+
+    // Pairs: [Name: "myFarm", Area: 1200]
+    // composed of multiple pairs
+    visitPairs = (ctx: PairsContext) => {
+        const pairs = new Pairs();
+        const all_pairs = this.visitChildren(ctx) as unknown as Pair[];
+        pairs.addPairs(all_pairs);
+        return pairs; 
+    }
+
+    // Pair: Name: "myFarm"
+    // composed of a name and a value (expression)
+    visitPair = (ctx: PairContext) => {
+        const name = ctx.children[0].getText();
+        const value = this.visit(ctx.children[2]) as Expression;
+        return new Pair(name, value);
     }
 }
 

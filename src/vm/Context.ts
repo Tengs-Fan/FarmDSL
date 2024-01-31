@@ -1,27 +1,29 @@
 import * as VMErr from '../Error';
 import { Variable } from './Variable';
+import { Function } from './Function';
 
 export class Context {
-    private globalVariables: Map<string, Variable>;
+    private variables: Map<string, Variable>;
+    private functions: Map<string, Function>;
 
-    constructor() { this.globalVariables = new Map(); }
+    constructor() { this.variables = new Map(); }
 
     private addVariable(name: string, variable: Variable) {
-        this.globalVariables.set(name, variable);
+        this.variables.set(name, variable);
     }
 
     newVariable(name: string, variable: Variable ) {
-        if (this.globalVariables.has(name)) {
+        if (this.variables.has(name)) {
             throw new VMErr.VariableError(`Variable ${name} already exists`);
         }
         this.addVariable(name, variable);
     }
 
     getVariable(name: string) {
-        if (!this.globalVariables.has(name)) {
+        if (!this.variables.has(name)) {
             throw new VMErr.VariableError(`Variable ${name} does not exist`);
         }
-        return this.globalVariables.get(name);
+        return this.variables.get(name);
     }
 
     updateVariable(name: string, value: any) {

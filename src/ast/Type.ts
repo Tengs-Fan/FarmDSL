@@ -1,6 +1,8 @@
 
+// The type of a value
 export type Type = "Num" | "Bool" | "Farm" | "Crop";
 
+// The type of an expression
 export type ExprType = 
     "Null"| // Does nothing
     Type  | 

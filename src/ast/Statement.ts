@@ -4,6 +4,7 @@ import {ASTNode} from "./Ast";
 import {Variable} from "vm/Variable";
 
 import {Expression} from "./Expression";
+import {Args} from "./Args";
 import {Block} from "./Block";
 import {Type} from "./Type";
 
@@ -20,12 +21,12 @@ export class ExprStatement implements ASTNode {
 export class DeclStatment implements ASTNode {
     type : Type;
     name : string;    
-    expr : Expression;  // Initialization value, can be EmptyExpression
+    initValue : Expression | Args;  // Initialization value, can be EmptyExpression
 
-    constructor(type: Type, name: string, expr: Expression) { this.type = type; this.name = name; this.expr = expr; }
+    constructor(type: Type, name: string, expr: Expression | Args) { this.type = type; this.name = name; this.initValue = expr; }
     
     eval(ctx: Context): Result {
-        const exprResult = this.expr.eval(ctx);
+        const exprResult = this.initValue.eval(ctx);
         const variable: Variable = {
             type: this.type,
             value: exprResult.value 
@@ -77,7 +78,7 @@ export class IfStatement implements ASTNode {
     }
 }
 
-type Tstatement = ExprStatement | DeclStatment | AssignStatement | IfStatement;
+export type Tstatement = ExprStatement | DeclStatment | AssignStatement | IfStatement;
 
 export class Statement implements ASTNode {
     stmt : Tstatement;
