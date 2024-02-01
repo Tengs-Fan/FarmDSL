@@ -1,28 +1,46 @@
 import {ASTNode} from "./Ast";
-import {Result} from "vm/Eval";
+import {Result} from "./Type";
 import {Context} from '../vm/Context'
-import {ExprType} from "./Type";
+import {Type, ExprTypeStr} from "./Type";
 import {ExprError} from "../Error";
 
 export class Expression implements ASTNode {
-    type: ExprType;
+    type: ExprTypeStr;
 
-    constructor(type: ExprType) { this.type = type; }
-
+    constructor(type: ExprTypeStr = "Null") { this.type = type; }
     eval(_ctx: Context): Result {
         throw new Error("Should not eval Expression directly, use subtypes");
     }
 }
 
+export class CallExpression extends Expression {
+    name: string;
+    args: Expression[];
+
+    constructor(name: string, args: Expression[]) { super(); this.name = name; this.args = args; }
+
+    eval(ctx: Context): Result {
+        const func = ctx.getFunction(this.name);
+        const evaluated_args: Result[] = [];
+
+        this.args.forEach(arg => {
+            const result: Result = arg.eval(ctx);
+            evaluated_args.push(result);
+        });
+
+        return func.call(evaluated_args);
+    }
+}
+
 export class NameExpression extends Expression {
     name: string;
-    constructor(name: string) { super("Name"); this.name = name; }
+    constructor(name: string) { super(); this.name = name; }
     eval(ctx: Context): Result {
         const value = ctx.getVariable(this.name);
         switch (value.type) {
             case "Num":
             case "Bool":
-            case "Farm":
+            case "Farm": 
             case "Crop": return new Result(value.type, value.value);
             default: throw new ExprError("Unknown variable type: " + value.type);
         }
@@ -31,7 +49,7 @@ export class NameExpression extends Expression {
 
 export class ValueExpression extends Expression {
     value: boolean | number | string;
-    constructor(type: ExprType, value: boolean | number | string) { super(type); this.value = value; }
+    constructor(type: ExprTypeStr, value: boolean | number | string) { super(type); this.value = value; }
     eval(_ctx: Context): Result {
         switch (this.type) {
             case "Bool":    return new Result("Bool",  this.value as boolean);
@@ -46,7 +64,7 @@ export class BinaryExpression extends Expression {
     left: Expression;
     right: Expression;
 
-    constructor(type: ExprType, left: Expression, right: Expression) { super(type); this.left = left; this.right = right; }
+    constructor(type: ExprTypeStr, left: Expression, right: Expression) { super(type); this.left = left; this.right = right; }
 
     eval(vm: Context): Result {
         const leftResult = this.left.eval(vm);
@@ -57,10 +75,10 @@ export class BinaryExpression extends Expression {
         }
 
         switch (this.type) {
-            case "Add": return new Result("Num", leftResult.value + rightResult.value);
-            case "Sub": return new Result("Num", leftResult.value - rightResult.value);
-            case "Mul": return new Result("Num", leftResult.value * rightResult.value);
-            case "Div": return new Result("Num", leftResult.value / rightResult.value);
+            case "Add": return new Result("Num", leftResult.value as number + (rightResult.value as number));
+            case "Sub": return new Result("Num", leftResult.value as number - (rightResult.value as number));
+            case "Mul": return new Result("Num", leftResult.value as number * (rightResult.value as number));
+            case "Div": return new Result("Num", leftResult.value as number / (rightResult.value as number));
             case "Eq":  return new Result("Bool", leftResult.value === rightResult.value);
             case "Neq": return new Result("Bool", leftResult.value !== rightResult.value);
             case "Gt":  return new Result("Bool", leftResult.value > rightResult.value);

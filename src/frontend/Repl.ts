@@ -41,7 +41,7 @@ export function runRepl(verbose = false) {
                 // for REPL, we always show the result
                 result.show();
             } catch (err) {
-                console.error('REPL: ', err.message);
+                console.error('REPL: ', err);
             }
             runRepl(verbose);
         }

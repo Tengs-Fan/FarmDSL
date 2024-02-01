@@ -69,7 +69,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         const name = ctx.children[1].getText();
 
         // If there is no initialization, expr is Null
-        let value = new Expression("Null") as Expression | Args;
+        let value = new Expression("Null") as Expression | Pairs;
 
         // assert(ctx.children.length === 2 || ctx.children.length === 4, "Decl_stmt should have 2 or 5 children");
         switch (ctx.children.length) {
@@ -79,7 +79,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
                 if (ctx.children[3] instanceof ExprContext) {
                     value = this.visit(ctx.children[3]) as Expression;
                 } else {  // instanceof ArgsContext
-                    value = this.visit(ctx.children[3]) as Args; 
+                    value = this.visit(ctx.children[3]) as Pairs; 
                 }
                 break;
             default: throw new Error(`Decl_stmt should have 3 or 5 children, but got ${ctx.children.length}`);

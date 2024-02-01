@@ -1,6 +1,6 @@
-import { Type } from "../ast/Type";
+import { Type, TypeStr } from "ast/Type";
 
 export interface Variable {
-    type: Type;
-    value: any;
+    type: TypeStr;
+    value: Type;
 }

@@ -1,6 +1,6 @@
 import {ASTNode} from "./Ast";
-import {Result} from "vm/Eval";
-import {Context} from 'vm/Context'
+import {Result} from "./Type";
+import {Context} from 'vm/Context';
 import {Statement} from "./Statement";
 
 export class Block implements ASTNode { 

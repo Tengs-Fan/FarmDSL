@@ -1,15 +1,15 @@
 import * as VMErr from '../Error';
 import { Variable } from './Variable';
-// import { Function } from './Function';
+import { Func } from './Function';
 import { DefaultFunctions } from 'backend/Functions';
 
 export class Context {
     private variables: Map<string, Variable>;
-    private functions: Map<string, Function>;
+    private functions: Map<string, Func>;
 
     constructor() {
         this.variables = new Map(); 
-        this.functions = DefaultFunctions.registerFunctions();
+        this.functions = DefaultFunctions.addDefaultFunctions();
     }
 
     private addVariable(name: string, variable: Variable) {
@@ -38,11 +38,11 @@ export class Context {
         variable.value = value;
     }
 
-    private addFunction(name: string, func: Function) {
+    private addFunction(name: string, func: Func) {
         this.functions.set(name, func);
     }
 
-    newFunction(name: string, func: Function) {
+    newFunction(name: string, func: Func) {
         if (this.functions.has(name)) {
             throw new VMErr.FunctionError(`Function ${name} already exists`);
         }

@@ -1,4 +1,4 @@
-import {Result} from "vm/Eval";
+import {Result} from "./Type";
 import {Context} from "vm/Context";
 import {ASTNode} from "./Ast";
 import {Statement} from "./Statement";

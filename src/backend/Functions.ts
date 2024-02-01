@@ -1,18 +1,27 @@
+import { Func } from 'vm/Function';
+import { Result } from 'ast/Type';
 
+function echo(num: number): number {
+    return num;
+}
 
 export class DefaultFunctions {
-    echo (message: string): string {
-        return message;
-    }
+    
+    private static functions: { [key: string]: Func } = {
+        echo: new Func(
+            ["Num"],  // Args
+            "Num",    // Return
+            echo,
+        ),
+    };
 
-    static registerFunctions(): Map<string, Function> {
-        const map = new Map<string, Function>();
+    static addDefaultFunctions(): Map<string, Func> {
+        const map = new Map<string, Func>();
         const prototype = DefaultFunctions.prototype;
 
-        Object.getOwnPropertyNames(prototype).forEach(name => {
-            if(name !== 'constructor' && typeof prototype[name] === 'function') {
-                map.set(name, prototype[name]);
-            }
+        // Iterate over the static 'functions' object and add each Func to the map
+        Object.entries(DefaultFunctions.functions).forEach(([name, func]) => {
+            map.set(name, func);
         });
 
         return map;

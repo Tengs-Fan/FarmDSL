@@ -1,18 +1,15 @@
 import {ASTNode} from "./Ast";
-import {Result} from "vm/Eval";
+import {Result} from "./Type";
 import {Context} from 'vm/Context'
-import {Type} from "./Type";
 import {Expression} from "./Expression";
+import {Farm} from "backend/Farm";
+import {Crop} from "backend/Crop";
 
 export class Pair implements ASTNode {
     name: string;
     value: Expression;
 
     constructor(name: string, value: Expression) { this.name = name; this.value = value; }
-
-    eval(ctx: Context): Result {
-        return this.value.eval(ctx);
-    }
 }
 
 export class Pairs implements ASTNode {
@@ -23,7 +20,20 @@ export class Pairs implements ASTNode {
     addPair(pair: Pair) { this.pairs.push(pair); }
     addPairs(pairs: Pair[]) { this.pairs.push(...pairs); }
 
-    eval(ctx: Context): Result {
-        return new Result("Null");
+    private buildFarm() : Farm {
+        return new Farm();
+    }
+
+    private buildCrop() : Crop {
+        return new Crop();
+    }
+
+    public eval(type: "Farm" | "Crop"): Result {
+        switch(type) {
+            case "Farm":
+                return new Result("Farm", this.buildFarm());
+            case "Crop":
+                return new Result("Crop", this.buildCrop());
+        }
     }
 }

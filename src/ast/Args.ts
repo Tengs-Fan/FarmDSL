@@ -1,15 +1,16 @@
 import {ASTNode} from "./Ast";
-import {Result} from "vm/Eval";
+import {Result} from "./Type";
 import {Context} from 'vm/Context'
 import {Expression} from "./Expression";
 
 export class Args implements ASTNode {
     args: Expression[];
 
-    addPair(pair: Expression) { this.args.push(pair); }
-    addPairs(pairs: Expression[]) { this.args.push(...pairs); }
+    constructor() { this.args = []; }
+    addArg(pair: Expression) { this.args.push(pair); }
+    addArgs(pairs: Expression[]) { this.args.push(...pairs); }
 
-    eval(_ctx: Context): Result {
-        throw new Error("Should not eval Args");
+    eval(): Result {
+        throw new Error("Should not eval Args, it is a list of expressions");
     }
 }

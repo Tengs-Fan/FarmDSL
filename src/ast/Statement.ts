@@ -1,12 +1,16 @@
-import {Result} from "vm/Eval";
+import {Result} from "./Type";
 import {Context} from "vm/Context";
 import {ASTNode} from "./Ast";
 import {Variable} from "vm/Variable";
+import {Type, TypeStr} from "./Type";
 
 import {Expression} from "./Expression";
-import {Args} from "./Args";
+import {Pairs} from "./Pairs";
 import {Block} from "./Block";
-import {Type} from "./Type";
+import {Farm} from "backend/Farm";
+import {Crop} from "backend/Crop";
+
+import { assert } from "console";
 
 export class ExprStatement implements ASTNode {
     expr : Expression;
@@ -19,17 +23,33 @@ export class ExprStatement implements ASTNode {
 }
 
 export class DeclStatment implements ASTNode {
-    type : Type;
+    type : TypeStr;
     name : string;    
-    initValue : Expression | Args;  // Initialization value, can be EmptyExpression
+    initValue : Expression | Pairs;  // Initialization value, can be EmptyExpression
 
-    constructor(type: Type, name: string, expr: Expression | Args) { this.type = type; this.name = name; this.initValue = expr; }
+    constructor(type: TypeStr, name: string, expr: Expression | Pairs) { this.type = type; this.name = name; this.initValue = expr; }
     
     eval(ctx: Context): Result {
-        const exprResult = this.initValue.eval(ctx);
+        let value : Type;
+        if (this.initValue instanceof Pairs) {
+            switch(this.name) {
+            case "farm":
+                value = this.initValue.eval("Farm").value;
+                break;
+            case "crop":
+                value = this.initValue.eval("Crop").value;
+                break;
+            default:
+                throw new Error("Unkown type of variable");
+            }
+        } else {
+            assert(this.initValue instanceof Expression, "Initialization value should be an expression");
+            value = this.initValue.eval(ctx);
+        }
+        
         const variable: Variable = {
             type: this.type,
-            value: exprResult.value 
+            value: value,
         };
         ctx.newVariable(this.name, variable);
 
