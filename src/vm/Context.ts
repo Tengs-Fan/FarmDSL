@@ -1,12 +1,16 @@
 import * as VMErr from '../Error';
 import { Variable } from './Variable';
-import { Function } from './Function';
+// import { Function } from './Function';
+import { DefaultFunctions } from 'backend/Functions';
 
 export class Context {
     private variables: Map<string, Variable>;
     private functions: Map<string, Function>;
 
-    constructor() { this.variables = new Map(); }
+    constructor() {
+        this.variables = new Map(); 
+        this.functions = DefaultFunctions.registerFunctions();
+    }
 
     private addVariable(name: string, variable: Variable) {
         this.variables.set(name, variable);
@@ -32,6 +36,24 @@ export class Context {
             throw new VMErr.VariableError(`Variable ${name} does not exist`);
         }
         variable.value = value;
+    }
+
+    private addFunction(name: string, func: Function) {
+        this.functions.set(name, func);
+    }
+
+    newFunction(name: string, func: Function) {
+        if (this.functions.has(name)) {
+            throw new VMErr.FunctionError(`Function ${name} already exists`);
+        }
+        this.addFunction(name, func);
+    }
+
+    getFunction(name: string) {
+        if (!this.functions.has(name)) {
+            throw new VMErr.FunctionError(`Function ${name} does not exist`);
+        }
+        return this.functions.get(name);
     }
 }
 
