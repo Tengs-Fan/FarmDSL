@@ -44,7 +44,9 @@ export class Result {
             case "Null": break;
             case "Bool":   
             case "Num":  
-            case "String":  console.log(this.value); break;
+            case "String": 
+            case "Farm":
+            case "Crop": console.log(this.value); break;
             case 'Name':
             default:  throw new Error("Unknown result type: " + this.type);
         }

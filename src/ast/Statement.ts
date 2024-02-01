@@ -2,7 +2,7 @@ import {Result} from "./Type";
 import {Context} from "vm/Context";
 import {ASTNode} from "./Ast";
 import {Variable} from "vm/Variable";
-import {Type, TypeStr} from "./Type";
+import {ResultType, Type, TypeStr} from "./Type";
 
 import {Expression} from "./Expression";
 import {Pairs} from "./Pairs";
@@ -30,17 +30,17 @@ export class DeclStatment implements ASTNode {
     constructor(type: TypeStr, name: string, expr: Expression | Pairs) { this.type = type; this.name = name; this.initValue = expr; }
     
     eval(ctx: Context): Result {
-        let value : Type;
+        let value : Result;
         if (this.initValue instanceof Pairs) {
-            switch(this.name) {
-            case "farm":
-                value = this.initValue.eval("Farm").value;
+            switch(this.type) {
+            case "Farm":
+                value = this.initValue.eval(ctx, "Farm");
                 break;
-            case "crop":
-                value = this.initValue.eval("Crop").value;
+            case "Crop":
+                value = this.initValue.eval(ctx, "Crop");
                 break;
             default:
-                throw new Error("Unkown type of variable");
+                throw new Error(`Unkown type of variable ${this.name}`);
             }
         } else {
             assert(this.initValue instanceof Expression, "Initialization value should be an expression");
@@ -49,7 +49,7 @@ export class DeclStatment implements ASTNode {
         
         const variable: Variable = {
             type: this.type,
-            value: value,
+            value: value.value as Type,
         };
         ctx.newVariable(this.name, variable);
 

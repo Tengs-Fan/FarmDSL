@@ -1,5 +1,4 @@
 import { Func } from 'vm/Function';
-import { Result } from 'ast/Type';
 
 function echo(num: number): number {
     return num;
@@ -17,7 +16,6 @@ export class DefaultFunctions {
 
     static addDefaultFunctions(): Map<string, Func> {
         const map = new Map<string, Func>();
-        const prototype = DefaultFunctions.prototype;
 
         // Iterate over the static 'functions' object and add each Func to the map
         Object.entries(DefaultFunctions.functions).forEach(([name, func]) => {

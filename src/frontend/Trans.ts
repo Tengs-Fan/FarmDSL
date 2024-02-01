@@ -200,8 +200,12 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     // composed of multiple pairs
     visitPairs = (ctx: PairsContext) => {
         const pairs = new Pairs();
-        const all_pairs = this.visitChildren(ctx) as unknown as Pair[];
-        pairs.addPairs(all_pairs);
+        for (let i = 1; i < ctx.getChildCount(); i += 2)
+        {
+            const pair = this.visit(ctx.children[i]) as Pair;
+            // if (ctx.children[i + 1].getText() !== ",") throw new Error("Args shoule be separated by ,");
+            pairs.addPair(pair);
+        }
         return pairs; 
     }
 

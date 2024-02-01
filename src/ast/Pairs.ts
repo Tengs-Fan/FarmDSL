@@ -20,20 +20,46 @@ export class Pairs implements ASTNode {
     addPair(pair: Pair) { this.pairs.push(pair); }
     addPairs(pairs: Pair[]) { this.pairs.push(...pairs); }
 
-    private buildFarm() : Farm {
-        return new Farm();
+    private validate(requiredProps: any): void {
+        const providedProps = new Set(this.pairs.map(p => p.name));
+
+        for (const prop in requiredProps) {
+            if (requiredProps[prop].required && !providedProps.has(prop)) {
+                throw new Error(`property ${prop} is required`);
+            }
+        }
     }
 
-    private buildCrop() : Crop {
-        return new Crop();
+    private buildFarm(ctx: Context) : Farm {
+        this.validate(Farm.propertiesMetadata);
+
+        const farmProps = this.pairs.reduce((acc, pair) => {
+            const value = pair.value.eval(ctx);
+            acc[pair.name] = value.value;
+            return acc;
+        }, {});
+
+        return new Farm(farmProps);
     }
 
-    public eval(type: "Farm" | "Crop"): Result {
+    private buildCrop(ctx: Context) : Crop {
+        this.validate(Crop.propertiesMetadata);
+
+        const cropProps = this.pairs.reduce((acc, pair) => {
+            const value = pair.value.eval(ctx);
+            acc[pair.name] = value.value;
+            return acc;
+        }, {});
+
+        return new Crop(cropProps);
+    }
+
+    public eval(ctx: Context, type: "Farm" | "Crop"): Result {
         switch(type) {
             case "Farm":
-                return new Result("Farm", this.buildFarm());
+                return new Result("Farm", this.buildFarm(ctx));
             case "Crop":
-                return new Result("Crop", this.buildCrop());
+                return new Result("Crop", this.buildCrop(ctx));
         }
     }
 }
