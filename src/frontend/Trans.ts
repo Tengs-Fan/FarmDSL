@@ -1,19 +1,19 @@
 import { ProgContext,
     StmtContext, Decl_stmtContext, Expr_stmtContext, Assign_stmtContext, If_stmtContext, 
-    ExprContext,
+    ExprContext, Call_exprContext,
     BlockContext,
     ArgsContext,
     PairsContext, PairContext
 } from "lang/FarmExprParser";
 import FarmExprVisitor from 'lang/FarmExprVisitor';
 import FarmExprLexer from "lang/FarmExprLexer";
-import { TerminalNode } from "antlr4/";
+import { TerminalNode } from "antlr4";
 import { ASTNode } from 'ast/Ast';
 import { Program } from 'ast/Program';
 import { Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement, Tstatement } from 'ast/Statement';
 import { Block } from 'ast/Block';
-import { Type } from 'ast/Type';
-import { Expression, BinaryExpression, ValueExpression, NameExpression } from 'ast/Expression';
+import { TypeStr } from 'ast/Type';
+import { Expression, CallExpression, BinaryExpression, ValueExpression, NameExpression } from 'ast/Expression';
 import { Args } from 'ast/Args';
 import { Pair, Pairs } from 'ast/Pairs';
 import { assert } from "console";
@@ -65,7 +65,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         // Example: Farm myFarm = [Name: "myFarm", Area: 1200];
         // child0: "Farm", child1: "myFarm", child2: "=",  child3: [Name: "myFarm", Area: 1200], child4: ; 
 
-        const type = ctx.children[0].getText() as Type;
+        const type = ctx.children[0].getText() as TypeStr;
         const name = ctx.children[1].getText();
 
         // If there is no initialization, expr is Null
@@ -127,6 +127,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         switch (ctx.getChildCount()){
             // 1. Expr op Expr
             // 2. ( Expr )
+            // 3. Call name(Args)
             case 3: {
                 // ( Expr )
                 if (ctx.children[0].getText() === "(") {
@@ -152,28 +153,46 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
                     default: throw new Error(`Unknown operator ${op}`);
                 }
             }
-            // value
+            // value 
+            // Call name(Args)
             case 1: {
-                const child = ctx.children[0] as TerminalNode;
-                switch (child.symbol.type) {
-                    case FarmExprLexer.BOOL:   return new ValueExpression("Bool", child.getText() === "true");
-                    case FarmExprLexer.FLOAT:  return new ValueExpression("Num", parseFloat(child.getText()));
-                    case FarmExprLexer.INT:    return new ValueExpression("Num", parseInt(child.getText()));
-                    case FarmExprLexer.STRING: return new ValueExpression("String", child.getText());
-                    case FarmExprLexer.NAME:   return new NameExpression(child.getText());
-                    default: throw new Error(`Unknown value type ${ctx.getText()}`);
+                const child = ctx.children[0];
+                // value
+                if (child instanceof TerminalNode) {
+                    switch (child.symbol.type) {
+                        case FarmExprLexer.BOOL:   return new ValueExpression("Bool", child.getText() === "true");
+                        case FarmExprLexer.FLOAT:  return new ValueExpression("Num", parseFloat(child.getText()));
+                        case FarmExprLexer.INT:    return new ValueExpression("Num", parseInt(child.getText()));
+                        case FarmExprLexer.STRING: return new ValueExpression("String", child.getText());
+                        case FarmExprLexer.NAME:   return new NameExpression(child.getText());
+                        default: throw new Error(`Unknown value type ${ctx.getText()}`);
+                    }
                 }
+                // Call name(Args)
+                return this.visit(ctx.children[0]) as CallExpression;
             }
             default: throw new Error(`Unknown expression ${ctx.getText()}`);
         }
+    }
+
+    visitCall_expr = (ctx: Call_exprContext) => {
+        const name = ctx.children[0].getText();
+        const args = this.visit(ctx.children[2]) as Args;
+        return new CallExpression(name, args.args);
     }
 
     // Args: (a, b, c), used in function call
     // composed of multiple expressions
     visitArgs = (ctx: ArgsContext) => {
         const args = new Args();
-        const all_args = this.visitChildren(ctx) as unknown as Expression[];
-        args.addPairs(all_args);
+
+        // it has "," between each expression
+        for (let i = 0; i < ctx.getChildCount(); i += 2)
+        {
+            const arg = this.visit(ctx.children[i]) as Expression;
+            // if (ctx.children[i + 1].getText() !== ",") throw new Error("Args shoule be separated by ,");
+            args.addArg(arg);
+        }
         return args;
     }
 
