@@ -2,27 +2,14 @@ import {Type} from "../ast/Type";
 
 export class Crop {
     static propertiesMetadata = {
-        Name: {
-            type: "String",
-            required: true
-        },
-        Season: {
-            type: "String",
-            required: true,
-        },
-        Water: {
-            type: "Num",
-            required: true,
-        },
-        Yield: {
-            type: "Num",
-            required: true,
-        },
-        SellPrice: {
-            type: "Num",
-            required: true,
-        },
+        Name: { type: "String", required: true },
+        Season: { type: "String", required: true },
+        Water: { type: "Num", required: true },
+        Yield: { type: "Num", required: true },
+        SellPrice: { type: "Num", required: true },
     };
+
+    static properties = Object.keys(Crop.propertiesMetadata);
 
     Name: string;
     Season: "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";

@@ -30,7 +30,7 @@ export class Pairs implements ASTNode {
         this.pairs.push(...pairs);
     }
 
-    private validate(requiredProps: any): void {
+    private validate(requiredProps: {[key: string]: { type: string, required: boolean}}): void {
         const providedProps = new Set(this.pairs.map((p) => p.name));
 
         for (const prop in requiredProps) {

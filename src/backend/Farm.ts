@@ -2,27 +2,12 @@ import {Type} from "../ast/Type";
 
 export class Farm {
     static propertiesMetadata = {
-        Name: {
-            type: "String",
-            required: true,
-        },
+        Name: {type: "String", required: true},
         Area: {type: "Num", required: true},
-        GridLength: {
-            type: "Num",
-            required: true,
-        },
-        Polyculture: {
-            type: "Bool",
-            required: true,
-        },
-        MaxWaterUsage: {
-            type: "Num",
-            required: true,
-        },
-        Season: {
-            type: "String",
-            required: true,
-        },
+        GridLength: {type: "Num", required: true},
+        Polyculture: {type: "Bool", required: true},
+        MaxWaterUsage: {type: "Num", required: true},
+        Season: {type: "String", required: true},
     };
 
     static properties = Object.keys(Farm.propertiesMetadata);

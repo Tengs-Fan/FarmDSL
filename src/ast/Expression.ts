@@ -1,8 +1,8 @@
-import {ASTNode} from "./Ast";
-import {Result} from "./Type";
-import {Context} from "../vm/Context";
-import {Type, ExprTypeStr} from "./Type";
-import {ExprError} from "../Error";
+import { ASTNode } from "./Ast";
+import { Result } from "./Type";
+import { Context } from "../vm/Context";
+import { ExprTypeStr } from "./Type";
+import { ExprError } from "../Error";
 
 export class Expression implements ASTNode {
     type: ExprTypeStr;
@@ -11,6 +11,7 @@ export class Expression implements ASTNode {
         this.type = type;
     }
     eval(_ctx: Context): Result {
+        (void _ctx);    // Disable unused variable warning
         throw new Error("Should not eval Expression directly, use subtypes");
     }
 }
@@ -65,6 +66,7 @@ export class ValueExpression extends Expression {
         this.value = value;
     }
     eval(_ctx: Context): Result {
+        (void _ctx);    // Disable unused variable warning
         switch (this.type) {
             case "Bool":
                 return new Result("Bool", this.value as boolean);

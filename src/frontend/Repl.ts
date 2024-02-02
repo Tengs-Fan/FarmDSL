@@ -25,9 +25,10 @@ export function runRepl(verbose = false) {
             case "exit":
                 exit();
                 break;
-            case "verbose":
+            case "verbose": {
                 const newVerbose = toggleVerbose(verbose);
                 runRepl(newVerbose);
+            }
                 break;
             default:
                 try {

@@ -30,7 +30,7 @@
       "scripts": {
             "cover": "nyc --reporter text --reporter html yarn run test",
             "build": "tsc && yarn lint",
-            "lint": "eslint src test --ext .ts",
+            "lint": "eslint src --ext .ts",
             "pretty": "prettier --config ./.prettierrc.json --write \"./**/*.ts\"",
             "test": "mocha --require ts-node/register --timeout 10000 --extension .spec.ts --recursive test",
             "st": "mocha --require ts-node/register --timeout 10000",
