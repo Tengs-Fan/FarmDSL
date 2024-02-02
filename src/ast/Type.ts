@@ -1,10 +1,6 @@
 import {Farm} from "../backend/Farm";
 import {Crop} from "../backend/Crop";
 
-// The type of a value
-export type Type = number | boolean | Farm | Crop | string | null;
-export type TypeStr = "Num" | "Bool" | "Farm" | "Crop" | "String" | "Null";
-
 // The type of an expression
 export type ExprTypeStr =
     | "Null" // Does nothing
@@ -23,16 +19,21 @@ export type ExprTypeStr =
     | "Lte" // result: Bool
     | "Call"; // Function call, result: unknown
 
+// The type of a value
+export type Type = number | boolean | Farm | Crop | string | null;
+export type TypeStr = "Num" | "Bool" | "Farm" | "Crop" | "String" | "Null";
+
 export function typeToString(type: Type): TypeStr {
     if (type instanceof Farm) return "Farm";
     if (type instanceof Crop) return "Crop";
+    if (type === null) return "Null"; // Handle null explicitly
     switch (typeof type) {
-        case "number":
-            return "Num";
-        case "boolean":
-            return "Bool";
+        case "number": return "Num";
+        case "boolean": return "Bool";
+        case "string": return "String"; // Added missing case
         default:
-            throw new Error("Unknown type: " + type);
+            console.warn("Unknown type: " + type); // Maybe log instead of throwing
+            return "Null"; // Fallback or throw Error if strict typing is needed
     }
 }
 
