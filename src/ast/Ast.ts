@@ -1,6 +1,4 @@
-import { Result } from './Type';
-import { Context } from '../vm/Context';
+import {Result} from "./Type";
+import {Context} from "../vm/Context";
 
-export interface ASTNode {
-
-}
+export interface ASTNode {}

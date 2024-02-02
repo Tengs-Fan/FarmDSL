@@ -11,9 +11,9 @@ export class ExprError extends Error {
 }
 
 export class FunctionError extends Error {
-  constructor(message: string) {
-    super(message);
-  }
+    constructor(message: string) {
+        super(message);
+    }
 }
 
 export class VariableError extends Error {

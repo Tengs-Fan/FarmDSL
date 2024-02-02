@@ -1,6 +1,6 @@
-import { Result } from "../ast/Type";
-import { FunctionError } from "../Error";
-import { TypeStr } from "../ast/Type";
+import {Result} from "../ast/Type";
+import {FunctionError} from "../Error";
+import {TypeStr} from "../ast/Type";
 
 export class Func {
     args: TypeStr[];
@@ -8,7 +8,9 @@ export class Func {
     func: Function;
 
     constructor(args: TypeStr[], ret: TypeStr, func: Function) {
-        this.args = args; this.return = ret; this.func = func;
+        this.args = args;
+        this.return = ret;
+        this.func = func;
     }
 
     // Any argument mismatch will raise an error
@@ -18,12 +20,12 @@ export class Func {
             throw new FunctionError(`Argument count mismatch: expected ${this.args.length}, got ${args.length}`);
         }
         // Check each argument type
-        for (let i = 0; i < args.length; i++) { 
+        for (let i = 0; i < args.length; i++) {
             if (args[i].type !== this.args[i]) {
                 throw new FunctionError(`Argument type mismatch: expected ${this.args[i]}, got ${args[i].type}`);
             }
         }
-        const arg_value = args.map(arg => arg.value);
+        const arg_value = args.map((arg) => arg.value);
 
         return new Result(this.return, this.func(...arg_value));
     }

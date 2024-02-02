@@ -1,13 +1,27 @@
-import { Type } from "../ast/Type";
+import {Type} from "../ast/Type";
 
 export class Crop {
-    
     static propertiesMetadata = {
-        Name: { type: "String", required: true},
-        Season: { type: "String", required: true},
-        Water: { type: "Num", required: true},
-        Yield: { type: "Num", required: true},
-        SellPrice: { type: "Num", required: true}
+        Name: {
+            type: "String",
+            required: true
+        },
+        Season: {
+            type: "String",
+            required: true,
+        },
+        Water: {
+            type: "Num",
+            required: true,
+        },
+        Yield: {
+            type: "Num",
+            required: true,
+        },
+        SellPrice: {
+            type: "Num",
+            required: true,
+        },
     };
 
     Name: string;
@@ -23,8 +37,4 @@ export class Crop {
         this.Yield = props.yield as number;
         this.SellPrice = props.sellPrice as number;
     }
-
 }
-
-
-

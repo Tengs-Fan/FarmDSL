@@ -8,12 +8,14 @@ import {Expression} from "./Expression";
 import {Pairs} from "./Pairs";
 import {Block} from "./Block";
 
-import { assert } from "console";
+import {assert} from "console";
 
 export class ExprStatement implements ASTNode {
-    expr : Expression;
+    expr: Expression;
 
-    constructor(expr: Expression) { this.expr = expr; }
+    constructor(expr: Expression) {
+        this.expr = expr;
+    }
 
     eval(vm: Context): Result {
         return this.expr.eval(vm);
@@ -21,30 +23,34 @@ export class ExprStatement implements ASTNode {
 }
 
 export class DeclStatment implements ASTNode {
-    type : TypeStr;
-    name : string;    
-    initValue : Expression | Pairs;  // Initialization value, can be EmptyExpression
+    type: TypeStr;
+    name: string;
+    initValue: Expression | Pairs; // Initialization value, can be EmptyExpression
 
-    constructor(type: TypeStr, name: string, expr: Expression | Pairs) { this.type = type; this.name = name; this.initValue = expr; }
-    
+    constructor(type: TypeStr, name: string, expr: Expression | Pairs) {
+        this.type = type;
+        this.name = name;
+        this.initValue = expr;
+    }
+
     eval(ctx: Context): Result {
-        let value : Result;
+        let value: Result;
         if (this.initValue instanceof Pairs) {
-            switch(this.type) {
-            case "Farm":
-                value = this.initValue.eval(ctx, "Farm");
-                break;
-            case "Crop":
-                value = this.initValue.eval(ctx, "Crop");
-                break;
-            default:
-                throw new Error(`Unkown type of variable ${this.name}`);
+            switch (this.type) {
+                case "Farm":
+                    value = this.initValue.eval(ctx, "Farm");
+                    break;
+                case "Crop":
+                    value = this.initValue.eval(ctx, "Crop");
+                    break;
+                default:
+                    throw new Error(`Unkown type of variable ${this.name}`);
             }
         } else {
             assert(this.initValue instanceof Expression, "Initialization value should be an expression");
             value = this.initValue.eval(ctx);
         }
-        
+
         const variable: Variable = {
             type: this.type,
             value: value.value as Type,
@@ -52,7 +58,7 @@ export class DeclStatment implements ASTNode {
         ctx.newVariable(this.name, variable);
 
         // It is totally a side effect to create a new variable in the VM
-        return new Result("Null", null); 
+        return new Result("Null", null);
     }
 }
 
@@ -60,7 +66,10 @@ export class AssignStatement implements ASTNode {
     name: string;
     expr: Expression;
 
-    constructor(name: string, expr: Expression) { this.name = name; this.expr = expr; }
+    constructor(name: string, expr: Expression) {
+        this.name = name;
+        this.expr = expr;
+    }
 
     eval(ctx: Context): Result {
         const exprResult = this.expr.eval(ctx);
@@ -77,7 +86,11 @@ export class IfStatement implements ASTNode {
     if_block: Block;
     else_block: Block;
 
-    constructor(cond: Expression, if_block: Block, else_block: Block) { this.cond = cond; this.if_block = if_block; this.else_block = else_block; }
+    constructor(cond: Expression, if_block: Block, else_block: Block) {
+        this.cond = cond;
+        this.if_block = if_block;
+        this.else_block = else_block;
+    }
 
     eval(vm: Context): Result {
         const exprResult = this.cond.eval(vm);
@@ -99,8 +112,10 @@ export class IfStatement implements ASTNode {
 export type Tstatement = ExprStatement | DeclStatment | AssignStatement | IfStatement;
 
 export class Statement implements ASTNode {
-    stmt : Tstatement;
-    constructor(stmt: Tstatement) { this.stmt = stmt; }
+    stmt: Tstatement;
+    constructor(stmt: Tstatement) {
+        this.stmt = stmt;
+    }
 
     eval(ctx: Context): Result {
         return this.stmt.eval(ctx);

@@ -1,14 +1,14 @@
-import * as VMErr from '../Error';
-import { Variable } from './Variable';
-import { Func } from './Function';
-import { DefaultFunctions } from '../backend/Functions';
+import * as VMErr from "../Error";
+import {Variable} from "./Variable";
+import {Func} from "./Function";
+import {DefaultFunctions} from "../backend/Functions";
 
 export class Context {
     private variables: Map<string, Variable>;
     private functions: Map<string, Func>;
 
     constructor() {
-        this.variables = new Map(); 
+        this.variables = new Map();
         this.functions = DefaultFunctions.addDefaultFunctions();
     }
 
@@ -16,7 +16,7 @@ export class Context {
         this.variables.set(name, variable);
     }
 
-    newVariable(name: string, variable: Variable ) {
+    newVariable(name: string, variable: Variable) {
         if (this.variables.has(name)) {
             throw new VMErr.VariableError(`Variable ${name} already exists`);
         }

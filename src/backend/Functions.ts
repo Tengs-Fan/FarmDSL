@@ -1,15 +1,16 @@
-import { Func } from '../vm/Function';
+import {Func} from "../vm/Function";
 
 function echo(num: number): number {
     return num;
 }
 
 export class DefaultFunctions {
-    
-    private static functions: { [key: string]: Func } = {
+    private static functions: {
+        [key: string]: Func;
+    } = {
         echo: new Func(
-            ["Num"],  // Args
-            "Num",    // Return
+            ["Num"], // Args
+            "Num", // Return
             echo,
         ),
     };
