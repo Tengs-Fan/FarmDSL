@@ -1,9 +1,10 @@
 import {ASTNode} from "./Ast";
 import {Result} from "./Type";
-import {Context} from 'vm/Context'
+import {Context} from '../vm/Context'
 import {Expression} from "./Expression";
-import {Farm} from "backend/Farm";
-import {Crop} from "backend/Crop";
+import {Farm} from "../backend/Farm";
+import {Crop} from "../backend/Crop";
+import {Type} from "./Type";
 
 export class Pair implements ASTNode {
     name: string;
@@ -33,9 +34,9 @@ export class Pairs implements ASTNode {
     private buildFarm(ctx: Context) : Farm {
         this.validate(Farm.propertiesMetadata);
 
-        const farmProps = this.pairs.reduce((acc, pair) => {
+        const farmProps = this.pairs.reduce<{[key: string]: Type}>((acc, pair) => {
             const value = pair.value.eval(ctx);
-            acc[pair.name] = value.value;
+            acc[pair.name] = value.value as Type;
             return acc;
         }, {});
 
@@ -45,9 +46,9 @@ export class Pairs implements ASTNode {
     private buildCrop(ctx: Context) : Crop {
         this.validate(Crop.propertiesMetadata);
 
-        const cropProps = this.pairs.reduce((acc, pair) => {
+        const cropProps = this.pairs.reduce<{[key:string]: Type}>((acc, pair) => {
             const value = pair.value.eval(ctx);
-            acc[pair.name] = value.value;
+            acc[pair.name] = value.value as Type;
             return acc;
         }, {});
 

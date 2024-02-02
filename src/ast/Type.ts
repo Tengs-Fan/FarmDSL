@@ -1,15 +1,9 @@
-import { Farm } from "backend/Farm";
-import { Crop } from "backend/Crop";
-
-export type ResultType =
-    null |
-    Type |
-    string
-;
+import { Farm } from "../backend/Farm";
+import { Crop } from "../backend/Crop";
 
 // The type of a value
-export type Type = number | boolean | Farm | Crop;
-export type TypeStr = "Num" | "Bool" | "Farm" | "Crop";
+export type Type = number | boolean | Farm | Crop | string | null ;
+export type TypeStr = "Num" | "Bool" | "Farm" | "Crop" | "String" | "Null";
 
 // The type of an expression
 export type ExprTypeStr = 
@@ -20,8 +14,6 @@ export type ExprTypeStr =
     "Neq" | "Gt" | "Lt" | "Gte" | "Lte" |  // result: Bool
     "Call"  // Function call, result: unknown
 ;
-
-export type ResultTypeStr = "Null" | TypeStr | "String" | "Name" ;
 
 export function typeToString(type: Type): TypeStr {
     if (type instanceof Farm) return "Farm";
@@ -34,10 +26,10 @@ export function typeToString(type: Type): TypeStr {
 }
 
 export class Result {
-    type  : ResultTypeStr;
-    value?: ResultType;
+    type  : TypeStr;
+    value?: Type;
 
-    constructor(type: ResultTypeStr, value:ResultType = null) { this.type = type; this.value = value; }
+    constructor(type: TypeStr, value: Type) { this.type = type; this.value = value; }
 
     show() {
         switch (this.type) {
@@ -47,7 +39,6 @@ export class Result {
             case "String": 
             case "Farm":
             case "Crop": console.log(this.value); break;
-            case 'Name':
             default:  throw new Error("Unknown result type: " + this.type);
         }
     }

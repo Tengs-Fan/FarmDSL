@@ -1,5 +1,5 @@
 import {Result} from "./Type";
-import {Context} from "vm/Context";
+import {Context} from "../vm/Context";
 import {ASTNode} from "./Ast";
 import {Statement} from "./Statement";
 
@@ -12,7 +12,7 @@ export class Program implements ASTNode {
     addStatements(stmts: Statement[]) { this.stmts.push(...stmts); }
 
     eval(ctx: Context): Result {
-        let lastResult = new Result("Null");
+        let lastResult = new Result("Null", null);
 
         this.stmts.forEach(
             stmt => {

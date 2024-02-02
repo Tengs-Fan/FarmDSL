@@ -1,4 +1,4 @@
-
+import { Type } from "../ast/Type";
 
 export class Farm {
     
@@ -20,13 +20,13 @@ export class Farm {
     MaxWaterUsage: number;
     Season: string;
 
-    constructor(props: {name: string, area: number, gridLength: number, polyculture: boolean, maxWaterUsage: number, season: string}) {
-        this.Name = props.name;
-        this.Area = props.area;
-        this.GridLength = props.gridLength;
-        this.Polyculture = props.polyculture;
-        this.MaxWaterUsage = props.maxWaterUsage;
-        this.Season = props.season;
+    constructor(props: {[key: string]: Type}) {
+        this.Name = "Test";
+        this.Area = props.area as number;
+        this.GridLength = props.gridLength as number;
+        this.Polyculture = props.polyculture as boolean;
+        this.MaxWaterUsage = props.maxWaterUsage as number
+        this.Season = "Summer";
     }
 
 }

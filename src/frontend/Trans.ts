@@ -4,18 +4,19 @@ import { ProgContext,
     BlockContext,
     ArgsContext,
     PairsContext, PairContext
-} from "lang/FarmExprParser";
-import FarmExprVisitor from 'lang/FarmExprVisitor';
-import FarmExprLexer from "lang/FarmExprLexer";
+} from "../../lang/FarmExprParser";
+import FarmExprVisitor from '../../lang/FarmExprVisitor';
+import FarmExprLexer from "../../lang/FarmExprLexer";
 import { TerminalNode } from "antlr4";
-import { ASTNode } from 'ast/Ast';
-import { Program } from 'ast/Program';
-import { Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement, Tstatement } from 'ast/Statement';
-import { Block } from 'ast/Block';
-import { TypeStr } from 'ast/Type';
-import { Expression, CallExpression, BinaryExpression, ValueExpression, NameExpression } from 'ast/Expression';
-import { Args } from 'ast/Args';
-import { Pair, Pairs } from 'ast/Pairs';
+import { ASTNode } from '../ast/Ast';
+import { Program } from '../ast/Program';
+import { Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement, Tstatement } from '../ast/Statement';
+import { Block } from '../ast/Block';
+import { TypeStr } from '../ast/Type';
+import { Expression, CallExpression, BinaryExpression, ValueExpression, NameExpression } from '../ast/Expression';
+import { Args } from '../ast/Args';
+import { Pair, Pairs } from '../ast/Pairs';
+import { ParseError } from '../Error';
 import { assert } from "console";
 
 
@@ -46,13 +47,10 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     
     // Statement
     visitStmt = (ctx: StmtContext) => {
-        const statement = new Statement();
-
         // Can only have one child
         const stmt = this.visitChildren(ctx) as unknown as Tstatement[]
-        statement.setStatement(stmt[0]);
 
-        return statement;
+        return new Statement(stmt[0]);
     }
 
     // Declararion:
@@ -64,6 +62,8 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         // child0: "Farm", child1: "y", child2: ";"
         // Example: Farm myFarm = [Name: "myFarm", Area: 1200];
         // child0: "Farm", child1: "myFarm", child2: "=",  child3: [Name: "myFarm", Area: 1200], child4: ; 
+
+        if (ctx.children === null) { throw new ParseError("Decl_stmt should have children"); }
 
         const type = ctx.children[0].getText() as TypeStr;
         const name = ctx.children[1].getText();
@@ -90,6 +90,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
 
     // Single expression, it does not have any side effect (do not change the virtual machine at all)
     visitExpr_stmt = (ctx: Expr_stmtContext) => {
+        if (ctx.children === null) { throw new ParseError("Expr_stmt should have children"); }
         const expr = this.visit(ctx.children[0]) as Expression;
         return new ExprStatement(expr);
     }
@@ -97,6 +98,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     // Assignment:
     // x = 1; a = f(x);
     visitAssign_stmt = (ctx: Assign_stmtContext) => {
+        if (ctx.children === null) { throw new ParseError("Assign_stmt should have children"); }
         const name = ctx.children[0].getText();
         const expr = this.visit(ctx.children[2]) as Expression;
 
@@ -110,6 +112,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         // child0: "if", child1: "x", child2: ... 
         // Example: if (x) { ... } else { ... }
         // child0: "if", child1: "x", child2: ... , child3: "else", child4: ... 
+        if (ctx.children === null) { throw new ParseError("If_stmt should have children"); }
         
         const condition = this.visit(ctx.children[1]) as Expression;
         const if_block = this.visit(ctx.children[2]) as Block;
@@ -124,6 +127,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     }
 
     visitExpr = (ctx: ExprContext) => {
+        if (ctx.children === null) { throw new ParseError("Expr should have children"); }
         switch (ctx.getChildCount()){
             // 1. Expr op Expr
             // 2. ( Expr )
@@ -176,6 +180,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     }
 
     visitCall_expr = (ctx: Call_exprContext) => {
+        if (ctx.children === null) { throw new ParseError("Expr should have children"); }
         const name = ctx.children[0].getText();
         const args = this.visit(ctx.children[2]) as Args;
         return new CallExpression(name, args.args);
@@ -185,6 +190,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     // composed of multiple expressions
     visitArgs = (ctx: ArgsContext) => {
         const args = new Args();
+        if (ctx.children === null) { return args; }
 
         // it has "," between each expression
         for (let i = 0; i < ctx.getChildCount(); i += 2)
@@ -200,6 +206,8 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     // composed of multiple pairs
     visitPairs = (ctx: PairsContext) => {
         const pairs = new Pairs();
+        if (ctx.children === null) { return pairs; }
+
         for (let i = 1; i < ctx.getChildCount(); i += 2)
         {
             const pair = this.visit(ctx.children[i]) as Pair;
@@ -212,6 +220,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     // Pair: Name: "myFarm"
     // composed of a name and a value (expression)
     visitPair = (ctx: PairContext) => {
+        if (ctx.children === null) { throw new Error("Pair should have children"); }
         const name = ctx.children[0].getText();
         const value = this.visit(ctx.children[2]) as Expression;
         return new Pair(name, value);

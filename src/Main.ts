@@ -1,10 +1,11 @@
 import * as fs from 'fs';
 import yargs from 'yargs';
+import { Arguments } from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { parseProgram } from 'frontend/Parse';
-import { transProgram } from 'frontend/Trans';
-import { evalProgram } from 'vm/Eval';
-import { runRepl } from 'frontend/Repl';
+import { parseProgram } from './frontend/Parse';
+import { transProgram } from './frontend/Trans';
+import { evalProgram } from './vm/Eval';
+import { runRepl } from './frontend/Repl';
 
 function executeFile(filename: string, verbose = false) 
 {
@@ -20,13 +21,12 @@ function executeFile(filename: string, verbose = false)
         case 'Farm':
         case 'Crop': result.show(); break;
         case 'String':
-        case 'Name':
         default: throw new Error("Unknown result type: " + result.type); 
     }
     process.exit(0);
 }
 
-interface MyArguments extends yargs.Arguments {
+interface MyArguments extends Arguments {
     file?: string;
     verbose?: boolean;
     execute?: string;
@@ -70,7 +70,7 @@ yargs(hideBin(process.argv))
     .check((argv: MyArguments) => {
         if (argv.execute)
         {
-            parseProgram(argv.execute, argv.verbose);
+            parseProgram(argv.execute, true);
             process.exit(0);
         }
         return true;

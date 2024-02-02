@@ -1,6 +1,5 @@
 import {ASTNode} from "./Ast";
 import {Result} from "./Type";
-import {Context} from 'vm/Context'
 import {Expression} from "./Expression";
 
 export class Args implements ASTNode {

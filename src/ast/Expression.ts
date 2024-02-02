@@ -74,6 +74,10 @@ export class BinaryExpression extends Expression {
             throw new ExprError("Binary expression should have same type on both sides");
         }
 
+        if (leftResult.value == null || rightResult.value == null) {
+            throw new ExprError("Binary expression values must not be null");
+        }
+
         switch (this.type) {
             case "Add": return new Result("Num", leftResult.value as number + (rightResult.value as number));
             case "Sub": return new Result("Num", leftResult.value as number - (rightResult.value as number));

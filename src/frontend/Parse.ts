@@ -1,7 +1,7 @@
 import * as antlr from 'antlr4';
-import FarmExprLexer from 'lang/FarmExprLexer';
-import FarmExprParser from 'lang/FarmExprParser';
-import { ProgContext } from 'lang/FarmExprParser';
+import FarmExprLexer from '../../lang/FarmExprLexer';
+import FarmExprParser from '../../lang/FarmExprParser';
+import { ProgContext } from '../../lang/FarmExprParser';
 
 export function parseProgram(input: string, verbose: boolean): ProgContext 
 {

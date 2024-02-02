@@ -1,7 +1,7 @@
 import * as readline from "readline";
 import { parseProgram } from "./Parse";
 import { transProgram } from "./Trans";
-import { evalProgram } from "vm/Eval";
+import { evalProgram } from "../vm/Eval";
 
 const rl = readline.createInterface({
     input: process.stdin,

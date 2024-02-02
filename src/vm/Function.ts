@@ -1,5 +1,5 @@
-import { Result } from "ast/Type";
-import { FunctionError } from "Error";
+import { Result } from "../ast/Type";
+import { FunctionError } from "../Error";
 import { TypeStr } from "../ast/Type";
 
 export class Func {

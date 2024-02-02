@@ -1,14 +1,9 @@
 {
-    // "extends": "@tsconfig/node/tsconfig.json",
     "compilerOptions": {
-        "baseUrl": "./", 
-        "paths": {
-            "*": ["src/*", "*"]
-        },
-        "outDir": "dist",     // Compoiled files (javascript) will be in dist folder
-        "target": "esnext",   // Use the newset javascript features
-        "module": "ESNext",   // Use the newset module system
-        "moduleResolution": "node", 
+        "target": "ESNext",   // Use the newset javascript features
+        "moduleResolution": "node",
+        "outDir": "dist",
+        "strict": true,
         "esModuleInterop": true,
         "noImplicitAny": true,
         "removeComments": true,

@@ -1,7 +1,7 @@
 import * as VMErr from '../Error';
 import { Variable } from './Variable';
 import { Func } from './Function';
-import { DefaultFunctions } from 'backend/Functions';
+import { DefaultFunctions } from '../backend/Functions';
 
 export class Context {
     private variables: Map<string, Variable>;
@@ -24,10 +24,11 @@ export class Context {
     }
 
     getVariable(name: string) {
-        if (!this.variables.has(name)) {
+        const variable = this.variables.get(name);
+        if (variable === undefined) {
             throw new VMErr.VariableError(`Variable ${name} does not exist`);
         }
-        return this.variables.get(name);
+        return variable;
     }
 
     updateVariable(name: string, value: any) {
@@ -49,11 +50,12 @@ export class Context {
         this.addFunction(name, func);
     }
 
-    getFunction(name: string) {
-        if (!this.functions.has(name)) {
+    getFunction(name: string): Func {
+        const func = this.functions.get(name);
+        if (func === undefined) {
             throw new VMErr.FunctionError(`Function ${name} does not exist`);
         }
-        return this.functions.get(name);
+        return func;
     }
 }
 

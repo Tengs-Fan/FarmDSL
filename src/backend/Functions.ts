@@ -1,4 +1,4 @@
-import { Func } from 'vm/Function';
+import { Func } from '../vm/Function';
 
 function echo(num: number): number {
     return num;

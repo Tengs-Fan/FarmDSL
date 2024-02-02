@@ -1,14 +1,12 @@
 import {Result} from "./Type";
-import {Context} from "vm/Context";
+import {Context} from "../vm/Context";
 import {ASTNode} from "./Ast";
-import {Variable} from "vm/Variable";
-import {ResultType, Type, TypeStr} from "./Type";
+import {Variable} from "../vm/Variable";
+import {Type, TypeStr} from "./Type";
 
 import {Expression} from "./Expression";
 import {Pairs} from "./Pairs";
 import {Block} from "./Block";
-import {Farm} from "backend/Farm";
-import {Crop} from "backend/Crop";
 
 import { assert } from "console";
 
@@ -54,7 +52,7 @@ export class DeclStatment implements ASTNode {
         ctx.newVariable(this.name, variable);
 
         // It is totally a side effect to create a new variable in the VM
-        return new Result("Null"); 
+        return new Result("Null", null); 
     }
 }
 
@@ -70,7 +68,7 @@ export class AssignStatement implements ASTNode {
         ctx.updateVariable(this.name, newValue);
 
         // Update the variable in the VM is a side effect
-        return new Result("Null");
+        return new Result("Null", null);
     }
 }
 
@@ -94,7 +92,7 @@ export class IfStatement implements ASTNode {
             this.else_block.eval(vm);
         }
 
-        return new Result("Null");
+        return new Result("Null", null);
     }
 }
 
@@ -102,7 +100,7 @@ export type Tstatement = ExprStatement | DeclStatment | AssignStatement | IfStat
 
 export class Statement implements ASTNode {
     stmt : Tstatement;
-    setStatement(stmt: Tstatement) { this.stmt = stmt; }
+    constructor(stmt: Tstatement) { this.stmt = stmt; }
 
     eval(ctx: Context): Result {
         return this.stmt.eval(ctx);
