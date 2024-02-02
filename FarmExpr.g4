@@ -1,9 +1,5 @@
 grammar FarmExpr;
 
-options { 
-    visitor = true; 
-}
-
 // A program is a bunch of statements
 prog: stmt+;
 
