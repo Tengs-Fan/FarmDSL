@@ -28,8 +28,8 @@ jobs:
     
     - name: Install ANTLR
       run: |
-        curl -O https://www.antlr.org/download/antlr-4.9.2-complete.jar
-        echo "java -jar $(pwd)/antlr-4.9.2-complete.jar \$@" > antlr4
+        curl -O https://www.antlr.org/download/antlr-4.13.1-complete.jar
+        echo "java -jar $(pwd)/antlr-4.13.1-complete.jar \$@" > antlr4
         chmod +x antlr4
         echo "$(pwd)" >> $GITHUB_PATH
 
