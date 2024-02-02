@@ -39,14 +39,16 @@ jobs:
 
     - name: Install dependencies
       run: yarn install
+
     - name: Compile TypeScript
       run: yarn tsc
+
     - name: Run linter
       run: yarn lint
+
     - name: Run prettier check
       run: yarn pretty --check
-    - name: Run tests with coverage
+
+    - name: Run all tests with coverage
       run: yarn cover
-    - name: Run all tests
-      run: yarn test
 
