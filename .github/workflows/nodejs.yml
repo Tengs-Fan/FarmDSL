@@ -34,7 +34,7 @@ jobs:
         echo "$(pwd)" >> $GITHUB_PATH
 
     - name: Generate ANTLR Source Files
-      run: antlr4 -Dlanguage=JavaScript FarmExpr.g4 -visitor -o lang
+      run: antlr4 -Dlanguage=TypeScript FarmExpr.g4 -visitor -o lang
 
     - name: Install dependencies
       run: yarn install
