@@ -20,7 +20,8 @@ Returns true if corn is a possible crop in this farm region, based on seasonalit
 
 
 ### Include the example snippets you used in your user study, and their outputs.
-```Farm myFarm =  Farm[Name: ‘myFarm’, Length: 100, Height: 12, Polyculture: Y, MaxWaterUsage: 1500, Season: Summer];
+```
+Farm myFarm =  Farm[Name: ‘myFarm’, Length: 100, Height: 12, Polyculture: Y, MaxWaterUsage: 1500, Season: Summer];
 Crop myCrop = Crop[Name: ‘elderberry’, Season: Summer, Water: 45, SellPrice: 110];
 if (PossibleCrop(‘corn’, 5, 10, 8, 12)) {
 		Plant(‘corn’, 5, 10, 8, 12);
@@ -28,7 +29,8 @@ if (PossibleCrop(‘corn’, 5, 10, 8, 12)) {
 		if (PossibleCrop(‘elderberry’, 5, 10, 8, 12)) {
 			Plant(‘elderberry’, 5, 10, 8, 12);
 		}
-}```
+}
+```
 
 This code will define a summer farm of length 100 and 12 with max water usage of 1500 units. It then defines a new type of crop, ‘elderberry’. The first if statement checks if ‘corn’ is a possible crop. ‘Corn’ is a common crop that we have pre-defined in our compiler, as a fall crop. Since ‘Corn’ is a fall crop, the code then switches into the else block, and checks if ‘elderberry’ is a possible crop. Because its season matches the season of our farm, this returns true, and ‘elderberry’ is planted in the region from x=5 to x=10 and y=8 to y=12 (30 units).
 
