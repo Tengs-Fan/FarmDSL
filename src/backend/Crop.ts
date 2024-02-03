@@ -18,10 +18,10 @@ export class Crop {
     SellPrice: number;
 
     constructor(props: {[key: string]: Type}) {
-        this.Name = "test";
-        this.Season = "Spring";
-        this.Water = props.water as number;
-        this.Yield = props.yield as number;
-        this.SellPrice = props.sellPrice as number;
+        this.Name = props.Name as string;
+        this.Season = props.Season as "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
+        this.Water = props.Water as number;
+        this.Yield = props.Yield as number;
+        this.SellPrice = props.SellPrice as number;
     }
 }

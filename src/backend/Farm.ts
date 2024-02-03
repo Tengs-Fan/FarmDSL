@@ -17,14 +17,14 @@ export class Farm {
     GridLength: number;
     Polyculture: boolean;
     MaxWaterUsage: number;
-    Season: string;
+    Season: "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
 
     constructor(props: {[key: string]: Type}) {
-        this.Name = "Test";
-        this.Area = props.area as number;
-        this.GridLength = props.gridLength as number;
-        this.Polyculture = props.polyculture as boolean;
-        this.MaxWaterUsage = props.maxWaterUsage as number;
-        this.Season = "Summer";
+        this.Name = props.Name as string;
+        this.Area = props.Area as number;
+        this.GridLength = props.GridLength as number;
+        this.Polyculture = props.Polyculture as boolean;
+        this.MaxWaterUsage = props.MaxWaterUsage as number;
+        this.Season = props.Season as "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
     }
 }
