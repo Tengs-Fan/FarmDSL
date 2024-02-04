@@ -10,6 +10,8 @@ node_modules/
 coverage/
 dist/
 
+antlr
+*.jar
 lang/
 yarn.lock
 

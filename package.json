@@ -38,7 +38,8 @@
             "test": "mocha --require ts-node/register --timeout 10000 --extension .spec.ts --recursive test",
             "st": "mocha --require ts-node/register --timeout 10000",
             "fix": "yarn lint --fix",
-            "lang": "antlr -Dlanguage=TypeScript FarmExpr.g4 -visitor -o lang",
+            "setup-antlr": "curl -O https://www.antlr.org/download/antlr-4.13.1-complete.jar && echo \"java -jar $(pwd)/antlr-4.13.1-complete.jar \\$@\" > antlr && chmod +x antlr",
+            "lang": "./antlr -Dlanguage=TypeScript FarmExpr.g4 -visitor -o lang",
             "start": "ts-node src/Main.ts"
       }
 }
