@@ -42,6 +42,7 @@ call_expr: NAME '(' args? ')' ;
 expr:   expr op=('*'|'/') expr
       | expr op=('+'|'-') expr
       | expr op=( '!=' | '==' | '>=' | '<=' | '<' | '>' ) expr
+      | expr '.' call_expr
       | call_expr
       | BOOL
       | INT

@@ -1,8 +1,10 @@
 import { ASTNode } from "./Ast";
 import { Result } from "./Type";
 import { Context } from "../vm/Context";
-import { ExprTypeStr } from "./Type";
-import { ExprError } from "../Error";
+import { Type, ExprTypeStr, typeToString } from "./Type";
+import { ExprError, FunctionError } from "../Error";
+import { Farm } from "../backend/Farm";
+import { Crop } from "../backend/Crop";
 
 export class Expression implements ASTNode {
     type: ExprTypeStr;
@@ -13,6 +15,39 @@ export class Expression implements ASTNode {
     eval(_ctx: Context): Result {
         (void _ctx);    // Disable unused variable warning
         throw new Error("Should not eval Expression directly, use subtypes");
+    }
+}
+
+export class OOPCallExpression extends Expression {
+    varName: Expression;
+    funcName: string;
+    args: Expression[];
+
+    constructor(varName: Expression, funcName: string, args: Expression[]) {
+        super();
+        this.varName = varName;
+        this.funcName = funcName;
+        this.args = args;
+    }
+
+    eval(ctx: Context): Result {
+        const obj = this.varName.eval(ctx).value as Type;
+        if (obj === null) { 
+            throw new ExprError("The object is null");
+        } else if (typeof obj === "string"  || typeof obj === "number" || typeof obj === "boolean") {
+            throw new FunctionError("The object is not a Farm or Crop");
+        }
+
+        const evaluated_args: Type[] = [];
+
+        this.args.forEach((arg) => {
+            const result: Type = arg.eval(ctx).value as Type;
+            evaluated_args.push(result);
+        });
+
+        const res = (obj as Farm | Crop).call(this.funcName, evaluated_args);
+
+        return new Result(typeToString(res), res);
     }
 }
 

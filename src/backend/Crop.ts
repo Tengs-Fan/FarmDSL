@@ -1,4 +1,5 @@
 import {Type} from "../ast/Type";
+import { FunctionError } from "../Error";
 
 export class Crop {
     static propertiesMetadata = {
@@ -23,5 +24,17 @@ export class Crop {
         this.Water = props.Water as number;
         this.Yield = props.Yield as number;
         this.SellPrice = props.SellPrice as number;
+    }
+
+    call(funcName: string, args: Type[]): Type {
+        if (typeof this[funcName as keyof this] === "function") {
+            return (this[funcName as keyof this] as Function)(...args);
+        } else {
+            throw new FunctionError(`Function ${funcName} does not exist in Farm class`);
+        }
+    }
+
+    OOPCallTest(): number {
+        return 1919810;
     }
 }
