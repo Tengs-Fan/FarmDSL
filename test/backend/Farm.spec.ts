@@ -38,7 +38,7 @@ describe("Farm tests", () => {
             const resultCorn = farm.plantFarm(corn,5);
             expect(resultCorn).to.equal(true);
             expect(farm.Crops[0][0]).to.equal(corn);
-            let resultApple: boolean | Error;
+            let resultApple: boolean | Error | Farm;
             try {
                 resultApple = farm.plantFarm(apple,5);
             } catch (error: any) {
@@ -55,8 +55,8 @@ describe("Farm tests", () => {
             const peach: Crop = new Crop({Name: "peach", Season: "Winter", Water: 45, Yield: 75, SellPrice: 110});
             const apple: Crop = new Crop({Name: "apple", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
             const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"})
-            let resultApple: boolean | Error;
-            let resultPeach: boolean | Error;
+            let resultApple: boolean | Error | Farm;
+            let resultPeach: boolean | Error | Farm;
 
             try {
                 resultApple = farm.plantFarm(apple, 5);
@@ -81,7 +81,7 @@ describe("Farm tests", () => {
         it("farm planting is not successful due to quantity of crop greater than farm size", () => {
             const apple: Crop = new Crop({Name: "apple", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
             const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"})
-            let resultApple: boolean | Error;
+            let resultApple: boolean | Error | Farm;
 
 
             try {
@@ -99,7 +99,7 @@ describe("Farm tests", () => {
         it("farm planting is not successful due to water requirements being exceeded", () => {
             const apple: Crop = new Crop({Name: "apple", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
             const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"})
-            let resultApple: boolean | Error;
+            let resultApple: boolean | Error | Farm;
 
 
             try {
