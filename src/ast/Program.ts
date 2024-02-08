@@ -5,11 +5,11 @@ import {Statement} from "./Statement";
 
 export class Program implements ASTNode {
     stmts: Statement[];
-    local_context: Context;
+    // local_context: Context;
 
     constructor() {
         this.stmts = [];
-        this.local_context = new Context();
+        // this.local_context = new Context();
     }
     addStatement(stmt: Statement) {
         this.stmts.push(stmt);
