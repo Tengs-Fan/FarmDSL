@@ -3,18 +3,33 @@ import {Farm} from "./Farm";
 import {Crop} from "./Crop";
 import {number} from "yargs";
 import {Context, g_context} from "../vm/Context";
+import {Type} from "../ast/Type";
 
 
-function plantFarm(farm: Farm, cropName: string, quantity: number): number {
+
+function plantFarm(farmName: string, cropName: string, quantity: number): void {
     let myCrop: Crop = g_context.getCrop(cropName);
-    return startPlanting(farm,myCrop, quantity);
+    let myFarmVariable = g_context.getVariable(farmName);
+    if (myFarmVariable === undefined || myFarmVariable.value === null) {
+        throw new Error("Farm not found or is null");
+    }
+    let myFarm: Farm = myFarmVariable.value as Farm;
+    let result: Farm = startPlanting(myFarm,myCrop, quantity);
+    g_context.updateVariable(farmName,result);
 }
 
-function farmAvailableSpace(farm: Farm): number {
+function farmAvailableSpace(farmName: string): number {
+
+    let myFarmVariable = g_context.getVariable(farmName);
+    if (myFarmVariable === undefined || myFarmVariable.value === null) {
+        throw new Error("Farm not found or is null");
+    }
+    let myFarm: Farm = myFarmVariable.value as Farm;
     let count: number = 0;
-    for (let x = 0; x < farm.GridLength; x++) {
-        for (let y = 0; y < farm.GridLength; y++) {
-            if (farm.Crops[x][y] == null) {
+
+    for (let x = 0; x < myFarm.GridLength; x++) {
+        for (let y = 0; y < myFarm.GridLength; y++) {
+            if (myFarm.Crops[x][y] == null) {
                 count++;
             }
         }
@@ -33,15 +48,18 @@ function plantIfEmpty(myFarm: Farm, x: number, y: number, aCrop: Crop): boolean 
 }
 }
 
-function startPlanting(myFarm: Farm, myCrop: Crop, quantity: number): number {
+function startPlanting(myFarm: Farm, myCrop: Crop, quantity: number): Farm {
     if (quantity < 0) {
         console.log(`Crop quantity cannot be negative.`);
-        return -1;
+        return myFarm;
     }
     let quantityLeft: number = quantity;
     for (let x = 0; x < myFarm.GridLength; x++) {
         for (let y = 0; y < myFarm.GridLength; y++) {
-            if (quantityLeft == 0) {return 1;}
+            if (quantityLeft == 0) {
+                console.log(`Planting was successful`);
+                return myFarm;
+            }
             if (plantIfEmpty(myFarm,x, y, myCrop)) {
                 quantityLeft--;
             }
@@ -49,10 +67,9 @@ function startPlanting(myFarm: Farm, myCrop: Crop, quantity: number): number {
     }
     if (quantityLeft > 0) {
         console.log(`The farm is full. Only ${quantity - quantityLeft} crops were planted`);
-        return 1;
+        return myFarm;
     }
-    // this is an error code but should never be returned.
-    return 0;
+    return myFarm;
 }
 
 export { plantFarm, farmAvailableSpace };

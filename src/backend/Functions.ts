@@ -2,7 +2,7 @@ import {Func} from "../vm/Function";
 import {Farm} from "./Farm";
 import {Crop} from "./Crop";
 import {number} from "yargs";
-import {availableSpace, plantFarm} from "./FarmFunctions";
+import {farmAvailableSpace, plantFarm} from "./FarmFunctions";
 
 function echo(num: number): number {
     return num;
@@ -18,12 +18,12 @@ export class DefaultFunctions {
             echo,
         ),
         plantFarm: new Func(
-            ["Farm", "String", "Num"], // Args
+            ["String", "String", "Num"], // Args
             "Num", // Return
             plantFarm,
         ),
         farmAvailableSpace: new Func(
-            ["Farm"], // Args
+            ["String"], // Args
             "Num", // Return
             farmAvailableSpace,
         ),
