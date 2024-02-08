@@ -22,10 +22,10 @@ export class DefaultFunctions {
             "Num", // Return
             plantFarm,
         ),
-        availableSpace: new Func(
+        farmAvailableSpace: new Func(
             ["Farm"], // Args
             "Num", // Return
-            availableSpace,
+            farmAvailableSpace,
         ),
     };
 

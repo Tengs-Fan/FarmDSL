@@ -10,7 +10,7 @@ function plantFarm(farm: Farm, cropName: string, quantity: number): number {
     return startPlanting(farm,myCrop, quantity);
 }
 
-function availableSpace(farm: Farm): number {
+function farmAvailableSpace(farm: Farm): number {
     let count: number = 0;
     for (let x = 0; x < farm.GridLength; x++) {
         for (let y = 0; y < farm.GridLength; y++) {
@@ -55,6 +55,6 @@ function startPlanting(myFarm: Farm, myCrop: Crop, quantity: number): number {
     return 0;
 }
 
-export { plantFarm, availableSpace };
+export { plantFarm, farmAvailableSpace };
 
 
