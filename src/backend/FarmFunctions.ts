@@ -7,15 +7,24 @@ import {Type} from "../ast/Type";
 
 
 
-function plantFarm(farmName: string, cropName: string, quantity: number): void {
+function plantFarm(farmName: string, cropName: string, quantity: number): number {
     let myCrop: Crop = g_context.getCrop(cropName);
     let myFarmVariable = g_context.getVariable(farmName);
     if (myFarmVariable === undefined || myFarmVariable.value === null) {
         throw new Error("Farm not found or is null");
     }
     let myFarm: Farm = myFarmVariable.value as Farm;
+
+    // Check if polyculture is false and another crop is planted
+    let uniqueCropsInFarm = getUniqueCrops(myFarm);
+    const CropIsAlreadyPresent: boolean = uniqueCropsInFarm.some(crop => crop.Name === myCrop.Name);
+    if (myFarm.Polyculture == false && CropIsAlreadyPresent) {
+        throw new Error("Multiple different crops cannot be planted when polyculture is false");
+    }
+    // Start planting
     let result: Farm = startPlanting(myFarm,myCrop, quantity);
     g_context.updateVariable(farmName,result);
+    return 1;
 }
 
 function farmAvailableSpace(farmName: string): number {
@@ -36,6 +45,23 @@ function farmAvailableSpace(farmName: string): number {
     }
     return count;
 }
+
+
+function getUniqueCrops(myFarm: Farm): Crop[] {
+    const uniqueCrops: Crop[] = [];
+
+    for (let x = 0; x < myFarm.GridLength; x++) {
+        for (let y = 0; y < myFarm.GridLength; y++) {
+            const currentCrop = myFarm.Crops[x][y];
+
+            if (currentCrop !== null && !uniqueCrops.some(crop => crop.Name === currentCrop.Name)) {
+                uniqueCrops.push(currentCrop);
+            }
+        }
+    }
+    return uniqueCrops;
+}
+
 
 function plantIfEmpty(myFarm: Farm, x: number, y: number, aCrop: Crop): boolean {
     if (myFarm.Crops[x][y] === null) {
