@@ -5,6 +5,9 @@ import {DefaultFunctions} from "../backend/Functions";
 import {Type} from "../ast/Type";
 import {Crop} from "../backend/Crop";
 import * as fs from "fs";
+import * as path from 'path';
+
+
 
 export class Context {
     private variables: Map<string, Variable>;
@@ -21,7 +24,9 @@ export class Context {
     private addCropsToDB(): void {
         try {
             // Read the contents of the crops.json file
-            const fileContent = fs.readFileSync("./crops.json", 'utf-8');
+            const fileContent = fs.readFileSync(path.join(__dirname, './crops.json'), 'utf-8');
+
+         //   const fileContent = fs.readFileSync("./crops.json", 'utf-8');
             // Parse the JSON content
             const cropsData: Crop[] = JSON.parse(fileContent);
             // Populate this.cropsDB map

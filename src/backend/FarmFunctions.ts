@@ -1,39 +1,43 @@
-import {Func} from "../vm/Function";
 import {Farm} from "./Farm";
 import {Crop} from "./Crop";
-import {number} from "yargs";
-import {Context, g_context} from "../vm/Context";
-import {Type} from "../ast/Type";
+import {g_context} from "../vm/Context";
+
 
 
 
 function plantFarm(farmName: string, cropName: string, quantity: number): number {
-    let myCrop: Crop = g_context.getCrop(cropName);
-    let myFarmVariable = g_context.getVariable(farmName);
+    // Get Crop from CropsDB
+    const myCrop: Crop = g_context.getCrop(cropName);
+
+    // Get Farm from VM
+    const myFarmVariable = g_context.getVariable(farmName);
     if (myFarmVariable === undefined || myFarmVariable.value === null) {
         throw new Error("Farm not found or is null");
     }
-    let myFarm: Farm = myFarmVariable.value as Farm;
+    const myFarm: Farm = myFarmVariable.value as Farm;
 
-    // Check if polyculture is false and another crop is planted
-    let uniqueCropsInFarm = getUniqueCrops(myFarm);
+    // If polyculture is false and another crop is already planted, throw error.
+    const uniqueCropsInFarm = getUniqueCrops(myFarm);
     const CropIsAlreadyPresent: boolean = uniqueCropsInFarm.some(crop => crop.Name === myCrop.Name);
     if (myFarm.Polyculture == false && CropIsAlreadyPresent) {
         throw new Error("Multiple different crops cannot be planted when polyculture is false");
     }
-    // Start planting
-    let result: Farm = startPlanting(myFarm,myCrop, quantity);
+    // Start planting crop
+    const result: Farm = startPlanting(myFarm,myCrop, quantity);
     g_context.updateVariable(farmName,result);
+
+    //If successful, return 1.
+    console.log(`Planting was successful`);
     return 1;
 }
 
 function farmAvailableSpace(farmName: string): number {
 
-    let myFarmVariable = g_context.getVariable(farmName);
+    const myFarmVariable = g_context.getVariable(farmName);
     if (myFarmVariable === undefined || myFarmVariable.value === null) {
         throw new Error("Farm not found or is null");
     }
-    let myFarm: Farm = myFarmVariable.value as Farm;
+    const myFarm: Farm = myFarmVariable.value as Farm;
     let count: number = 0;
 
     for (let x = 0; x < myFarm.GridLength; x++) {
@@ -76,24 +80,21 @@ function plantIfEmpty(myFarm: Farm, x: number, y: number, aCrop: Crop): boolean 
 
 function startPlanting(myFarm: Farm, myCrop: Crop, quantity: number): Farm {
     if (quantity < 0) {
-        console.log(`Crop quantity cannot be negative.`);
-        return myFarm;
+        throw new Error("Crop quantity cannot be negative.");
     }
     let quantityLeft: number = quantity;
     for (let x = 0; x < myFarm.GridLength; x++) {
         for (let y = 0; y < myFarm.GridLength; y++) {
             if (quantityLeft == 0) {
-                console.log(`Planting was successful`);
                 return myFarm;
             }
-            if (plantIfEmpty(myFarm,x, y, myCrop)) {
+            if (plantIfEmpty(myFarm, x, y, myCrop)) {
                 quantityLeft--;
             }
         }
     }
     if (quantityLeft > 0) {
-        console.log(`The farm is full. Only ${quantity - quantityLeft} crops were planted`);
-        return myFarm;
+        throw new Error(`There are ${quantityLeft} more crops than space. Crops were not planted`);
     }
     return myFarm;
 }

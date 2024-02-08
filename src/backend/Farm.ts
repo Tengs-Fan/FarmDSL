@@ -10,7 +10,7 @@ export class Farm {
         MaxWaterUsage: {type: "Num", required: true},
         Season: {type: "String", required: true},
         //TODO: how to state the type of crop[][] when it is not a type in the DSL
-        Crops: {type: "Crop[][]", required: true},
+        Crops: {type: "Crop[][]", required: false},
     };
 
     static properties = Object.keys(Farm.propertiesMetadata);

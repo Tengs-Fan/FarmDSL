@@ -1,7 +1,4 @@
 import {Func} from "../vm/Function";
-import {Farm} from "./Farm";
-import {Crop} from "./Crop";
-import {number} from "yargs";
 import {farmAvailableSpace, plantFarm} from "./FarmFunctions";
 
 function echo(num: number): number {
