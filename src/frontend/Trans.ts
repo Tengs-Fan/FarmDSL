@@ -216,12 +216,25 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     };
 
     visitCall_expr = (ctx: Call_exprContext) => {
-        if (ctx.children === null) {
-            throw new ParseError("Expr should have children");
-        }
+        if (ctx.children === null) throw new ParseError("Expr should have children");
+
+        // Name of the function
         const name = ctx.children[0].getText();
-        const args = this.visit(ctx.children[2]) as Args;
-        return new CallExpression(name, args.args);
+        if (ctx.children.length === 4) // Witharguments
+        {
+            if (ctx.children[1].getText() !== "(" && ctx.children[3].getText() !== ")") {
+                throw new ParseError("Call_expr should have ( and )");
+            }
+            const args = this.visit(ctx.children[2]) as Args;
+            return new CallExpression(name, args.args);
+        }
+        else // Without arguments
+        {
+            if (ctx.children[1].getText() !== "(" && ctx.children[2].getText() !== ")") {
+                throw new ParseError("Call_expr should have ( and )");
+            }
+            return new CallExpression(name, [] as Expression[]);
+        }
     };
 
     // Args: (a, b, c), used in function call
