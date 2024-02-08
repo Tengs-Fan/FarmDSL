@@ -20,7 +20,7 @@ import {Program} from "../ast/Program";
 import {Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement, Tstatement} from "../ast/Statement";
 import {Block} from "../ast/Block";
 import {TypeStr} from "../ast/Type";
-import {Expression, CallExpression, BinaryExpression, ValueExpression, NameExpression} from "../ast/Expression";
+import {Expression, OOPCallExpression, CallExpression, BinaryExpression, ValueExpression, NameExpression} from "../ast/Expression";
 import {Args} from "../ast/Args";
 import {Pair, Pairs} from "../ast/Pairs";
 import {ParseError} from "../Error";
@@ -147,9 +147,10 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
             throw new ParseError("Expr should have children");
         }
         switch (ctx.getChildCount()) {
-            // 1. Expr op Expr
-            // 2. ( Expr )
-            // 3. Call name(Args)
+            // 1. Expr op Expr        op: +, -, *, /, >, >=, <, <=, ==, !=
+            // 2. ( Expr )            wrapped by ()
+            // 3. name(Args)          function call
+            // 4. Expr . name(Args)   OOP function call
             case 3: {
                 // ( Expr )
                 if (ctx.children[0].getText() === "(") {
@@ -182,6 +183,9 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
                         return new BinaryExpression("Eq", left, right);
                     case "!=":
                         return new BinaryExpression("Neq", left, right);
+                    case ".":
+                        if (!(right instanceof CallExpression)) throw new Error("Right expression should be CallExpression");
+                        return new OOPCallExpression(left, (right as CallExpression).name, (right as CallExpression).args);
                     default:
                         throw new Error(`Unknown operator ${op}`);
                 }

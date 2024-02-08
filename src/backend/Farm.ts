@@ -1,4 +1,5 @@
 import {Type} from "../ast/Type";
+import { FunctionError } from "../Error";
 
 export class Farm {
     static propertiesMetadata = {
@@ -26,5 +27,18 @@ export class Farm {
         this.Polyculture = props.Polyculture as boolean;
         this.MaxWaterUsage = props.MaxWaterUsage as number;
         this.Season = props.Season as "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
+    }
+
+    getFunction(funcName: string): Function {
+        const func = this[funcName as keyof this];
+        if (typeof func === "function") {
+            return func;
+        } else {
+            throw new FunctionError(`Function ${funcName} does not exist in Farm class`);
+        }
+    }
+
+    OOPCallTest(): number {
+        return 114514;
     }
 }
