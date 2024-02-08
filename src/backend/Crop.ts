@@ -26,12 +26,11 @@ export class Crop {
         this.SellPrice = props.SellPrice as number;
     }
 
-    getFunction(funcName: string): Function {
-        const func = this[funcName as keyof this];
-        if (typeof func === "function") {
-            return func;
+    call(funcName: string, args: Type[]): Type {
+        if (typeof this[funcName as keyof this] === "function") {
+            return (this[funcName as keyof this] as Function)(...args);
         } else {
-            throw new FunctionError(`Function ${funcName} does not exist in Crop class`);
+            throw new FunctionError(`Function ${funcName} does not exist in Farm class`);
         }
     }
 
