@@ -129,7 +129,9 @@ export class Farm {
         let waterUsage: number = 0;
         for (let x = 0; x < this.GridLength; x++) {
             for (let y = 0; y < this.GridLength; y++) {
-                waterUsage += this.Crops[x][y].Water;
+                if (this.Crops[x][y] != null) {
+                    waterUsage += this.Crops[x][y].Water;
+                }
                 }
             }
         return waterUsage;

@@ -36,10 +36,19 @@ describe("Farm tests", () => {
             const apple: Crop = new Crop({Name: "apple", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
             const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: false, MaxWaterUsage: 1500, Season: "Summer"})
             const resultCorn = farm.plantFarm(corn,5);
-            const resultApple = farm.plantFarm(apple,5);
             expect(resultCorn).to.equal(true);
-            expect(resultCorn).to.equal(false);
             expect(farm.Crops[0][0]).to.equal(corn);
+            let resultApple: boolean | Error;
+            try {
+                resultApple = farm.plantFarm(apple,5);
+            } catch (error: any) {
+                resultApple = error;
+            }
+            expect(resultApple).to.be.an.instanceOf(Error);
+            expect((resultApple as Error).message.trim()).to.equal("Multiple different crops cannot be planted when polyculture is false");
+
+
+
             expect(farm.Crops[0][6]).to.equal(null);
         });
         it("farm planting is not successful due to farm and crop having incompatible seasons", () => {
@@ -87,6 +96,31 @@ describe("Farm tests", () => {
             expect(farm.Crops[9][9]).to.equal(null);
         });
 
+        it("farm planting is not successful due to water requirements being exceeded", () => {
+            const apple: Crop = new Crop({Name: "apple", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
+            const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"})
+            let resultApple: boolean | Error;
+
+
+            try {
+                resultApple = farm.plantFarm(apple, 10);
+            } catch (error: any) {
+                resultApple = error;
+            }
+
+            expect(resultApple).to.equal(true);
+            expect(farm.Crops[0][9]).to.equal(apple);
+
+            try {
+                resultApple = farm.plantFarm(apple, 50);
+            } catch (error: any) {
+                resultApple = error;
+            }
+
+            expect(resultApple).to.be.an.instanceOf(Error);
+            expect((resultApple as Error).message.trim()).to.equal("The proposed planting would exceed farm's water capacity by 1200");
+            expect(farm.Crops[1][1]).to.equal(null);
+        });
 
     });
 });
