@@ -1,5 +1,5 @@
 import {Func} from "../vm/Function";
-import {farmAvailableSpace, plantFarm} from "./FarmFunctions";
+
 
 function echo(num: number): number {
     return num;
@@ -14,16 +14,6 @@ export class DefaultFunctions {
             "Num", // Return
             echo,
         ),
-        plantFarm: new Func(
-            ["String", "String", "Num"], // Args
-            "Num", // Return
-            plantFarm,
-        ),
-        farmAvailableSpace: new Func(
-            ["String"], // Args
-            "Num", // Return
-            farmAvailableSpace,
-        ),
     };
 
     static addDefaultFunctions(): Map<string, Func> {
@@ -33,7 +23,6 @@ export class DefaultFunctions {
         Object.entries(DefaultFunctions.functions).forEach(([name, func]) => {
             map.set(name, func);
         });
-
         return map;
     }
 }
