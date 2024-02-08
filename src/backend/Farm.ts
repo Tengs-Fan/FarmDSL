@@ -1,4 +1,5 @@
 import {Type} from "../ast/Type";
+import { Crop } from "./Crop";
 
 export class Farm {
     static propertiesMetadata = {
@@ -18,6 +19,7 @@ export class Farm {
     Polyculture: boolean;
     MaxWaterUsage: number;
     Season: "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
+    Crops: Crop[][];
 
     constructor(props: {[key: string]: Type}) {
         this.Name = props.Name as string;
@@ -26,5 +28,6 @@ export class Farm {
         this.Polyculture = props.Polyculture as boolean;
         this.MaxWaterUsage = props.MaxWaterUsage as number;
         this.Season = props.Season as "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
+        this.Crops = Array.from({ length: this.GridLength }, () => Array(this.GridLength).fill(null));
     }
 }

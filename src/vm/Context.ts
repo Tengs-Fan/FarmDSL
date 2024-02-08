@@ -3,14 +3,43 @@ import {Variable} from "./Variable";
 import {Func} from "./Function";
 import {DefaultFunctions} from "../backend/Functions";
 import {Type} from "../ast/Type";
+import {Crop} from "../backend/Crop";
+import * as fs from "fs";
 
 export class Context {
     private variables: Map<string, Variable>;
     private functions: Map<string, Func>;
+    private cropsDB: Map<string, Crop>;
 
     constructor() {
         this.variables = new Map();
         this.functions = DefaultFunctions.addDefaultFunctions();
+        this.cropsDB = new Map();
+        this.addCropsToDB();
+    }
+
+    private addCropsToDB(): void {
+        try {
+            // Read the contents of the crops.json file
+            const fileContent = fs.readFileSync("./crops.json", 'utf-8');
+            // Parse the JSON content
+            const cropsData: Crop[] = JSON.parse(fileContent);
+            // Populate this.cropsDB map
+            cropsData.forEach(crop => {
+                this.cropsDB.set(crop.Name, crop);
+            });
+            console.log('Crops data loaded successfully.');
+        } catch (error) {
+            console.error('Error reading crops file:', (error as Error).message);
+        }
+    }
+
+    public getCrop(name: string) {
+        const aCrop: Crop | undefined = this.cropsDB.get(name);
+        if (aCrop === undefined) {
+            throw new VariableError(`Crop ${name} does not exist`);
+        }
+        return aCrop;
     }
 
     private addVariable(name: string, variable: Variable) {
