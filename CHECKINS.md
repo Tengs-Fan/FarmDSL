@@ -2,11 +2,11 @@ Use this file to commit information clearly documenting your check-ins' content.
 
 # Check-in 4 Report Items
 
-## Status of implementation.
+## Status of implementation:
 ### Component-wise progress
-Fully implemented Farm and Crop backend functions
-Added new functionality in lexer, parser and evaluator for OOP-like functionality, specifically to call functions on Farm and crop objects. 
-Currently implementing Display Farm function
+- Fully implemented Farm and Crop backend functions
+- Added new functionality in lexer, parser and evaluator for OOP-like functionality, specifically to call functions on Farm and crop objects. 
+- Currently implementing Display Farm function
 
 ## Which tests are passing, and which not?
 The backend tests for Farm functionality like plantFarm are passing.
