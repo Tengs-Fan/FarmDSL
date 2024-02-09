@@ -1,6 +1,44 @@
 Use this file to commit information clearly documenting your check-ins' content. If you want to store more information/details besides what's required for the check-ins that's fine too. Make sure that your TA has had a chance to sign off on your check-in each week (before the deadline); typically you should discuss your material with them before finalizing it here.
 
+# Check-in 4 Report Items
 
+## Status of implementation.
+### Component-wise progress
+Fully implemented Farm and Crop backend functions
+Added new functionality in lexer, parser and evaluator for OOP-like functionality, specifically to call functions on Farm and crop objects. 
+Currently implementing Display Farm function
+
+## Which tests are passing, and which not?
+The backend tests for Farm functionality like plantFarm are passing.
+The tests for Parse program are also passing multiple and nested statement tests.
+Some of the tests for the module that converts the ANTLR parse tree to our AST are failing.
+
+## Which extra tests still need to be written/made?
+To enhance our testing coverage, we plan to develop end-to-end tests for the entire system, encompassing both positive and negative scenarios. Additionally, we aim to implement integration tests focusing on both positive and negative cases to ensure robust functionality between individual modules.
+
+## Plans for final user study.
+We plan to conduct a user study with participants who have varying levels of technical and programming literacy. This will help us gather diverse feedback and ensure that our language is accessible to a broad audience. We also plan to have a higher sample size of participants.
+
+## Are there any major differences from the previous one? If so, what are the reasons?
+Our first user study used a paper mock to simulate the DSL. This time we are using an actual working REPL of our DSL and have multiple features implemented. This will give the users a richer and authentic experience and provide us with more relevant and detailed feedback.
+Make sure to find suitable users (different from the first study!)
+
+## Planned timeline for the remaining days.
+Testing: Complete and refine unit tests for parser and evaluator components.
+Integration Testing: Conduct end-to-end testing for the entire language to ensure smooth interactions between components.
+Bug Fixing: Dedicate time for identifying and fixing bugs or issues uncovered during testing.
+Documentation: Ensure that all features, syntax changes, and error messages are well-documented for users.
+Stretch goals: We might want to improve the syntax of our DSL if we have the time. We might also want to add additional functionality such as a time feature to our farm and add scheduling for watering crops etc.
+
+## Plans for integration/end-to-end testing
+Our integration and end-to-end testing plans involve concluding the system design by specifying the outputs of each module and defining the format of the returned values. We aim to complete these tests by Check-In 5, ensuring thorough coverage for regression testing to maintain the stability of our implementation.
+
+## Be sure to test for smooth error-handling (as well as expected results working)
+We're implementing and testing detailed error messages, ensuring users receive clear feedback on issues such as undefined variables or function misuse.
+Make sure to schedule some time for bug-fixing!
+We are allocating extra time in the last few days to address bugs discovered during testing, with priority given to critical issues that can affect our demo. We’re also hoping to get a somewhat stable and user-friendly release for the final user study.
+
+--------------------
 
 # Check-in 3 Report Items
 ## Explain a mockup of your concrete language design (as used for your first user study), including descriptions of both the syntax and what is meant to happen.
@@ -73,7 +111,8 @@ For our functions like possibleCrop and Plant, we will have “number of argumen
 
 Within the evaluator we would like to implement exceptions that give helpful error messages for example if a call to plant fails the exception should provide a reason for why it failed for e.g. water requirement exceeded or not enough space or seasonal incompatibility etc.
 
----
+--------------------
+
 # Check-in 2 Report Items
 
 ## Planned division of main responsibilities between team members, considering how to enable working in parallel as much as possible. Consider the following points:
@@ -151,7 +190,7 @@ Within the evaluator we would like to implement exceptions that give helpful err
 * Further clarified the concept of DSL features. The TA helped us recognize that one of our features was still considered declarative. Based on that feedback, we have decided to focus on two features for now, with the third feature being a stretch goal.
 * Gave us suggestions on how to progress. As of right now, it is difficult to determine a concrete roadmap or divide responsibilities as we are not experienced with building DSLs and are unsure as to what kind of work is required at each stage. The TA suggested that we begin scaffolding our AST and start implementing it as soon as possible to help clarify these points.
 
----
+--------------------
 
 # Check-in 1 Report Items
 
