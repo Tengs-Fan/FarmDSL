@@ -34,10 +34,10 @@ export class OOPCallExpression extends Expression {
         const obj = this.varName.eval(ctx).value as Type;
         if (obj === null) { 
             throw new ExprError("The object is null");
-        } else if (obj === "string"  || obj === "number" || obj === "boolean") {
+        } else if (typeof obj === "string"  || typeof obj === "number" || typeof obj === "boolean") {
             throw new FunctionError("The object is not a Farm or Crop");
         }
-        const func = (obj as Farm | Crop).getFunction(this.funcName);
+
         const evaluated_args: Type[] = [];
 
         this.args.forEach((arg) => {
@@ -45,7 +45,7 @@ export class OOPCallExpression extends Expression {
             evaluated_args.push(result);
         });
 
-        const res = func(...evaluated_args);
+        const res = (obj as Farm | Crop).call(this.funcName, evaluated_args);
 
         return new Result(typeToString(res), res);
     }
