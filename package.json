@@ -30,7 +30,7 @@
             "typescript": "^4.9.4"
       },
       "scripts": {
-            "postinstall": "git config core.hooksPath .githooks",
+            "postinstall": "git config core.hooksPath .githooks && yarn setup-antlr && yarn lang",
             "cover": "nyc --reporter text --reporter html yarn run test",
             "build": "tsc && yarn lint",
             "lint": "eslint src --ext .ts",

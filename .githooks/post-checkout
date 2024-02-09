@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# If the antlr script do not exists, then download it
+if test -e ./antlr; then
+    echo "File does not exist."
+else
+    curl -O https://www.antlr.org/download/antlr-4.13.1-complete.jar && echo "java -jar $(pwd)/antlr-4.13.1-complete.jar \$@" > antlr && chmod +x antlr
+fi
+
+./antlr -Dlanguage=TypeScript FarmExpr.g4 -visitor -o lang
+
