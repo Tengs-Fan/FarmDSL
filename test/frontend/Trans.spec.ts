@@ -88,4 +88,11 @@ describe("transProgram", () => {
         expect(() => result2.eval(new Context())).to.throw("The object is not a Farm or Crop");
     });
 
+    it("Double Quote around string should be removed", () => {
+        const input = "\"Summer\";";
+        const tree = parseProgram(input, false);
+        const result = transProgram(tree, false);
+        expect(result.eval(new Context()).value).to.equal('Summer');
+    });
+
 });
