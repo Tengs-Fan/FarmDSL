@@ -1,0 +1,72 @@
+[
+  {
+    "Name": "Carrot",
+    "Season": "Spring",
+    "Water": 2,
+    "Yield": 5,
+    "SellPrice": 10
+  },
+  {
+    "Name": "Tomato",
+    "Season": "Summer",
+    "Water": 3,
+    "Yield": 8,
+    "SellPrice": 15
+  },
+  {
+    "Name": "Potato",
+    "Season": "Fall",
+    "Water": 4,
+    "Yield": 7,
+    "SellPrice": 12
+  },
+  {
+    "Name": "Lettuce",
+    "Season": "Spring",
+    "Water": 2,
+    "Yield": 4,
+    "SellPrice": 8
+  },
+  {
+    "Name": "Corn",
+    "Season": "Summer",
+    "Water": 5,
+    "Yield": 10,
+    "SellPrice": 20
+  },
+  {
+    "Name": "Pumpkin",
+    "Season": "Fall",
+    "Water": 6,
+    "Yield": 12,
+    "SellPrice": 25
+  },
+  {
+    "Name": "Cabbage",
+    "Season": "Spring",
+    "Water": 3,
+    "Yield": 6,
+    "SellPrice": 13
+  },
+  {
+    "Name": "Strawberry",
+    "Season": "Summer",
+    "Water": 2,
+    "Yield": 5,
+    "SellPrice": 10
+  },
+  {
+    "Name": "Eggplant",
+    "Season": "Fall",
+    "Water": 4,
+    "Yield": 9,
+    "SellPrice": 18
+  },
+  {
+    "Name": "Radish",
+    "Season": "Spring",
+    "Water": 2,
+    "Yield": 4,
+    "SellPrice": 8
+  }
+]
