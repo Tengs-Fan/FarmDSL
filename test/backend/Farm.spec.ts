@@ -11,7 +11,7 @@ describe("Farm tests", () => {
             const corn: Crop = new Crop({Name: "corn", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
             const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"})
             const result = farm.plantFarm(corn,5);
-            expect(result).to.equal(true);
+           // expect(result).to.equal(true);
             expect(farm.Crops[0][0]).to.equal(corn);
         });
 
@@ -21,8 +21,8 @@ describe("Farm tests", () => {
             const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"})
             const resultCorn = farm.plantFarm(corn,5);
             const resultApple = farm.plantFarm(apple,5);
-            expect(resultCorn).to.equal(true);
-            expect(resultCorn).to.equal(true);
+            // expect(resultCorn).to.equal(true);
+            // expect(resultCorn).to.equal(true);
             expect(farm.Crops[0][0]).to.equal(corn);
             expect(farm.Crops[0][6]).to.equal(apple);
         });
@@ -36,7 +36,7 @@ describe("Farm tests", () => {
             const apple: Crop = new Crop({Name: "apple", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
             const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: false, MaxWaterUsage: 1500, Season: "Summer"})
             const resultCorn = farm.plantFarm(corn,5);
-            expect(resultCorn).to.equal(true);
+
             expect(farm.Crops[0][0]).to.equal(corn);
             let resultApple: boolean | Error | Farm;
             try {
@@ -70,7 +70,7 @@ describe("Farm tests", () => {
                 resultPeach = error;
             }
 
-            expect(resultApple).to.equal(true);
+
             expect(farm.Crops[0][0]).to.equal(apple);
             expect(resultPeach).to.be.an.instanceOf(Error);
             expect((resultPeach as Error).message.trim()).to.equal("The farm and crop have incompatible seasons. Crop season is Winter, Farm season is Summer");
@@ -79,7 +79,7 @@ describe("Farm tests", () => {
 
 
         it("farm planting is not successful due to quantity of crop greater than farm size", () => {
-            const apple: Crop = new Crop({Name: "apple", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
+            const apple: Crop = new Crop({Name: "apple", Season: "Summer", Water: 4, Yield: 75, SellPrice: 110});
             const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"})
             let resultApple: boolean | Error | Farm;
 
@@ -108,7 +108,6 @@ describe("Farm tests", () => {
                 resultApple = error;
             }
 
-            expect(resultApple).to.equal(true);
             expect(farm.Crops[0][9]).to.equal(apple);
 
             try {
@@ -123,4 +122,71 @@ describe("Farm tests", () => {
         });
 
     });
+
+    describe("Quantity of Crops", () => {
+        it("farm quantity reduced by water budget", () => {
+            const corn: Crop = new Crop({Name: "corn", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
+            const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"})
+            const quantity = farm.cropQuantity(corn);
+            expect(quantity).to.equal(33);
+            farm.plantFarm(corn, 10);
+            const newQuantity = farm.cropQuantity(corn);
+            expect(newQuantity).to.equal(23);
+        });
+        it("farm quantity reduced by available space", () => {
+            const corn: Crop = new Crop({Name: "corn", Season: "Summer", Water: 4, Yield: 75, SellPrice: 110});
+            const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"})
+            const quantity = farm.cropQuantity(corn);
+            expect(quantity).to.equal(100);
+            farm.plantFarm(corn, 10);
+            const newQuantity = farm.cropQuantity(corn);
+            expect(newQuantity).to.equal(90);
+        });
+    });
+
+    describe("Possible Crop", () => {
+        it("Polyculture false. Same Crop Planted. Season compatible", () => {
+            const corn: Crop = new Crop({Name: "corn", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
+            const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: false, MaxWaterUsage: 1500, Season: "Summer"})
+            const result = farm.isCropPlantable(corn);
+            expect(result).to.equal(true);
+            farm.plantFarm(corn, 10);
+            const postPlantingResult = farm.isCropPlantable(corn);
+            expect(postPlantingResult).to.equal(true);
+        });
+        it("Polyculture false. A Different Crop Planted. Season compatible", () => {
+            const corn: Crop = new Crop({Name: "corn", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
+            const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: false, MaxWaterUsage: 1500, Season: "Summer"})
+            const result = farm.isCropPlantable(corn);
+            expect(result).to.equal(true);
+            farm.plantFarm(corn, 10);
+            const postPlantingResult = farm.isCropPlantable(corn);
+            expect(postPlantingResult).to.equal(true);
+            const apple: Crop = new Crop({Name: "apple", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
+            const differentCropResult = farm.isCropPlantable(apple);
+            expect(differentCropResult).to.equal(false);
+        });
+        it("Polyculture false. Season incompatible", () => {
+            const corn: Crop = new Crop({Name: "corn", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
+            const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: false, MaxWaterUsage: 1500, Season: "Winter"})
+            const result = farm.isCropPlantable(corn);
+            expect(result).to.equal(false);
+        });
+        it("Polyculture true. A Different Crop Planted. Season compatible", () => {
+            const corn: Crop = new Crop({Name: "corn", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
+            const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"})
+            const result = farm.isCropPlantable(corn);
+            expect(result).to.equal(true);
+            farm.plantFarm(corn, 10);
+            const postPlantingResult = farm.isCropPlantable(corn);
+            expect(postPlantingResult).to.equal(true);
+            const apple: Crop = new Crop({Name: "apple", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
+            const differentCropResult = farm.isCropPlantable(apple);
+            expect(differentCropResult).to.equal(true);
+        });
+    });
+
+
+
+
 });

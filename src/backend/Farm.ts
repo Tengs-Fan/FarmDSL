@@ -34,19 +34,19 @@ export class Farm {
         this.Crops = Array.from({ length: this.GridLength }, () => Array(this.GridLength).fill(null));
     }
 
-    plantFarm(crop: Crop, quantity: number): Farm {
+    plantFarm(plantingCrop: Crop, quantity: number): Farm {
 
 
         //If proposed plantation would exceed farm water capacity
-        const waterRequirementOfCrop: number = crop.Water * quantity;
+        const waterRequirementOfCrop: number = plantingCrop.Water * quantity;
         const remainingWaterCapacity: number = this.MaxWaterUsage - this.getWaterUsageOfFarm();
         if (waterRequirementOfCrop > remainingWaterCapacity) {
             throw new Error(`The proposed planting would exceed farm's water capacity by ${waterRequirementOfCrop - remainingWaterCapacity}`);
         }
 
         // If crop and farm seasonality do not match
-        if (this.Season !== crop.Season) {
-            throw new Error(`The farm and crop have incompatible seasons. Crop season is ${crop.Season}, Farm season is ${this.Season}`);
+        if (this.Season !== plantingCrop.Season) {
+            throw new Error(`The farm and crop have incompatible seasons. Crop season is ${plantingCrop.Season}, Farm season is ${this.Season}`);
         }
 
         // If farm does not have space
@@ -56,12 +56,12 @@ export class Farm {
 
         // If polyculture is false and another crop is already planted, throw error.
         const uniqueCropsInFarm = this.getUniqueCrops();
-        const CropIsAlreadyPresent: boolean = uniqueCropsInFarm.some(crop => crop.Name === crop.Name);
-        if (this.Polyculture == false && CropIsAlreadyPresent) {
+        const ADifferentCropIsAlreadyPresent: boolean = uniqueCropsInFarm.some(crop => crop.Name !== plantingCrop.Name);
+        if (this.Polyculture == false && ADifferentCropIsAlreadyPresent) {
             throw new Error("Multiple different crops cannot be planted when polyculture is false");
         }
         // Start planting crop
-        const result: Farm = this.startPlanting(crop, quantity);
+        const result: Farm = this.startPlanting(plantingCrop, quantity);
         console.log(`Planting was successful`);
         return result;
     }
@@ -76,6 +76,28 @@ export class Farm {
             }
         }
         return count;
+    }
+
+    isCropPlantable(plantingCrop: Crop): boolean {
+        // If crop and farm seasonality do not match
+        if (this.Season !== plantingCrop.Season) {
+            return false;
+        }
+        // If polyculture is false and another crop is already planted, throw error.
+        const uniqueCropsInFarm = this.getUniqueCrops();
+        const ADifferentCropIsAlreadyPresent: boolean = uniqueCropsInFarm.some(crop => crop.Name !== plantingCrop.Name);
+        if (this.Polyculture == false && ADifferentCropIsAlreadyPresent) {
+            return false;
+        }
+        return true;
+    }
+
+    cropQuantity(plantingCrop: Crop): number {
+       const emptySlotsAvailable = this.getEmptySlotCount();
+       const remainingWaterCapacity : number = this.MaxWaterUsage - this.getWaterUsageOfFarm();
+       const possibleQuantity = Math.floor(remainingWaterCapacity / plantingCrop.Water);
+       const cropQuantity = Math.min(emptySlotsAvailable,possibleQuantity);
+       return cropQuantity;
     }
 
     getWaterUsageOfFarm(): number {
