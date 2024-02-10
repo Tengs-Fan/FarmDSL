@@ -134,7 +134,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         const if_block = this.visit(ctx.children[2]) as Block;
         let else_block = new Block();
 
-        if (ctx.children.length === 4) {
+        if (ctx.children.length === 5) {
             else_block = this.visit(ctx.children[4]) as Block;
         }
 

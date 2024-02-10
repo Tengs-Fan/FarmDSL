@@ -18,9 +18,9 @@ export class Block implements ASTNode {
 
     eval(ctx: Context): Result {
         let lastResult = new Result("Null", null);
-
         this.stmts.forEach((stmt) => {
-            lastResult = stmt.eval(ctx);
+            if (stmt != undefined)
+                lastResult = stmt.eval(ctx);
         });
 
         return lastResult;

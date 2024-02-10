@@ -232,6 +232,7 @@ export class Farm {
         ].join("\n");
 
         // Join everything together
+        console.log([title, topBottomBorder, formattedFarm, topBottomBorder, farmInfo].join("\n"));
         return [title, topBottomBorder, formattedFarm, topBottomBorder, farmInfo].join("\n");
     }
 
