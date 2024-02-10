@@ -1,6 +1,6 @@
 import {Type} from "../ast/Type";
-import { Crop } from "./Crop";
-import { FunctionError } from "../Error";
+import {Crop} from "./Crop";
+import {FunctionError} from "../Error";
 
 export class Farm {
     static propertiesMetadata = {
@@ -31,12 +31,10 @@ export class Farm {
         this.Polyculture = props.Polyculture as boolean;
         this.MaxWaterUsage = props.MaxWaterUsage as number;
         this.Season = props.Season as "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
-        this.Crops = Array.from({ length: this.GridLength }, () => Array(this.GridLength).fill(null));
+        this.Crops = Array.from({length: this.GridLength}, () => Array(this.GridLength).fill(null));
     }
 
     plantFarm(plantingCrop: Crop, quantity: number): Farm {
-
-
         //If proposed plantation would exceed farm water capacity
         const waterRequirementOfCrop: number = plantingCrop.Water * quantity;
         const remainingWaterCapacity: number = this.MaxWaterUsage - this.getWaterUsageOfFarm();
@@ -56,7 +54,7 @@ export class Farm {
 
         // If polyculture is false and another crop is already planted, throw error.
         const uniqueCropsInFarm = this.getUniqueCrops();
-        const ADifferentCropIsAlreadyPresent: boolean = uniqueCropsInFarm.some(crop => crop.Name !== plantingCrop.Name);
+        const ADifferentCropIsAlreadyPresent: boolean = uniqueCropsInFarm.some((crop) => crop.Name !== plantingCrop.Name);
         if (this.Polyculture == false && ADifferentCropIsAlreadyPresent) {
             throw new Error("Multiple different crops cannot be planted when polyculture is false");
         }
@@ -85,7 +83,7 @@ export class Farm {
         }
         // If polyculture is false and another crop is already planted, throw error.
         const uniqueCropsInFarm = this.getUniqueCrops();
-        const ADifferentCropIsAlreadyPresent: boolean = uniqueCropsInFarm.some(crop => crop.Name !== plantingCrop.Name);
+        const ADifferentCropIsAlreadyPresent: boolean = uniqueCropsInFarm.some((crop) => crop.Name !== plantingCrop.Name);
         if (this.Polyculture == false && ADifferentCropIsAlreadyPresent) {
             return false;
         }
@@ -93,11 +91,11 @@ export class Farm {
     }
 
     cropQuantity(plantingCrop: Crop): number {
-       const emptySlotsAvailable = this.getEmptySlotCount();
-       const remainingWaterCapacity : number = this.MaxWaterUsage - this.getWaterUsageOfFarm();
-       const possibleQuantity = Math.floor(remainingWaterCapacity / plantingCrop.Water);
-       const cropQuantity = Math.min(emptySlotsAvailable,possibleQuantity);
-       return cropQuantity;
+        const emptySlotsAvailable = this.getEmptySlotCount();
+        const remainingWaterCapacity: number = this.MaxWaterUsage - this.getWaterUsageOfFarm();
+        const possibleQuantity = Math.floor(remainingWaterCapacity / plantingCrop.Water);
+        const cropQuantity = Math.min(emptySlotsAvailable, possibleQuantity);
+        return cropQuantity;
     }
 
     getWaterUsageOfFarm(): number {
@@ -112,13 +110,12 @@ export class Farm {
         return waterUsage;
     }
 
-
     private getUniqueCrops(): Crop[] {
         const uniqueCrops: Crop[] = [];
         for (let x = 0; x < this.GridLength; x++) {
             for (let y = 0; y < this.GridLength; y++) {
                 const currentCrop = this.Crops[x][y];
-                if (currentCrop !== null && !uniqueCrops.some(crop => crop.Name === currentCrop.Name)) {
+                if (currentCrop !== null && !uniqueCrops.some((crop) => crop.Name === currentCrop.Name)) {
                     uniqueCrops.push(currentCrop);
                 }
             }
@@ -133,8 +130,8 @@ export class Farm {
                 if (this.Crops[x][y] == null) {
                     emptyCount++;
                 }
-                }
             }
+        }
         return emptyCount;
     }
 
@@ -173,6 +170,69 @@ export class Farm {
         } else {
             throw new FunctionError(`Function ${funcName} does not exist in Farm class`);
         }
+    }
+
+    displayFarm(): string {
+        const farmLength: number = this.Crops[0].length;
+        const farmWidth: number = this.Crops.length;
+
+        const initialFarm: string[][] = Array.from({length: farmWidth}, () =>
+            Array.from(
+                {length: farmLength + 2}, // Extra 2 cols for left-right borders
+                () => "",
+            ),
+        );
+
+        // Determine width of middle cells
+        // Side cells will have a width of 1
+        const longestCropName: number = this.Crops.map((row) => row.map((crop) => (crop === null ? 0 : crop.Name.length))).reduce(
+            (longestName, row) => Math.max(longestName, ...row),
+            0,
+        );
+        const middleCellLength = Math.max(longestCropName + 2, 3); // defaults to 3
+        const padding = " ";
+
+        // Format crop cells and left-right borders
+        const formattedFarm = initialFarm
+            .map((row, r) =>
+                row
+                    .map((col, c) => {
+                        if (c === 0 || c === farmWidth + 1) {
+                            return "|";
+                        } else {
+                            const val = this.Crops[r][c - 1] === null ? "" : this.Crops[r][c - 1]!.Name;
+                            const leftPadding = padding.repeat(Math.floor((middleCellLength - val.length) / 2));
+                            const rightPadding = padding.repeat(middleCellLength - val.length - leftPadding.length);
+                            return leftPadding + val + rightPadding;
+                        }
+                    })
+                    .join(""),
+            )
+            .join("\n");
+
+        // Format top-bottom borders
+        const topBottomBorder: string = Array.from({length: farmWidth + 2}, (row, i) => {
+            const val = "\u2014";
+            if (i !== 0 && i !== farmWidth + 1) {
+                return padding + val.repeat(middleCellLength - 2) + padding;
+            } else {
+                return padding; // Empty corners
+            }
+        }).join("");
+
+        // Format farm metadata
+        const title: string = `Name: ${this.Name}`;
+        const farmInfo: string = [
+            `Available Space: ${this.getEmptySlotCount()}`,
+            `Area: ${this.Area}`,
+            `Grid Length: ${this.GridLength}`,
+            `Max Water Usage: ${this.MaxWaterUsage}`,
+            `Polyculture: ${this.Polyculture}`,
+            `Season: ${this.Season}`,
+        ].join("\n");
+
+        // Join everything together
+        return [title, topBottomBorder, formattedFarm, topBottomBorder, farmInfo].join("\n");
     }
 
     OOPCallTest(): number {
