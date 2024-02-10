@@ -23,7 +23,7 @@ function loadHistory() {
     } else {
         fs.openSync(historyFile, 'w');
     }
-};
+}
 
 function exit() {
     console.log("Goodbye!");
