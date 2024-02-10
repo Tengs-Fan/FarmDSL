@@ -14,6 +14,7 @@ antlr
 *.jar
 lang/
 yarn.lock
+.repl_history
 
 # Persist Dir
 data/

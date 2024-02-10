@@ -1,4 +1,6 @@
 import {expect, use} from "chai";
+import fs from "fs";
+import path from 'path';
 
 import {FunctionError} from "../../src/Error";
 import {Context} from "../../src/vm/Context";
@@ -94,5 +96,19 @@ describe("transProgram", () => {
         const result = transProgram(tree, false);
         expect(result.eval(new Context()).value).to.equal('Summer');
     });
+
+    it("All exmples should pass", () => {
+        // read input from examples folder
+        const filenames = fs.readdirSync("examples/");
+
+        filenames.forEach((filename) => {
+            const filePath = path.join("examples", filename);
+                if (fs.statSync(filePath).isFile()) {
+                    const content = fs.readFileSync(filePath, 'utf8');
+                    const tree = parseProgram(content, false);
+                    expect(() => transProgram(tree, false)).to.not.throw();
+                }
+            });
+        });
 
 });

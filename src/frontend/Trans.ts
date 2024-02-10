@@ -203,9 +203,10 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
                             return new ValueExpression("Num", parseFloat(child.getText()));
                         case FarmExprLexer.INT:
                             return new ValueExpression("Num", parseInt(child.getText()));
-                        case FarmExprLexer.STRING:
+                        case FarmExprLexer.STRING: {
                             const unquotedString: string = child.getText().replace(/^"|"$/g, '');
                             return new ValueExpression("String", unquotedString);
+                        }
                         case FarmExprLexer.NAME:
                             return new NameExpression(child.getText());
                         default:

@@ -68,7 +68,7 @@ yargs(hideBin(process.argv))
     .version("version", "0.0.1")
     .alias("version", "V")
     .showHelpOnFail(true)
-    .epilog("Author: Group 12")
+    .epilog(`If you run it with no -f, it reads from stdin\n`)
     .check((argv: MyArguments) => {
         if (argv.execute) {
             parseProgram(argv.execute, true);

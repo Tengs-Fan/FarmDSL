@@ -28,14 +28,10 @@ jobs:
         java-version: 11
     
     - name: Install ANTLR
-      run: |
-        curl -O https://www.antlr.org/download/antlr-4.13.1-complete.jar
-        echo "java -jar $(pwd)/antlr-4.13.1-complete.jar \$@" > antlr4
-        chmod +x antlr4
-        echo "$(pwd)" >> $GITHUB_PATH
+      run: yarn setup-antlr
 
     - name: Generate ANTLR Source Files
-      run: antlr4 -Dlanguage=TypeScript FarmExpr.g4 -visitor -o lang
+      run: yarn lang
 
     - name: Install dependencies
       run: yarn install
@@ -43,12 +39,12 @@ jobs:
     - name: Compile TypeScript
       run: yarn tsc
 
+    - name: Run all tests with coverage
+      run: yarn cover
+
     - name: Run linter
       run: yarn lint
 
     - name: Run prettier check
       run: yarn pretty --check
-
-    - name: Run all tests with coverage
-      run: yarn cover
 
