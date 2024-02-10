@@ -13,9 +13,9 @@ if myFarm.isCropPlantable(Blueberry) {
     myFarm.plantFarm(Blueberry, 10);
 }
 
-Num melonQuant = myFarm.cropQuantity(Watermelon);
-if melonQuant > 10 {
-    myFarm.plantFarm(Watermelon, melonQuant);
+Num cropQuant = myFarm.cropQuantity(myCrop);
+if cropQuant > 10 {
+    myFarm.plantFarm(myCrop, cropQuant);
 }
 myFarm.displayFarm();
 
