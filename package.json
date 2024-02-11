@@ -12,6 +12,7 @@
             "@types/yargs": "^17.0.32",
             "antlr4": "^4.13.1",
             "prettier": "^3.2.4",
+            "winston": "^3.11.0",
             "yargs": "^17.7.2"
       },
       "devDependencies": {

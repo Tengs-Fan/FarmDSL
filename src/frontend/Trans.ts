@@ -28,8 +28,7 @@ import {assert} from "console";
 
 export class TransVisitor extends FarmExprVisitor<ASTNode> {
     defaultResult(): ASTNode {
-        console.log("defaultResult");
-        return new Program();
+        throw new ParseError("defaultResult should not be called");
     }
 
     visitProg = (ctx: ProgContext) => {
