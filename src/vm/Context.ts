@@ -6,7 +6,7 @@ import {Type} from "../ast/Type";
 import {Crop} from "../backend/Crop";
 import * as fs from "fs";
 import * as path from 'path';
-
+import logger from "../Log";
 
 
 export class Context {
@@ -38,9 +38,9 @@ export class Context {
                 this.variables.set(crop.Name, cropVariable);
             });
 
-            console.log('Crops data loaded successfully.');
+            logger.verbose('Crops data loaded successfully.');
         } catch (error) {
-            console.error('Error reading crops file:', (error as Error).message);
+            logger.error('Error reading crops file:', (error as Error).message);
         }
     }
 
