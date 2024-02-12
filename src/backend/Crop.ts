@@ -1,13 +1,13 @@
 import {Type} from "../ast/Type";
-import { FunctionError } from "../Error";
+import {FunctionError} from "../Error";
 
 export class Crop {
     static propertiesMetadata = {
-        Name: { type: "String", required: true },
-        Season: { type: "String", required: true },
-        Water: { type: "Num", required: true },
-        Yield: { type: "Num", required: true },
-        SellPrice: { type: "Num", required: true },
+        Name: {type: "String", required: true},
+        Season: {type: "String", required: true},
+        Water: {type: "Num", required: true},
+        Yield: {type: "Num", required: true},
+        SellPrice: {type: "Num", required: true},
     };
 
     static properties = Object.keys(Crop.propertiesMetadata);

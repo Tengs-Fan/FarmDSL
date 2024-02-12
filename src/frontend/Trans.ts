@@ -204,7 +204,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
                         case FarmExprLexer.INT:
                             return new ValueExpression("Num", parseInt(child.getText()));
                         case FarmExprLexer.STRING: {
-                            const unquotedString: string = child.getText().replace(/^"|"$/g, '');
+                            const unquotedString: string = child.getText().replace(/^"|"$/g, "");
                             return new ValueExpression("String", unquotedString);
                         }
                         case FarmExprLexer.NAME:
@@ -226,16 +226,15 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
 
         // Name of the function
         const name = ctx.children[0].getText();
-        if (ctx.children.length === 4) // Witharguments
-        {
+        if (ctx.children.length === 4) {
+            // Witharguments
             if (ctx.children[1].getText() !== "(" && ctx.children[3].getText() !== ")") {
                 throw new ParseError("Call_expr should have ( and )");
             }
             const args = this.visit(ctx.children[2]) as Args;
             return new CallExpression(name, args.args);
-        }
-        else // Without arguments
-        {
+        } // Without arguments
+        else {
             if (ctx.children[1].getText() !== "(" && ctx.children[2].getText() !== ")") {
                 throw new ParseError("Call_expr should have ( and )");
             }

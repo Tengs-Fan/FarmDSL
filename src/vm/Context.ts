@@ -5,9 +5,7 @@ import {DefaultFunctions} from "../backend/Functions";
 import {Type} from "../ast/Type";
 import {Crop} from "../backend/Crop";
 import * as fs from "fs";
-import * as path from 'path';
-
-
+import * as path from "path";
 
 export class Context {
     private variables: Map<string, Variable>;
@@ -22,15 +20,15 @@ export class Context {
     private addStoredCropsFromJSONFile(): void {
         try {
             // Read the contents of the crops.json file
-            const fileContent = fs.readFileSync(path.join(__dirname, './crops.json'), 'utf-8');
+            const fileContent = fs.readFileSync(path.join(__dirname, "./crops.json"), "utf-8");
 
             // Parse the JSON content
             const cropsData: Crop[] = JSON.parse(fileContent);
 
             // Populate this.variables map with crops
-            cropsData.forEach(crop => {
+            cropsData.forEach((crop) => {
                 const cropVariable: Variable = {
-                    type: "Crop",  // Assuming "Crop" is a valid type string
+                    type: "Crop", // Assuming "Crop" is a valid type string
                     value: crop,
                 };
 
@@ -38,9 +36,9 @@ export class Context {
                 this.variables.set(crop.Name, cropVariable);
             });
 
-            console.log('Crops data loaded successfully.');
+            console.log("Crops data loaded successfully.");
         } catch (error) {
-            console.error('Error reading crops file:', (error as Error).message);
+            console.error("Error reading crops file:", (error as Error).message);
         }
     }
 

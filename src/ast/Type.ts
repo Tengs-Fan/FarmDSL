@@ -29,10 +29,14 @@ export function typeToString(type: Type): TypeStr {
     if (type instanceof Crop) return "Crop";
     if (type === null) return "Null"; // Handle null explicitly
     switch (typeof type) {
-        case "number": return "Num";
-        case "boolean": return "Bool";
-        case "string": return "String"; // Added missing case
-        case "undefined": return "Null";
+        case "number":
+            return "Num";
+        case "boolean":
+            return "Bool";
+        case "string":
+            return "String"; // Added missing case
+        case "undefined":
+            return "Null";
         default:
             throw new EvalError("Unknown type: " + typeof type);
     }

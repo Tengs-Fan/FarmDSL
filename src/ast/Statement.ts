@@ -74,7 +74,7 @@ export class AssignStatement implements ASTNode {
     eval(ctx: Context): Result {
         const exprResult = this.expr.eval(ctx);
         const newValue = exprResult.value;
-        if (newValue !== undefined) { 
+        if (newValue !== undefined) {
             ctx.updateVariable(this.name, newValue);
         }
 
