@@ -38,7 +38,6 @@ function toggleVerbose(oldVerbose: boolean): boolean {
 
 export function runRepl(verbose = false) {
     loadHistory();
-    console.log("Starting REPL...");
     rl.question("> ", (input) => {
         switch (input) {
             case "exit":

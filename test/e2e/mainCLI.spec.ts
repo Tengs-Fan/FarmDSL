@@ -46,8 +46,10 @@ describe("REPL Mode Tests", function () {
         repl.stdout.pipe(split()).on("data", (line: string) => {
             console.log("REPL Output:", line);
             // Once the REPL is ready, send the command 1+1
-            repl.stdin.write("1+1;\n");
-            commandSent = true;
+            if (!commandSent) {
+                repl.stdin.write("1+1;\n");
+                commandSent = true;
+            }
 
             // Check for the expected output from the command 1+1
             if (commandSent && line.includes("2")) {
