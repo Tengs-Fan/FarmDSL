@@ -6,7 +6,7 @@ import {Type, TypeStr} from "./Type";
 
 import {Expression} from "./Expression";
 import {Pairs} from "./Pairs";
-import {Block} from "./Block";
+import {Program} from "./Program";
 
 import {assert} from "console";
 
@@ -85,10 +85,10 @@ export class AssignStatement implements ASTNode {
 
 export class IfStatement implements ASTNode {
     cond: Expression;
-    if_block: Block;
-    else_block: Block;
+    if_block: Program
+    else_block: Program
 
-    constructor(cond: Expression, if_block: Block, else_block: Block) {
+    constructor(cond: Expression, if_block: Program, else_block: Program) {
         this.cond = cond;
         this.if_block = if_block;
         this.else_block = else_block;

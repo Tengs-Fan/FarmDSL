@@ -1,7 +1,7 @@
 grammar FarmExpr;
 
 // A program is a bunch of statements
-prog: stmt+;
+prog: stmt*;
 
 stmt: decl_stmt
     | if_stmt
@@ -19,7 +19,7 @@ expr_stmt: expr ';' ;
 assign_stmt: NAME '=' expr ';' ;
 
 // If statement
-if_stmt: 'if' expr block ('else' block)? ;
+if_stmt: 'if' expr '{' prog '}' ('else' '{' prog '}')? ;
 
 // Argument to function call
 args: expr (',' expr)* ;
@@ -27,7 +27,7 @@ args: expr (',' expr)* ;
 pairs: '[' pair (',' pair)* ']' ;
 pair:  NAME ':' expr ;
 
-block: '{' stmt* '}' ;
+// block: '{' stmt* '}' ;
 
 // Types 
 type: 'Num' 

@@ -7,7 +7,6 @@ import {
     If_stmtContext,
     ExprContext,
     Call_exprContext,
-    BlockContext,
     ArgsContext,
     PairsContext,
     PairContext,
@@ -18,7 +17,6 @@ import {TerminalNode} from "antlr4";
 import {ASTNode} from "../ast/Ast";
 import {Program} from "../ast/Program";
 import {Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement, Tstatement} from "../ast/Statement";
-import {Block} from "../ast/Block";
 import {TypeStr} from "../ast/Type";
 import {Expression, OOPCallExpression, CallExpression, BinaryExpression, ValueExpression, NameExpression} from "../ast/Expression";
 import {Args} from "../ast/Args";
@@ -40,21 +38,14 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         return program;
     };
 
-    visitBlock = (ctx: BlockContext) => {
-        const block = new Block();
-
-        const stmts = this.visitChildren(ctx) as unknown as Statement[];
-        block.addStatements(stmts);
-
-        return block;
-    };
-
     // Statement
     visitStmt = (ctx: StmtContext) => {
         // Can only have one child
-        const stmt = this.visitChildren(ctx) as unknown as Tstatement[];
+        if (ctx.getChildCount() !== 1) { throw new ParseError("Stmt should have only one child"); }
 
-        return new Statement(stmt[0]);
+        const stmt = this.visit(ctx.getChild(0)) as Tstatement;
+
+        return new Statement(stmt);
     };
 
     // Declararion:
@@ -130,11 +121,11 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         }
 
         const condition = this.visit(ctx.children[1]) as Expression;
-        const if_block = this.visit(ctx.children[2]) as Block;
-        let else_block = new Block();
+        const if_block = this.visit(ctx.children[2]) as Program;
+        let else_block = new Program();
 
-        if (ctx.children.length === 4) {
-            else_block = this.visit(ctx.children[4]) as Block;
+        if (ctx.children.length === 5) {
+            else_block = this.visit(ctx.children[4]) as Program;
         }
 
         const ifstmt = new IfStatement(condition, if_block, else_block);
