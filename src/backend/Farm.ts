@@ -173,7 +173,7 @@ export class Farm {
         }
     }
 
-    displayFarm(): string {
+    displayFarm() {
         const farmLength: number = this.Crops[0].length;
         const farmWidth: number = this.Crops.length;
 
@@ -233,7 +233,7 @@ export class Farm {
         ].join("\n");
 
         // Join everything together
-        return [title, topBottomBorder, formattedFarm, topBottomBorder, farmInfo].join("\n");
+        console.log([title, topBottomBorder, formattedFarm, topBottomBorder, farmInfo].join("\n"));
     }
 
     OOPCallTest(): number {

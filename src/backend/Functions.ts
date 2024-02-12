@@ -16,9 +16,7 @@ export class DefaultFunctions {
         ),
     };
 
-    static addDefaultFunctions(): Map<string, Func> {
-        const map = new Map<string, Func>();
-
+    static addDefaultFunctions(map: Map<string, Func>): Map<string, Func> {
         // Iterate over the static 'functions' object and add each Func to the map
         Object.entries(DefaultFunctions.functions).forEach(([name, func]) => {
             map.set(name, func);
