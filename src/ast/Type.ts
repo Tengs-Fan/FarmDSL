@@ -1,5 +1,6 @@
 import {Farm} from "../backend/Farm";
 import {Crop} from "../backend/Crop";
+import {EvalError} from "../Error";
 
 // The type of an expression
 export type ExprTypeStr =
@@ -31,9 +32,9 @@ export function typeToString(type: Type): TypeStr {
         case "number": return "Num";
         case "boolean": return "Bool";
         case "string": return "String"; // Added missing case
+        case "undefined": return "Null";
         default:
-            console.warn("Unknown type: " + type); // Maybe log instead of throwing
-            return "Null"; // Fallback or throw Error if strict typing is needed
+            throw new EvalError("Unknown type: " + typeof type);
     }
 }
 
