@@ -10,13 +10,19 @@ import * as path from 'path';
 
 
 export class Context {
+    private parent?: Context;
     private variables: Map<string, Variable>;
     private functions: Map<string, Func>;
 
-    constructor() {
+    constructor(parent? : Context) {
+        this.parent = parent;
         this.variables = new Map();
-        this.functions = DefaultFunctions.addDefaultFunctions();
-        this.addStoredCropsFromJSONFile();
+        this.functions = new Map();
+
+        if (this.parent === undefined) {
+            this.addStoredCropsFromJSONFile();
+            this.functions = DefaultFunctions.addDefaultFunctions(this.functions);
+        }
     }
 
     private addStoredCropsFromJSONFile(): void {
@@ -55,10 +61,15 @@ export class Context {
         this.addVariable(name, variable);
     }
 
-    getVariable(name: string) {
+    getVariable(name: string) : Variable {
         const variable = this.variables.get(name);
-        if (variable === undefined) {
-            throw new VariableError(`Variable ${name} does not exist`);
+        if (variable === undefined ) {
+            if (this.parent !== undefined) { 
+                // This is a recursive call to getVariable to check the parent context
+                return this.parent.getVariable(name);
+            } else {
+                throw new VariableError(`Variable ${name} does not exist`);
+            }
         }
         return variable;
     }
@@ -66,7 +77,11 @@ export class Context {
     updateVariable(name: string, value: Type) {
         const variable = this.getVariable(name);
         if (variable === undefined) {
-            throw new VariableError(`Variable ${name} does not exist`);
+            if (this.parent !== undefined) { 
+                this.parent.updateVariable(name, value);
+            } else {
+                throw new VariableError(`Variable ${name} does not exist`);
+            }
         }
         variable.value = value;
     }
@@ -77,7 +92,11 @@ export class Context {
 
     newFunction(name: string, func: Func) {
         if (this.functions.has(name)) {
-            throw new FunctionError(`Function ${name} already exists`);
+            if (this.parent !== undefined) { 
+                this.parent.newFunction(name, func);
+            } else {
+                throw new FunctionError(`Function ${name} already exists`);
+            }
         }
         this.addFunction(name, func);
     }
@@ -85,7 +104,11 @@ export class Context {
     getFunction(name: string): Func {
         const func = this.functions.get(name);
         if (func === undefined) {
-            throw new FunctionError(`Function ${name} does not exist`);
+            if (this.parent !== undefined) { 
+                return this.parent.getFunction(name);
+            } else {
+                throw new FunctionError(`Function ${name} does not exist`);
+            }
         }
         return func;
     }
