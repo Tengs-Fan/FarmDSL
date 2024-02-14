@@ -1,12 +1,18 @@
 grammar FarmExpr;
 
+func: 'def' NAME '(' (parameter)? (',' parameter)* ')' ('->' type)? '{' prog '}' ;
+
+parameter: NAME ':' type ;
+
 // A program is a bunch of statements
-prog: stmt*;
+prog: (stmt | func)* ;
 
 stmt: decl_stmt
     | if_stmt
     | expr_stmt
     | assign_stmt
+    | loop_stmt
+    | return_stmt
     ;
 
 // Declarations 
@@ -21,13 +27,17 @@ assign_stmt: NAME '=' expr ';' ;
 // If statement
 if_stmt: 'if' expr '{' prog '}' ('else' '{' prog '}')? ;
 
+// Loop statement
+loop_stmt: 'for' NAME 'in' NAME '{' prog '}';
+
+// Final return of function
+return_stmt: 'return' expr ';' ; 
+
 // Argument to function call
 args: expr (',' expr)* ;
 
 pairs: '[' pair (',' pair)* ']' ;
 pair:  NAME ':' expr ;
-
-// block: '{' stmt* '}' ;
 
 // Types 
 type: 'Num' 
