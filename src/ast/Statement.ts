@@ -74,7 +74,7 @@ export class AssignStatement implements ASTNode {
     eval(ctx: Context): Result {
         const exprResult = this.expr.eval(ctx);
         const newValue = exprResult.value;
-        if (newValue !== undefined) { 
+        if (newValue !== undefined) {
             ctx.updateVariable(this.name, newValue);
         }
 
@@ -85,8 +85,8 @@ export class AssignStatement implements ASTNode {
 
 export class IfStatement implements ASTNode {
     cond: Expression;
-    if_block: Program
-    else_block: Program
+    if_block: Program;
+    else_block: Program;
 
     constructor(cond: Expression, if_block: Program, else_block: Program) {
         this.cond = cond;
@@ -94,24 +94,51 @@ export class IfStatement implements ASTNode {
         this.else_block = else_block;
     }
 
-    eval(vm: Context): Result {
-        const exprResult = this.cond.eval(vm);
+    eval(ctx: Context): Result {
+        const exprResult = this.cond.eval(ctx);
         if (exprResult.type !== "Bool") {
             throw new Error("Condition expression should be a boolean");
         }
 
         //TODO: here we face a choice, should we make the change in the block global ?
         if (exprResult.value) {
-            this.if_block.eval(vm);
+            this.if_block.eval(ctx);
         } else {
-            this.else_block.eval(vm);
+            this.else_block.eval(ctx);
         }
 
         return new Result("Null", null);
     }
 }
 
-export type Tstatement = ExprStatement | DeclStatment | AssignStatement | IfStatement;
+export class LoopStatement implements ASTNode {
+    current: string; // Name of the current variable
+    loopable: Expression;
+
+    constructor(current: string, loopable: Expression) {
+        this.current = current;
+        this.loopable = loopable;
+    }
+
+    eval(_ctx: Context): Result {
+        void _ctx; // Disable unused variable warning
+        throw new Error("Method not implemented.");
+    }
+}
+
+export class ReturnStatement implements ASTNode {
+    value: Expression;
+
+    constructor(value: Expression) {
+        this.value = value;
+    }
+
+    eval(ctx: Context): Result {
+        return this.value.eval(ctx);
+    }
+}
+
+export type Tstatement = ExprStatement | DeclStatment | AssignStatement | IfStatement | LoopStatement | ReturnStatement;
 
 export class Statement implements ASTNode {
     stmt: Tstatement;
