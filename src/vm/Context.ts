@@ -108,7 +108,7 @@ export class Context {
                 throw new VariableError(`Variable ${name} does not exist`);
             }
         }
-        if (variable.type !== typeToString(value)) { 
+        if (variable.type !== typeToString(value)) {
             throw new VariableError(`Type mismatch for variable ${name}`);
         }
         variable.value = value;

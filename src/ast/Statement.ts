@@ -142,7 +142,7 @@ export class LoopStatement implements ASTNode {
 
     eval(ctx: Context): Result {
         let toLoop;
-        switch (this.loopable) { 
+        switch (this.loopable) {
             case "Farms":
                 toLoop = ctx.getAllFarms();
                 ctx.newVariable(this.current, {type: "Farm", value: null});

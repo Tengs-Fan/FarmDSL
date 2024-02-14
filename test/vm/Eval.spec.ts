@@ -67,5 +67,4 @@ describe("transProgram", () => {
         const secondResult = program2.eval(context);
         expect(secondResult.value).to.equal(3);
     });
-
 });
