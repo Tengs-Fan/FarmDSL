@@ -1,10 +1,10 @@
-import { ASTNode } from "./Ast";
-import { Result } from "./Type";
-import { Context } from "../vm/Context";
-import { Type, ExprTypeStr, typeToString } from "./Type";
-import { ExprError, FunctionError } from "../Error";
-import { Farm } from "../backend/Farm";
-import { Crop } from "../backend/Crop";
+import {ASTNode} from "./Ast";
+import {Result} from "./Type";
+import {Context} from "../vm/Context";
+import {Type, ExprTypeStr, typeToString} from "./Type";
+import {ExprError, FunctionError} from "../Error";
+import {Farm} from "../backend/Farm";
+import {Crop} from "../backend/Crop";
 
 export class Expression implements ASTNode {
     type: ExprTypeStr;
@@ -13,7 +13,7 @@ export class Expression implements ASTNode {
         this.type = type;
     }
     eval(_ctx: Context): Result {
-        (void _ctx);    // Disable unused variable warning
+        void _ctx; // Disable unused variable warning
         throw new Error("Should not eval Expression directly, use subtypes");
     }
 }
@@ -32,9 +32,9 @@ export class OOPCallExpression extends Expression {
 
     eval(ctx: Context): Result {
         const obj = this.varName.eval(ctx).value as Type;
-        if (obj === null) { 
+        if (obj === null) {
             throw new ExprError("The object is null");
-        } else if (typeof obj === "string"  || typeof obj === "number" || typeof obj === "boolean") {
+        } else if (typeof obj === "string" || typeof obj === "number" || typeof obj === "boolean") {
             throw new FunctionError("The object is not a Farm or Crop");
         }
 
@@ -70,7 +70,7 @@ export class CallExpression extends Expression {
             evaluated_args.push(result);
         });
 
-        return func.call(evaluated_args);
+        return func.eval(ctx, evaluated_args);
     }
 }
 
@@ -101,7 +101,7 @@ export class ValueExpression extends Expression {
         this.value = value;
     }
     eval(_ctx: Context): Result {
-        (void _ctx);    // Disable unused variable warning
+        void _ctx; // Disable unused variable warning
         switch (this.type) {
             case "Bool":
                 return new Result("Bool", this.value as boolean);
