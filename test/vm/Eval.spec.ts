@@ -1,14 +1,11 @@
 import {expect, use} from "chai";
-
-import {FunctionError} from "../../src/Error";
 import {Context} from "../../src/vm/Context";
 import {parseProgram} from "../../src/frontend/Parse";
 import {transProgram} from "../../src/frontend/Trans";
 
 describe("transProgram", () => {
     it("First branch of if should be evaluated", () => {
-        const text : string = 
-            `
+        const text: string = `
             Num a = 1;
             if (true) {
                 a = 2;
@@ -28,8 +25,7 @@ describe("transProgram", () => {
     });
 
     it("Second branch of if should be evaluated", () => {
-        const text : string = 
-            `
+        const text: string = `
             Num a = 1;
             if (false) {
                 a = 2;
@@ -48,9 +44,8 @@ describe("transProgram", () => {
         expect(secondResult.value).to.equal(3);
     });
 
-    it("Nested if should be evaluated", () => { 
-        const text : string = 
-            `
+    it("Nested if should be evaluated", () => {
+        const text: string = `
             Num a = 1;
             if (false) {
                 a = 4;
