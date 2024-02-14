@@ -180,16 +180,16 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         // child0: "if", child1: "x", child2: ... , child3: "else", child4: ...
 
         const condition = this.visit(ctx.getChild(1)) as Expression;
-        assert(ctx.getChild(2).getText() === "{");
+        assert(ctx.getChild(2).getText() === "{", `If condition should be wrapped by {}: ${ctx.getChild(4).getText()}`);
         const if_block = this.visit(ctx.getChild(3)) as Program;
-        assert(ctx.getChild(4).getText() === "{");
+        assert(ctx.getChild(4).getText() === "}", `If condition should be wrapped by {}: ${ctx.getChild(4).getText()}`);
         let else_block = new Program();
 
         if (ctx.getChildCount() === 9) {
-            assert(ctx.getChild(5).getText() === "else");
-            assert(ctx.getChild(6).getText() === "{");
+            assert(ctx.getChild(5).getText() === "else", "Else should be followed by else");
+            assert(ctx.getChild(6).getText() === "{", "Else condition should be wrapped by {}");
             else_block = this.visit(ctx.getChild(7)) as Program;
-            assert(ctx.getChild(8).getText() === "}");
+            assert(ctx.getChild(8).getText() === "}", "Else condition should be wrapped by {}");
         }
 
         const ifstmt = new IfStatement(condition, if_block, else_block);
@@ -204,16 +204,16 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         const currentName = ctx.getChild(1).getText();
         let loopable: Tloopable;
 
-        assert(ctx.getChild(2).getText() === "in"); 
+        assert(ctx.getChild(2).getText() === "in", "Loop should have in");
 
-        switch(ctx.getChild(3).getText()) {
+        switch (ctx.getChild(3).getText()) {
             case "Crops":
                 loopable = "Crops";
                 break;
             case "Farms":
                 loopable = "Farms";
                 break;
-            default: 
+            default:
                 if (!(ctx.getChild(3) instanceof TerminalNode)) throw new Error("Loopable should be a terminal node(Name)");
                 loopable = new NameExpression(ctx.getChild(3).getText());
         }
