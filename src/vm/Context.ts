@@ -1,10 +1,13 @@
 import {VariableError, FunctionError} from "../Error";
 import {Variable} from "./Variable";
-import {Func} from "../ast/Func";
-import {Type} from "../ast/Type";
+import {Function as MyFunction} from "../vm/Function";
 import {parseProgram} from "../frontend/Parse";
 import {transProgram} from "../frontend/Trans";
 import {evalProgram} from "./Eval";
+import {Type, TypeStr, typeToString} from "../ast/Type";
+import {Farm} from "../backend/Farm";
+import {Crop} from "../backend/Crop";
+import {addInlineFunctions} from "../backend/Functions";
 import * as fs from "fs";
 import * as path from "path";
 import logger from "../Log";
@@ -12,12 +15,13 @@ import logger from "../Log";
 export class Context {
     private parent?: Context;
     private variables: Map<string, Variable>;
-    private functions: Map<string, Func>;
+    private functions: Map<string, MyFunction>;
 
     constructor(parent?: Context, empty = false) {
         this.parent = parent;
         this.variables = new Map();
         this.functions = new Map();
+        this.functions = addInlineFunctions(this.functions);
 
         if (parent !== undefined && empty === true) {
             throw new Error("Context can only be empty if it is the root context");
@@ -75,6 +79,26 @@ export class Context {
         return variable;
     }
 
+    private getAllInstaceOfType(type: TypeStr): Type[] {
+        const allVarOfType: Type[] = [];
+
+        for (const [_, variable] of this.variables) {
+            if (variable.type === type) {
+                allVarOfType.push(variable.value);
+            }
+        }
+
+        return allVarOfType;
+    }
+
+    getAllCrops(): Crop[] {
+        return this.getAllInstaceOfType("Crop") as Crop[];
+    }
+
+    getAllFarms(): Type[] {
+        return this.getAllInstaceOfType("Farm") as Farm[];
+    }
+
     updateVariable(name: string, value: Type) {
         const variable = this.getVariable(name);
         if (variable === undefined) {
@@ -84,14 +108,17 @@ export class Context {
                 throw new VariableError(`Variable ${name} does not exist`);
             }
         }
+        if (variable.type !== typeToString(value)) { 
+            throw new VariableError(`Type mismatch for variable ${name}`);
+        }
         variable.value = value;
     }
 
-    private addFunction(name: string, func: Func) {
+    private addFunction(name: string, func: MyFunction) {
         this.functions.set(name, func);
     }
 
-    newFunction(name: string, func: Func) {
+    newFunction(name: string, func: MyFunction) {
         if (this.functions.has(name)) {
             if (this.parent !== undefined) {
                 this.parent.newFunction(name, func);
@@ -102,7 +129,7 @@ export class Context {
         this.addFunction(name, func);
     }
 
-    getFunction(name: string): Func {
+    getFunction(name: string): MyFunction {
         const func = this.functions.get(name);
         if (func === undefined) {
             if (this.parent !== undefined) {

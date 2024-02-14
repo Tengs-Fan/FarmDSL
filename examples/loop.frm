@@ -1,4 +1,5 @@
 
+Num a = 1; 
 for c in Crops {
-   Num a = 1; 
+    a = a + 1;
 }

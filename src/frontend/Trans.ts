@@ -20,7 +20,7 @@ import FarmExprLexer from "../../lang/FarmExprLexer";
 import {TerminalNode} from "antlr4";
 import {ASTNode} from "../ast/Ast";
 import {Program} from "../ast/Program";
-import {Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement, LoopStatement, ReturnStatement, Tstatement} from "../ast/Statement";
+import {Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement, LoopStatement, Tloopable, ReturnStatement, Tstatement} from "../ast/Statement";
 import {TypeStr} from "../ast/Type";
 import {Expression, OOPCallExpression, CallExpression, BinaryExpression, ValueExpression, NameExpression} from "../ast/Expression";
 import {Args} from "../ast/Args";
@@ -197,16 +197,32 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     };
 
     visitLoop_stmt = (ctx: Loop_stmtContext) => {
-        if (ctx.getChildCount() < 5) {
-            throw new ParseError("Loop_stmt should have at least 5 children");
+        if (ctx.getChildCount() !== 7) {
+            throw new ParseError("loop_stmt should have 7 children");
         }
 
-        const current = ctx.getChild(1).getText();
-        const loopable = this.visit(ctx.getChild(3)) as Expression;
-        const loop = new LoopStatement(current, loopable);
-        void loop; // Disable unused variable warning
+        const currentName = ctx.getChild(1).getText();
+        let loopable: Tloopable;
 
-        throw new Error("Not implemented yet");
+        assert(ctx.getChild(2).getText() === "in"); 
+
+        switch(ctx.getChild(3).getText()) {
+            case "Crops":
+                loopable = "Crops";
+                break;
+            case "Farms":
+                loopable = "Farms";
+                break;
+            default: 
+                if (!(ctx.getChild(3) instanceof TerminalNode)) throw new Error("Loopable should be a terminal node(Name)");
+                loopable = new NameExpression(ctx.getChild(3).getText());
+        }
+
+        assert(ctx.getChild(4).getText() === "{", "Loop body should be wrapped by {}");
+        const loopBody = this.visit(ctx.getChild(5)) as Program;
+        assert(ctx.getChild(6).getText() === "}", "Loop body should be wrapped by {}");
+
+        return new LoopStatement(currentName, loopable, loopBody);
     };
 
     visitReturn_stmt = (ctx: Return_stmtContext) => {

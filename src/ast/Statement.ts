@@ -7,6 +7,9 @@ import {Type, TypeStr} from "./Type";
 import {Expression} from "./Expression";
 import {Pairs} from "./Pairs";
 import {Program} from "./Program";
+import {ExprError} from "../Error";
+import {Farm} from "../backend/Farm";
+import {Crop} from "../backend/Crop";
 
 import {assert} from "console";
 
@@ -51,6 +54,7 @@ export class DeclStatment implements ASTNode {
             value = this.initValue.eval(ctx);
         }
 
+        // TODO check undefined
         const variable: Variable = {
             type: this.type,
             value: value.value as Type,
@@ -111,21 +115,6 @@ export class IfStatement implements ASTNode {
     }
 }
 
-export class LoopStatement implements ASTNode {
-    current: string; // Name of the current variable
-    loopable: Expression;
-
-    constructor(current: string, loopable: Expression) {
-        this.current = current;
-        this.loopable = loopable;
-    }
-
-    eval(_ctx: Context): Result {
-        void _ctx; // Disable unused variable warning
-        throw new Error("Method not implemented.");
-    }
-}
-
 export class ReturnStatement implements ASTNode {
     value: Expression;
 
@@ -138,7 +127,50 @@ export class ReturnStatement implements ASTNode {
     }
 }
 
-export type Tstatement = ExprStatement | DeclStatment | AssignStatement | IfStatement | LoopStatement | ReturnStatement;
+export type Tloopable = "Farms" | "Crops" | Expression;
+
+export class LoopStatement implements ASTNode {
+    current: string; // Name of the current variable
+    loopable: Tloopable;
+    loopBody: Program;
+
+    constructor(current: string, loopable: Tloopable, loopBody: Program) {
+        this.current = current;
+        this.loopable = loopable;
+        this.loopBody = loopBody;
+    }
+
+    eval(ctx: Context): Result {
+        let toLoop;
+        switch (this.loopable) { 
+            case "Farms":
+                toLoop = ctx.getAllFarms();
+                ctx.newVariable(this.current, {type: "Farm", value: null});
+                break;
+            case "Crops":
+                toLoop = ctx.getAllCrops();
+                ctx.newVariable(this.current, {type: "Crop", value: null});
+                break;
+            default:
+                const res = this.loopable.eval(ctx);
+                if (res.type !== "Farm") {
+                    throw new ExprError("Loopable should be a farm");
+                }
+                toLoop = (res.value as Farm).Crops.flat();
+                ctx.newVariable(this.current, {type: "Farm", value: null});
+                break;
+        }
+
+        toLoop.forEach((item) => {
+            ctx.updateVariable(this.current, item);
+            this.loopBody.eval(ctx);
+        });
+
+        return new Result("Null", null);
+    }
+}
+
+export type Tstatement = ExprStatement | DeclStatment | AssignStatement | IfStatement;
 
 export class Statement implements ASTNode {
     stmt: Tstatement;
