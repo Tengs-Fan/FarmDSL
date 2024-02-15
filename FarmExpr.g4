@@ -1,11 +1,7 @@
 grammar FarmExpr;
 
-func: 'def' NAME '(' (parameter)? (',' parameter)* ')' ('->' type)? '{' prog '}' ;
-
-parameter: NAME ':' type ;
-
 // A program is a bunch of statements
-prog: (stmt | func)* ;
+prog: stmt* ;
 
 stmt: decl_stmt
     | if_stmt

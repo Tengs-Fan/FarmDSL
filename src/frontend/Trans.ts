@@ -1,5 +1,4 @@
 import {
-    FuncContext,
     ProgContext,
     StmtContext,
     Decl_stmtContext,
@@ -7,10 +6,8 @@ import {
     Assign_stmtContext,
     If_stmtContext,
     Loop_stmtContext,
-    Return_stmtContext,
     ExprContext,
     Call_exprContext,
-    ParameterContext,
     ArgsContext,
     PairsContext,
     PairContext,
@@ -20,12 +17,11 @@ import FarmExprLexer from "../../lang/FarmExprLexer";
 import {TerminalNode} from "antlr4";
 import {ASTNode} from "../ast/Ast";
 import {Program} from "../ast/Program";
-import {Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement, LoopStatement, Tloopable, ReturnStatement, Tstatement} from "../ast/Statement";
+import {Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement, LoopStatement, Tloopable, Tstatement} from "../ast/Statement";
 import {TypeStr} from "../ast/Type";
 import {Expression, OOPCallExpression, CallExpression, BinaryExpression, ValueExpression, NameExpression} from "../ast/Expression";
 import {Args} from "../ast/Args";
 import {Pair, Pairs} from "../ast/Pairs";
-import {Func, FuncParam} from "../ast/Func";
 import {ParseError} from "../Error";
 import {assert} from "console";
 
@@ -33,58 +29,6 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     defaultResult(): ASTNode {
         throw new ParseError("defaultResult should not be called");
     }
-
-    visitFunc = (ctx: FuncContext) => {
-        assert(ctx.getChild(0).getText() === "def", "Func should start with def");
-        const name = ctx.getChild(1).getText();
-        assert(ctx.getChild(2).getText() === "(", `Func parameter list should start with (`);
-
-        const params: FuncParam[] = [];
-
-        // Get all the parameters
-        let i = 3;
-        if (ctx.getChild(i).getText() !== ")") {
-            for (; i < ctx.getChildCount(); i += 2) {
-                if (!(ctx.getChild(i) instanceof ParameterContext)) {
-                    throw new ParseError("Func parameter should be ParameterContext");
-                } else {
-                    const parameter = ctx.getChild(i) as ParameterContext;
-                    const param: FuncParam = [parameter.getChild(0).getText() as string, parameter.getChild(2).getText() as TypeStr];
-                    params.push(param);
-                }
-
-                if (ctx.getChild(i + 1).getText() === ")") {
-                    break;
-                }
-            }
-        } else {
-            // If there is no parameter, i should be the index of ")"
-            i -= 1;
-        }
-
-        assert(ctx.getChild(i + 1).getText() === ")", `Func parameter list should end with )`);
-
-        // Get the return type
-        let returnType: TypeStr = "Null";
-        if (ctx.getChild(i + 2).getText() === "->") {
-            returnType = ctx.getChild(i + 3).getText() as TypeStr;
-            i += 3;
-        } else {
-            // If there is no return type, i should be the index of ")"
-            i += 1;
-        }
-
-        assert(ctx.getChild(i + 1).getText() === "{", "Func body should start with {");
-        assert(ctx.getChild(i + 3).getText() === "}", "Func body should end with }");
-
-        const program = this.visit(ctx.getChild(i + 2)) as Program;
-        return new Func(name, params, returnType, program);
-    };
-
-    visitParameter = (_ctx: ParameterContext) => {
-        void _ctx; // Disable unused variable warning
-        throw new Error("Do not call visitParameter, directly get the text");
-    };
 
     visitProg = (ctx: ProgContext) => {
         const program = new Program();
@@ -94,10 +38,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         }
 
         for (const child of ctx.children) {
-            if (child instanceof FuncContext) {
-                const func = this.visitFunc(child);
-                program.addFunction(func);
-            } else if (child instanceof StmtContext) {
+            if (child instanceof StmtContext) {
                 const stmt = this.visitStmt(child);
                 program.addStatement(stmt);
             } else {
@@ -223,16 +164,6 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         assert(ctx.getChild(6).getText() === "}", "Loop body should be wrapped by {}");
 
         return new LoopStatement(currentName, loopable, loopBody);
-    };
-
-    visitReturn_stmt = (ctx: Return_stmtContext) => {
-        if (ctx.getChild(0).getText() !== "return") {
-            throw new ParseError("Return_stmt should start with return");
-        }
-
-        const expr = this.visit(ctx.getChild(1)) as Expression;
-
-        return new ReturnStatement(expr);
     };
 
     visitExpr = (ctx: ExprContext) => {

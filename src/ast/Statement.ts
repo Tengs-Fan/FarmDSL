@@ -115,18 +115,6 @@ export class IfStatement implements ASTNode {
     }
 }
 
-export class ReturnStatement implements ASTNode {
-    value: Expression;
-
-    constructor(value: Expression) {
-        this.value = value;
-    }
-
-    eval(ctx: Context): Result {
-        return this.value.eval(ctx);
-    }
-}
-
 export type Tloopable = "Farms" | "Crops" | Expression;
 
 export class LoopStatement implements ASTNode {
