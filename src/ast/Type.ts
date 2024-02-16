@@ -19,7 +19,7 @@ export type ExprTypeStr =
     | "Gte"
     | "Lte" // result: Bool
     | "And"
-    | "Or" 
+    | "Or"
     | "Call"; // Function call, result: unknown
 
 // The type of a value

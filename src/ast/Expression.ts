@@ -161,7 +161,7 @@ export class BinaryExpression extends Expression {
             case "And":
                 return new Result("Bool", leftResult.value && rightResult.value);
             case "Or":
-                    return new Result("Bool", leftResult.value || rightResult.value);
+                return new Result("Bool", leftResult.value || rightResult.value);
             default:
                 throw new ExprError("Unknown binary expression type: " + this.type);
         }

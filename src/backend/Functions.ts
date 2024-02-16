@@ -5,7 +5,7 @@ import {Context} from "../vm/Context";
 import {Farm} from "./Farm";
 import {Crop} from "./Crop";
 
-function show(obj: Farm | Crop | boolean ) {
+function show(obj: Farm | Crop | boolean) {
     console.log(obj);
 }
 

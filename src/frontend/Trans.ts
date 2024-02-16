@@ -275,7 +275,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
                         return new BinaryExpression("Eq", left, right);
                     case "!=":
                         return new BinaryExpression("Neq", left, right);
-                    case "and": 
+                    case "and":
                         return new BinaryExpression("And", left, right);
                     case "or":
                         return new BinaryExpression("Or", left, right);
