@@ -1,8 +1,7 @@
 import {expect} from "chai";
-import {typeToString} from "../../src/ast/Type";
 import {Crop} from "../../src/backend/Crop";
 import {Farm} from "../../src/backend/Farm";
-import {Context} from "mocha";
+import * as sinon from "sinon";
 
 describe("Farm tests", () => {
     describe("plant farm successful", () => {
@@ -177,6 +176,8 @@ describe("Farm tests", () => {
     });
 
     describe("Display Farm", () => {
+        let logSpy: sinon.SinonSpy;
+
         const topBottomBorderVal = "\u2014";
         const leftRightBorderVal = "|";
         const padding = " ";
@@ -188,6 +189,8 @@ describe("Farm tests", () => {
         let farm: Farm, expectedTitle: string, expectedFarmMetadata: string;
 
         beforeEach(() => {
+            logSpy = sinon.spy(console, 'log');
+
             farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 2500, Season: "Summer"});
             expectedTitle = `Name: ${farm.Name}`;
             expectedFarmMetadata = [
@@ -199,20 +202,29 @@ describe("Farm tests", () => {
             ].join("\n");
         });
 
+        afterEach(() => {
+            // Restore the original method after each test
+            if (logSpy) {
+                logSpy.restore();
+            }
+        });
+
         it("Should display empty farm correctly", () => {
-            const result = farm.displayFarm();
+
             const expectedTopBottomBorder = padding + (padding + topBottomBorderVal + padding).repeat(farm.GridLength) + padding;
             const expectedCropRows = Array.from(
                 {length: farm.GridLength},
                 () => leftRightBorderVal + padding.repeat(defaultCellLength).repeat(farm.GridLength) + leftRightBorderVal,
             ).join("\n");
             const expectedResult = [expectedTitle, expectedTopBottomBorder, expectedCropRows, expectedTopBottomBorder, expectedFarmMetadata].join("\n");
-            expect(result).to.equal(expectedResult);
+
+            farm.displayFarm();
+            expect(logSpy.firstCall.args[0]).to.equal(expectedResult);
         });
 
         it("Should display farm with one crop type planted correctly", () => {
             farm.plantFarm(corn, 2);
-            const result = farm.displayFarm();
+            farm.displayFarm();
             const expectedMiddleCellLength = corn.Name.length + 2;
 
             const expectedTopBottomBorder =
@@ -236,7 +248,8 @@ describe("Farm tests", () => {
                 expectedTopBottomBorder,
                 expectedFarmMetadata,
             ].join("\n");
-            expect(result).to.equal(expectedResult);
+
+            expect(logSpy.firstCall.args[0]).to.equal(expectedResult);
         });
 
         it("Should display farm with two crop types planted correctly", () => {
@@ -245,7 +258,7 @@ describe("Farm tests", () => {
 
             farm.plantFarm(corn, cornQuantity);
             farm.plantFarm(strawberry, strawberryQuantity);
-            const result = farm.displayFarm();
+            farm.displayFarm();
 
             const expectedMiddleCellLength = Math.max(strawberry.Name.length, corn.Name.length) + 2;
 
@@ -276,7 +289,8 @@ describe("Farm tests", () => {
                 expectedTopBottomBorder,
                 expectedFarmMetadata,
             ].join("\n");
-            expect(result).to.equal(expectedResult);
+
+            expect(logSpy.firstCall.args[0]).to.equal(expectedResult);
         });
 
         it("Should display fully planted farm correctly", () => {
@@ -287,7 +301,7 @@ describe("Farm tests", () => {
 
             farm.plantFarm(corn, cornQuantity);
             farm.plantFarm(strawberry, strawberryQuantity);
-            const result = farm.displayFarm();
+            farm.displayFarm();
 
             const expectedMiddleCellLength = Math.max(strawberry.Name.length, corn.Name.length) + 2;
 
@@ -315,7 +329,11 @@ describe("Farm tests", () => {
                 expectedTopBottomBorder,
                 expectedFarmMetadata,
             ].join("\n");
-            expect(result).to.equal(expectedResult);
+
+            console.log(logSpy.firstCall.args[0]);
+            console.log(expectedResult);
+
+            expect(logSpy.firstCall.args[0]).to.equal(expectedResult);
         });
     });
 });

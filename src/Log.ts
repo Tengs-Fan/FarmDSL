@@ -41,7 +41,6 @@ export function addConsoleOutput() {
     logger.remove(errorToConsole);
 }
 
-// Function to configure logger for file output
 export function configureFileLogging() {
     logger.add(fileTransport);
 }
