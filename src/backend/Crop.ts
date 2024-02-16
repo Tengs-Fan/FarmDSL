@@ -30,11 +30,15 @@ export class Crop {
         return this.Yield;
     }
 
+    getSeason(): "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None" {
+        return this.Season;
+    }
+
     call(funcName: string, args: Type[]): Type {
         if (typeof this[funcName as keyof this] === "function") {
             return (this[funcName as keyof this] as Function)(...args);
         } else {
-            throw new FunctionError(`Function ${funcName} does not exist in Farm class`);
+            throw new FunctionError(`Function ${funcName} does not exist in Crop class`);
         }
     }
 
