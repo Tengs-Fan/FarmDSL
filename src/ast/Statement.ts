@@ -9,7 +9,6 @@ import {Pairs} from "./Pairs";
 import {Program} from "./Program";
 import {ExprError} from "../Error";
 import {Farm} from "../backend/Farm";
-import {Crop} from "../backend/Crop";
 
 import {assert} from "console";
 
@@ -139,13 +138,14 @@ export class LoopStatement implements ASTNode {
                 toLoop = ctx.getAllCrops();
                 if (toLoop.length !== 0) ctx.newVariable(this.current, {type: "Crop", value: toLoop[0]});
                 break;
-            default:
+            default: {
                 const res = this.loopable.eval(ctx);
                 if (res.type !== "Farm") {
                     throw new ExprError("Loopable should be a farm");
                 }
                 toLoop = (res.value as Farm).Crops.flat().filter((item) => item !== null);
                 if (toLoop.length !== 0) ctx.newVariable(this.current, {type: "Crop", value: toLoop[0]});
+            }
                 break;
         }
 

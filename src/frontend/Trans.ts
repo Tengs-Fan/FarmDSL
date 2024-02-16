@@ -156,10 +156,11 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
             case "Farms":
                 loopable = "Farms";
                 break;
-            default:
+            default: {
                 const child3 = ctx.getChild(3);
                 if (!(child3 instanceof TerminalNode) || child3.symbol.type != FarmExprLexer.NAME) throw new Error("Loopable should be a terminal node(Name)");
                 loopable = new NameExpression(child3.getText());
+            }
         }
 
         assert(ctx.getChild(4).getText() === "{", "Loop body should be wrapped by {}");
@@ -201,6 +202,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     };
 
     visitExprTail = (_ctx: ExprTailContext) => {
+        (void _ctx);
         throw new Error("ExprTail should not be called");
     };
 
@@ -259,85 +261,6 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
             default:
                 throw new Error(`Unknown operator ${op}`);
         }
-
-        switch (ctx.getChildCount()) {
-        }
-        console.log(ctx.getChild(0).getText());
-        console.log(ctx.getChild(1).getText());
-        return new ValueExpression("Num", 0);
-        // switch (ctx.getChildCount()) {
-        //     // 1. Expr op Expr        op: +, -, *, /, >, >=, <, <=, ==, !=
-        //     // 2. ( Expr )            wrapped by ()
-        //     // 3. name(Args)          function call
-        //     // 4. Expr . name(Args)   OOP function call
-        //     case 3: {
-        //         // ( Expr )
-        //         if (ctx.getChild(0).getText() === "(") {
-        //             assert(ctx.getChild(2).getText() === ")", "Expr should be wrapped by ()");
-        //             return this.visit(ctx.getChild(1)) as Expression;
-        //         }
-
-        //         // Expr op Expr
-        //         const left = this.visit(ctx.getChild(0)) as Expression;
-        //         const right = this.visit(ctx.getChild(2)) as Expression;
-        //         const op = ctx.getChild(1).getText();
-        //         switch (op) {
-        //             case "+":
-        //                 return new BinaryExpression("Add", left, right);
-        //             case "-":
-        //                 return new BinaryExpression("Sub", left, right);
-        //             case "*":
-        //                 return new BinaryExpression("Mul", left, right);
-        //             case "/":
-        //                 return new BinaryExpression("Div", left, right);
-        //             case ">":
-        //                 return new BinaryExpression("Gt", left, right);
-        //             case ">=":
-        //                 return new BinaryExpression("Gte", left, right);
-        //             case "<":
-        //                 return new BinaryExpression("Lt", left, right);
-        //             case "<=":
-        //                 return new BinaryExpression("Lte", left, right);
-        //             case "==":
-        //                 return new BinaryExpression("Eq", left, right);
-        //             case "!=":
-        //                 return new BinaryExpression("Neq", left, right);
-        //             case ".":
-        //                 if (!(right instanceof CallExpression)) throw new Error("Right expression should be CallExpression");
-        //                 return new OOPCallExpression(left, (right as CallExpression).name, (right as CallExpression).args);
-        //             default:
-        //                 throw new Error(`Unknown operator ${op}`);
-        //         }
-        //     }
-        //     // value
-        //     // Call name(Args)
-        //     case 1: {
-        //         const child = ctx.getChild(0);
-        //         // value
-        //         if (child instanceof TerminalNode) {
-        //             switch (child.symbol.type) {
-        //                 case FarmExprLexer.BOOL:
-        //                     return new ValueExpression("Bool", child.getText() === "true");
-        //                 case FarmExprLexer.FLOAT:
-        //                     return new ValueExpression("Num", parseFloat(child.getText()));
-        //                 case FarmExprLexer.INT:
-        //                     return new ValueExpression("Num", parseInt(child.getText()));
-        //                 case FarmExprLexer.STRING: {
-        //                     const unquotedString: string = child.getText().replace(/^"|"$/g, "");
-        //                     return new ValueExpression("String", unquotedString);
-        //                 }
-        //                 case FarmExprLexer.NAME:
-        //                     return new NameExpression(child.getText());
-        //                 default:
-        //                     throw new Error(`Unknown value type ${ctx.getText()}`);
-        //             }
-        //         }
-        //         // Call name(Args)
-        //         return this.visit(ctx.getChild(0)) as CallExpression;
-        //     }
-        //     default:
-        //         throw new Error(`Unknown expression ${ctx.getText()}`);
-        // }
     };
 
     visitCall_expr = (ctx: Call_exprContext) => {
