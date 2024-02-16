@@ -45,22 +45,19 @@ type: 'Num'
 // Function call
 call_expr: NAME '(' args? ')' ;
 
-expr: noneLeftExpr exprTail?;
-
-exprTail: op=('*'|'/') expr
-        | op=('+'|'-') expr
-        | op=( '!=' | '==' | '>=' | '<=' | '<' | '>' ) expr
-        | '.' call_expr
-        ;
-
-noneLeftExpr: call_expr
-            | BOOL
-            | INT
-            | FLOAT
-            | NAME
-            | STRING
-            | '(' expr ')'
-            ;
+expr:   expr '.' call_expr
+      | expr op=( 'and' | 'or' | 'not' ) expr
+      | expr op=('*'|'/') expr
+      | expr op=('+'|'-') expr
+      | expr op=( '!=' | '==' | '>=' | '<=' | '<' | '>' ) expr
+      | call_expr
+      | BOOL
+      | INT
+      | FLOAT
+      | NAME
+      | STRING
+      | '(' expr ')'
+      ;
 
 // Tokens
 
