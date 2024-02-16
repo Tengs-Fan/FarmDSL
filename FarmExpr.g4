@@ -49,18 +49,18 @@ type: 'Num'
 // Function call
 call_expr: NAME '(' args? ')' ;
 
-expr:   expr '.' call_expr
-      | expr op=( 'and' | 'or' | 'not' ) expr
+expr: '(' expr ')'
+      | expr op=( 'and' | 'or' ) expr
       | expr op=('*'|'/') expr
       | expr op=('+'|'-') expr
       | expr op=( '!=' | '==' | '>=' | '<=' | '<' | '>' ) expr
       | call_expr
+      | NAME '.' call_expr
       | BOOL
       | INT
       | FLOAT
       | NAME
       | STRING
-      | '(' expr ')'
       ;
 
 // Tokens

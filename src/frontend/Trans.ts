@@ -275,6 +275,10 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
                         return new BinaryExpression("Eq", left, right);
                     case "!=":
                         return new BinaryExpression("Neq", left, right);
+                    case "and": 
+                        return new BinaryExpression("And", left, right);
+                    case "or":
+                        return new BinaryExpression("Or", left, right);
                     case ".":
                         if (!(right instanceof CallExpression)) throw new Error("Right expression should be CallExpression");
                         return new OOPCallExpression(left, (right as CallExpression).name, (right as CallExpression).args);
