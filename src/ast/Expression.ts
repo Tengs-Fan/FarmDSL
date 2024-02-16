@@ -41,7 +41,7 @@ export class OOPCallExpression extends Expression {
         const evaluated_args: Type[] = [];
 
         this.args.forEach((arg) => {
-            const result: Type = arg.eval(ctx).value as Type;
+            const result: Type = arg.eval(ctx).value;
             evaluated_args.push(result);
         });
 

@@ -60,6 +60,9 @@ export class Context {
     }
 
     newVariable(name: string, variable: Variable) {
+        if (variable.type != typeToString(variable.value)) {
+            throw new VariableError(`Type mismatch for variable ${name}, should be ${variable.type}, get ${typeToString(variable.type)}`);
+        }
         if (this.variables.has(name)) {
             throw new VariableError(`Variable ${name} already exists`);
         }
@@ -109,7 +112,7 @@ export class Context {
             }
         }
         if (variable.type !== typeToString(value)) {
-            throw new VariableError(`Type mismatch for variable ${name}`);
+            throw new VariableError(`Type mismatch for variable ${name}, should be ${variable.type}, get ${typeToString(value)}`);
         }
         variable.value = value;
     }
