@@ -1,5 +1,42 @@
 Use this file to commit information clearly documenting your check-ins' content. If you want to store more information/details besides what's required for the check-ins that's fine too. Make sure that your TA has had a chance to sign off on your check-in each week (before the deadline); typically you should discuss your material with them before finalizing it here.
 
+# Check-in 5 Report Items
+
+## Status of user study (should be completed this week at the latest)
+### If you've done it, what were the findings? Did it go smoothly?
+The user studies went smoothly. The findings include:
+- Changing the “Water” attribute in crops to “WaterRequirement”
+- To make Corn and corn and “corn” interchangeables in the names of the crops since these were common spelling variations used for users which caused frustration for them. 
+- When the plantFarm function fails, the error message is not fully expressive and is not instructive as to a helpful suggestions/next step.
+- Change cropQuantity() to cropCapacity() (cropQuantity feels like it should return the number of already planted crops on the farm)
+- Show current water usage in displayFarm() in addition to max water usage
+
+## What are the key elements of feedback you've learned from it?
+Users liked the syntax however a number of areas of improvement were noted that are listed above.
+
+## Are there any last changes to your design, implementation or tests?
+Our 3 features are implemented. We are debating if we want to output the farm in a graphical format versus the current text format. We are also thinking of allowing users to define their own functions.
+
+## What will these improvements enable?
+A graphical farm will look more pleasing to the users. Giving users the ability to define their own functions derives from the fact that users are the ones closest to their problems/pain point and there might be use cases that we have not implemented that a user might want to implement themselves using our DSL. 
+
+## Plans for final video (possible draft version). 
+We are working on the examples of DSL that will be used in the demo video. In the video we want to present a comprehensive overview of the project's features, improvements, and user feedback. We haven’t decided which team members will record the demo.
+
+## Who is responsible for the rest?
+We are working on this as a team.
+
+## Make sure to check it for length, working sound etc.
+Okay.
+
+## Planned timeline for the remaining days.
+Finalize decision on graphical vs. text format. Implement any additional user-defined function features. Begin drafting and editing the final video. Aim for completion by the end of reading break.
+
+## What is there left to do?
+The two features mentioned above (graphical layout and user-defined functions), bug fixes, and the improvements suggested by user-study 
+If you want to, you can feel free to submit early (before the break)!
+
+--------------------
 # Check-in 4 Report Items
 
 ## Status of implementation:

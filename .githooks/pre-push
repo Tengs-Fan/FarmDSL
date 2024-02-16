@@ -8,6 +8,13 @@ if [ "$PUSHING_TO_TARGET" = "true" ]; then
     # echo "Already pushing to target repository. Skipping to avoid loop."
     exit 0
 else 
+    
+    # Run the tests before pushing to the target repository
+    yarn cover
+
+    # Run the prettier to format the code
+    yarn pretty
+
     echo "\nAlso pushing to the GitHub repo to use the CI tools it provides\n"
 fi
 

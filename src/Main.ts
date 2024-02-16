@@ -6,6 +6,7 @@ import {parseProgram} from "./frontend/Parse";
 import {transProgram} from "./frontend/Trans";
 import {evalProgram} from "./vm/Eval";
 import {runRepl} from "./frontend/Repl";
+import {setLogLevel, addConsoleOutput} from "./Log";
 
 function executeFile(filename: string, verbose = false) {
     const programString = fs.readFileSync(filename, "utf-8");
@@ -29,6 +30,7 @@ function executeFile(filename: string, verbose = false) {
 }
 
 interface MyArguments extends Arguments {
+    log?: string;
     file?: string;
     verbose?: boolean;
     execute?: string;
@@ -38,13 +40,22 @@ yargs(hideBin(process.argv))
     .scriptName("Farm DSL")
     .usage("$0 [options]")
     .command("$0", "The default command", {}, (argv: MyArguments) => {
+        setLogLevel(argv.log ? argv.log : "info");
         if (argv.file) {
             // Execute file if provided
             executeFile(argv.file, argv.verbose);
         } else {
+            // Output to console in REPL mode if verbose is open
+            if (argv.verbose) addConsoleOutput();
             // Run the REPL if no file option is provided
             runRepl(argv.verbose);
         }
+    })
+    .option("log", {
+        alias: "l",
+        type: "string",
+        description: "Set the log level",
+        requiresArg: true,
     })
     .option("file", {
         alias: "f",

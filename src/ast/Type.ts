@@ -27,7 +27,7 @@ export type TypeStr = "Num" | "Bool" | "Farm" | "Crop" | "String" | "Null";
 export function typeToString(type: Type): TypeStr {
     if (type instanceof Farm) return "Farm";
     if (type instanceof Crop) return "Crop";
-    if (type === null) return "Null"; // Handle null explicitly
+    if (type == undefined) return "Null";
     switch (typeof type) {
         case "number":
             return "Num";
@@ -35,8 +35,6 @@ export function typeToString(type: Type): TypeStr {
             return "Bool";
         case "string":
             return "String"; // Added missing case
-        case "undefined":
-            return "Null";
         default:
             throw new EvalError("Unknown type: " + typeof type);
     }
@@ -44,7 +42,7 @@ export function typeToString(type: Type): TypeStr {
 
 export class Result {
     type: TypeStr;
-    value?: Type;
+    value: Type;
 
     constructor(type: TypeStr, value: Type) {
         this.type = type;

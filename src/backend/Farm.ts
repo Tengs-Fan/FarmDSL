@@ -1,6 +1,7 @@
 import {Type} from "../ast/Type";
 import {Crop} from "./Crop";
 import {FunctionError} from "../Error";
+import logger from "../Log";
 
 export class Farm {
     static propertiesMetadata = {
@@ -60,7 +61,7 @@ export class Farm {
         }
         // Start planting crop
         const result: Farm = this.startPlanting(plantingCrop, quantity);
-        console.log(`Planting was successful`);
+        logger.debug(`Planting was successful`);
         return result;
     }
 
@@ -138,10 +139,10 @@ export class Farm {
     private plantIfEmpty(x: number, y: number, aCrop: Crop): boolean {
         if (this.Crops[x][y] === null) {
             this.Crops[x][y] = aCrop;
-            console.log(`Planted ${aCrop.Name} at position (${x}, ${y}).`);
+            logger.debug(`Planted ${aCrop.Name} at position (${x}, ${y}).`);
             return true;
         } else {
-            console.log(`There's already a crop at position (${x}, ${y}). Skipping this space.`);
+            logger.debug(`There's already a crop at position (${x}, ${y}). Skipping this space.`);
             return false;
         }
     }

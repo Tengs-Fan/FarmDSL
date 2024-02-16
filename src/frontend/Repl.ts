@@ -3,6 +3,7 @@ import {parseProgram} from "./Parse";
 import {transProgram} from "./Trans";
 import {evalProgram} from "../vm/Eval";
 import * as fs from "fs";
+import {removeConsoleOutput, addConsoleOutput} from "../Log";
 
 const historyFile = ".repl_history";
 const history: string[] = [];
@@ -32,6 +33,12 @@ function exit() {
 }
 
 function toggleVerbose(oldVerbose: boolean): boolean {
+    const newVerbose = !oldVerbose;
+    if (newVerbose) {
+        addConsoleOutput();
+    } else {
+        removeConsoleOutput();
+    }
     console.log(`Verbose mode is ${!oldVerbose ? "on" : "off"}`);
     return !oldVerbose;
 }

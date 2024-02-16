@@ -8,7 +8,7 @@ import {transProgram} from "../../src/frontend/Trans";
 
 describe("transProgram", () => {
     it("Default function call is ok", () => {
-        const input = "echo(1);";
+        const input = "add(1, 2);";
         const tree = parseProgram(input, false);
         const result = transProgram(tree, false);
         expect(() => result.eval(new Context())).to.not.throw();
@@ -30,7 +30,7 @@ describe("transProgram", () => {
 
     it("OOP function call for Farm and Crop is ok", () => {
         const input = `
-        Farm farm = [Name: "myFarm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
+        Farm farm = [Name: \"myFarm\", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: \"Summer\"];
         farm.OOPCallTest();
         `;
         const tree = parseProgram(input, false);
@@ -48,7 +48,7 @@ describe("transProgram", () => {
 
     it("OOP function call for function not exist isn't ok", () => {
         const input = `
-        Farm farm = [Name: "myFarm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
+        Farm farm = [Name: \"myFarm\", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: \"Summer\"];
         farm.noThisFunction();
         `;
         const tree = parseProgram(input, false);

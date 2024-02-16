@@ -26,6 +26,10 @@ export class Crop {
         this.SellPrice = props.SellPrice as number;
     }
 
+    getYield(): number {
+        return this.Yield;
+    }
+
     call(funcName: string, args: Type[]): Type {
         if (typeof this[funcName as keyof this] === "function") {
             return (this[funcName as keyof this] as Function)(...args);
