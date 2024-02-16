@@ -202,7 +202,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     };
 
     visitExprTail = (_ctx: ExprTailContext) => {
-        (void _ctx);
+        void _ctx;
         throw new Error("ExprTail should not be called");
     };
 

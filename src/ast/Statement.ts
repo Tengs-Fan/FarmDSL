@@ -138,14 +138,15 @@ export class LoopStatement implements ASTNode {
                 toLoop = ctx.getAllCrops();
                 if (toLoop.length !== 0) ctx.newVariable(this.current, {type: "Crop", value: toLoop[0]});
                 break;
-            default: {
-                const res = this.loopable.eval(ctx);
-                if (res.type !== "Farm") {
-                    throw new ExprError("Loopable should be a farm");
+            default:
+                {
+                    const res = this.loopable.eval(ctx);
+                    if (res.type !== "Farm") {
+                        throw new ExprError("Loopable should be a farm");
+                    }
+                    toLoop = (res.value as Farm).Crops.flat().filter((item) => item !== null);
+                    if (toLoop.length !== 0) ctx.newVariable(this.current, {type: "Crop", value: toLoop[0]});
                 }
-                toLoop = (res.value as Farm).Crops.flat().filter((item) => item !== null);
-                if (toLoop.length !== 0) ctx.newVariable(this.current, {type: "Crop", value: toLoop[0]});
-            }
                 break;
         }
 
