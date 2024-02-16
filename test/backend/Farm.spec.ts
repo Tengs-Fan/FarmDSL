@@ -189,7 +189,7 @@ describe("Farm tests", () => {
         let farm: Farm, expectedTitle: string, expectedFarmMetadata: string;
 
         beforeEach(() => {
-            logSpy = sinon.spy(console, 'log');
+            logSpy = sinon.spy(console, "log");
 
             farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 2500, Season: "Summer"});
             expectedTitle = `Name: ${farm.Name}`;
@@ -210,7 +210,6 @@ describe("Farm tests", () => {
         });
 
         it("Should display empty farm correctly", () => {
-
             const expectedTopBottomBorder = padding + (padding + topBottomBorderVal + padding).repeat(farm.GridLength) + padding;
             const expectedCropRows = Array.from(
                 {length: farm.GridLength},
