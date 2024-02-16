@@ -7,8 +7,6 @@ import {
     If_stmtContext,
     Loop_stmtContext,
     ExprContext,
-    NoneLeftExprContext,
-    ExprTailContext,
     Call_exprContext,
     ArgsContext,
     PairsContext,
@@ -170,11 +168,56 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         return new LoopStatement(currentName, loopable, loopBody);
     };
 
-    visitNoneLeftExpr = (ctx: NoneLeftExprContext) => {
-        const child = ctx.getChild(0);
-
+    visitExpr = (ctx: ExprContext) => {
         switch (ctx.getChildCount()) {
-            case 1: // call_expr
+            // 1. Expr op Expr        op: +, -, *, /, >, >=, <, <=, ==, !=
+            // 2. ( Expr )            wrapped by ()
+            // 3. name(Args)          function call
+            // 4. Expr . name(Args)   OOP function call
+            case 3: {
+                // ( Expr )
+                if (ctx.getChild(0).getText() === "(") {
+                    assert(ctx.getChild(2).getText() === ")", "Expr should be wrapped by ()");
+                    return this.visit(ctx.getChild(1)) as Expression;
+                }
+
+                // Expr op Expr
+                const left = this.visit(ctx.getChild(0)) as Expression;
+                const right = this.visit(ctx.getChild(2)) as Expression;
+                const op = ctx.getChild(1).getText();
+                switch (op) {
+                    case "+":
+                        return new BinaryExpression("Add", left, right);
+                    case "-":
+                        return new BinaryExpression("Sub", left, right);
+                    case "*":
+                        return new BinaryExpression("Mul", left, right);
+                    case "/":
+                        return new BinaryExpression("Div", left, right);
+                    case ">":
+                        return new BinaryExpression("Gt", left, right);
+                    case ">=":
+                        return new BinaryExpression("Gte", left, right);
+                    case "<":
+                        return new BinaryExpression("Lt", left, right);
+                    case "<=":
+                        return new BinaryExpression("Lte", left, right);
+                    case "==":
+                        return new BinaryExpression("Eq", left, right);
+                    case "!=":
+                        return new BinaryExpression("Neq", left, right);
+                    case ".":
+                        if (!(right instanceof CallExpression)) throw new Error("Right expression should be CallExpression");
+                        return new OOPCallExpression(left, (right as CallExpression).name, (right as CallExpression).args);
+                    default:
+                        throw new Error(`Unknown operator ${op}`);
+                }
+            }
+            // value
+            // Call name(Args)
+            case 1: {
+                const child = ctx.getChild(0);
+                // value
                 if (child instanceof TerminalNode) {
                     switch (child.symbol.type) {
                         case FarmExprLexer.BOOL:
@@ -190,76 +233,14 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
                         case FarmExprLexer.NAME:
                             return new NameExpression(child.getText());
                         default:
-                            throw new ParseError(`Unknown value type ${ctx.getText()}`);
+                            throw new Error(`Unknown value type ${ctx.getText()}`);
                     }
                 }
+                // Call name(Args)
                 return this.visit(ctx.getChild(0)) as CallExpression;
-            case 3: // ( Expr )
-                return this.visit(ctx.getChild(1));
-            default:
-                throw new ParseError(`Unknown expression ${ctx.getText()}`);
-        }
-    };
-
-    visitExprTail = (_ctx: ExprTailContext) => {
-        void _ctx;
-        throw new Error("ExprTail should not be called");
-    };
-
-    visitExpr = (ctx: ExprContext) => {
-        if (!(ctx.getChild(0) instanceof NoneLeftExprContext)) {
-            throw new ParseError("Expr should start with NoneLeftExprContext");
-        }
-        const left = this.visit(ctx.getChild(0) as NoneLeftExprContext) as Expression;
-
-        if (ctx.getChildCount() === 1) return left;
-
-        const exprTail = ctx.getChild(1);
-        if (!(exprTail instanceof ExprTailContext)) {
-            throw new ParseError("Expr should end with ExprTailContext");
-        }
-
-        // NameExpression
-        // console.log(exprTail.getText());
-        const op = exprTail.getChild(0).getText();
-
-        if (op == ".") {
-            const callExpr = exprTail.getChild(1);
-            if (!(callExpr instanceof Call_exprContext)) {
-                throw new Error("Right expression should be CallExpression");
             }
-            const right = this.visitCall_expr(callExpr);
-            return new OOPCallExpression(left, (right as CallExpression).name, (right as CallExpression).args);
-        }
-
-        const right = this.visit(exprTail.getChild(1));
-        if (!(right instanceof Expression)) {
-            throw new ParseError("Right expression should be Expression");
-        }
-
-        switch (op) {
-            case "+":
-                return new BinaryExpression("Add", left, right);
-            case "-":
-                return new BinaryExpression("Sub", left, right);
-            case "*":
-                return new BinaryExpression("Mul", left, right);
-            case "/":
-                return new BinaryExpression("Div", left, right);
-            case ">":
-                return new BinaryExpression("Gt", left, right);
-            case ">=":
-                return new BinaryExpression("Gte", left, right);
-            case "<":
-                return new BinaryExpression("Lt", left, right);
-            case "<=":
-                return new BinaryExpression("Lte", left, right);
-            case "==":
-                return new BinaryExpression("Eq", left, right);
-            case "!=":
-                return new BinaryExpression("Neq", left, right);
             default:
-                throw new Error(`Unknown operator ${op}`);
+                throw new Error(`Unknown expression ${ctx.getText()}`);
         }
     };
 
