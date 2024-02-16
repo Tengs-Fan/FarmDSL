@@ -158,8 +158,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
                 break;
             default:
                 const child3 = ctx.getChild(3);
-                if (!(child3 instanceof TerminalNode) || (child3.symbol.type != FarmExprLexer.NAME))
-                    throw new Error("Loopable should be a terminal node(Name)");
+                if (!(child3 instanceof TerminalNode) || child3.symbol.type != FarmExprLexer.NAME) throw new Error("Loopable should be a terminal node(Name)");
                 loopable = new NameExpression(child3.getText());
         }
 
@@ -173,7 +172,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     visitNoneLeftExpr = (ctx: NoneLeftExprContext) => {
         const child = ctx.getChild(0);
 
-        switch(ctx.getChildCount()) {
+        switch (ctx.getChildCount()) {
             case 1: // call_expr
                 if (child instanceof TerminalNode) {
                     switch (child.symbol.type) {
@@ -199,11 +198,11 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
             default:
                 throw new ParseError(`Unknown expression ${ctx.getText()}`);
         }
-    }
+    };
 
     visitExprTail = (_ctx: ExprTailContext) => {
         throw new Error("ExprTail should not be called");
-    }
+    };
 
     visitExpr = (ctx: ExprContext) => {
         if (!(ctx.getChild(0) instanceof NoneLeftExprContext)) {
@@ -218,7 +217,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
             throw new ParseError("Expr should end with ExprTailContext");
         }
 
-        // NameExpression 
+        // NameExpression
         // console.log(exprTail.getText());
         const op = exprTail.getChild(0).getText();
 
@@ -260,7 +259,6 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
             default:
                 throw new Error(`Unknown operator ${op}`);
         }
-
 
         switch (ctx.getChildCount()) {
         }
