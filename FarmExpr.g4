@@ -1,12 +1,14 @@
 grammar FarmExpr;
 
 // A program is a bunch of statements
-prog: stmt+;
+prog: stmt* ;
 
 stmt: decl_stmt
     | if_stmt
     | expr_stmt
     | assign_stmt
+    | loop_stmt
+    | return_stmt
     ;
 
 // Declarations 
@@ -19,15 +21,19 @@ expr_stmt: expr ';' ;
 assign_stmt: NAME '=' expr ';' ;
 
 // If statement
-if_stmt: 'if' expr block ('else' block)? ;
+if_stmt: 'if' expr '{' prog '}' ('else' '{' prog '}')? ;
+
+// Loop statement
+loop_stmt: 'for' NAME 'in' NAME '{' prog '}';
+
+// Final return of function
+return_stmt: 'return' expr ';' ; 
 
 // Argument to function call
 args: expr (',' expr)* ;
 
 pairs: '[' pair (',' pair)* ']' ;
 pair:  NAME ':' expr ;
-
-block: '{' stmt* '}' ;
 
 // Types 
 type: 'Num' 
@@ -39,10 +45,11 @@ type: 'Num'
 // Function call
 call_expr: NAME '(' args? ')' ;
 
-expr:   expr op=('*'|'/') expr
+expr:   expr '.' call_expr
+      | expr op=( 'and' | 'or' | 'not' ) expr
+      | expr op=('*'|'/') expr
       | expr op=('+'|'-') expr
       | expr op=( '!=' | '==' | '>=' | '<=' | '<' | '>' ) expr
-      | expr '.' call_expr
       | call_expr
       | BOOL
       | INT
@@ -51,8 +58,6 @@ expr:   expr op=('*'|'/') expr
       | STRING
       | '(' expr ')'
       ;
-
-
 
 // Tokens
 

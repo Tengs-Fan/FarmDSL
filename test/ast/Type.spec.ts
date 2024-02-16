@@ -1,5 +1,5 @@
-import { expect } from "chai";
-import { typeToString, Result } from "../../src/ast/Type";
+import {expect} from "chai";
+import {typeToString, Result} from "../../src/ast/Type";
 import * as sinon from "sinon";
 
 describe("Type System", () => {
@@ -20,7 +20,6 @@ describe("Type System", () => {
         it("should handle null values", () => {
             expect(typeToString(null)).to.equal("Null");
         });
-
     });
 
     describe("Result class", () => {
@@ -44,11 +43,8 @@ describe("Type System", () => {
             spy = sinon.spy(console, "log");
             const nullResult = new Result("Null", null);
             nullResult.show();
-            expect(spy.called).to.be.false; 
+            expect(spy.called).to.be.false;
             spy.restore(); // Clean up the spy
         });
-
     });
-
 });
-

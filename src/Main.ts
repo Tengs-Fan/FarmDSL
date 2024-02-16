@@ -6,7 +6,7 @@ import {parseProgram} from "./frontend/Parse";
 import {transProgram} from "./frontend/Trans";
 import {evalProgram} from "./vm/Eval";
 import {runRepl} from "./frontend/Repl";
-import logger, {setLogLevel, addConsoleOutput} from "./Log";
+import {setLogLevel, addConsoleOutput} from "./Log";
 
 function executeFile(filename: string, verbose = false) {
     const programString = fs.readFileSync(filename, "utf-8");

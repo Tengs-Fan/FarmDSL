@@ -5,9 +5,9 @@ import {
     Expr_stmtContext,
     Assign_stmtContext,
     If_stmtContext,
+    Loop_stmtContext,
     ExprContext,
     Call_exprContext,
-    BlockContext,
     ArgsContext,
     PairsContext,
     PairContext,
@@ -17,8 +17,7 @@ import FarmExprLexer from "../../lang/FarmExprLexer";
 import {TerminalNode} from "antlr4";
 import {ASTNode} from "../ast/Ast";
 import {Program} from "../ast/Program";
-import {Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement, Tstatement} from "../ast/Statement";
-import {Block} from "../ast/Block";
+import {Statement, ExprStatement, DeclStatment, AssignStatement, IfStatement, LoopStatement, Tloopable, Tstatement} from "../ast/Statement";
 import {TypeStr} from "../ast/Type";
 import {Expression, OOPCallExpression, CallExpression, BinaryExpression, ValueExpression, NameExpression} from "../ast/Expression";
 import {Args} from "../ast/Args";
@@ -34,27 +33,32 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     visitProg = (ctx: ProgContext) => {
         const program = new Program();
 
-        const statements = this.visitChildren(ctx) as unknown as Statement[];
-        program.addStatements(statements);
+        if (ctx.children === null) {
+            return program;
+        }
+
+        for (const child of ctx.children) {
+            if (child instanceof StmtContext) {
+                const stmt = this.visitStmt(child);
+                program.addStatement(stmt);
+            } else {
+                throw new Error(`Unknown child type ${child.constructor.name}`);
+            }
+        }
 
         return program;
-    };
-
-    visitBlock = (ctx: BlockContext) => {
-        const block = new Block();
-
-        const stmts = this.visitChildren(ctx) as unknown as Statement[];
-        block.addStatements(stmts);
-
-        return block;
     };
 
     // Statement
     visitStmt = (ctx: StmtContext) => {
         // Can only have one child
-        const stmt = this.visitChildren(ctx) as unknown as Tstatement[];
+        if (ctx.getChildCount() !== 1) {
+            throw new ParseError("Stmt should have only one child");
+        }
 
-        return new Statement(stmt[0]);
+        const stmt = this.visit(ctx.getChild(0)) as Tstatement;
+
+        return new Statement(stmt);
     };
 
     // Declararion:
@@ -67,31 +71,27 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         // Example: Farm myFarm = [Name: "myFarm", Area: 1200];
         // child0: "Farm", child1: "myFarm", child2: "=",  child3: [Name: "myFarm", Area: 1200], child4: ;
 
-        if (ctx.children === null) {
-            throw new ParseError("Decl_stmt should have children");
-        }
-
-        const type = ctx.children[0].getText() as TypeStr;
-        const name = ctx.children[1].getText();
+        const type = ctx.getChild(0).getText() as TypeStr;
+        const name = ctx.getChild(1).getText();
 
         // If there is no initialization, expr is Null
         let value = new Expression("Null") as Expression | Pairs;
 
         // assert(ctx.children.length === 2 || ctx.children.length === 4, "Decl_stmt should have 2 or 5 children");
-        switch (ctx.children.length) {
+        switch (ctx.getChildCount()) {
             // Num x = 1;
             case 3:
                 break;
             case 5:
-                if (ctx.children[3] instanceof ExprContext) {
-                    value = this.visit(ctx.children[3]) as Expression;
+                if (ctx.getChild(3) instanceof ExprContext) {
+                    value = this.visit(ctx.getChild(3)) as Expression;
                 } else {
                     // instanceof ArgsContext
-                    value = this.visit(ctx.children[3]) as Pairs;
+                    value = this.visit(ctx.getChild(3)) as Pairs;
                 }
                 break;
             default:
-                throw new Error(`Decl_stmt should have 3 or 5 children, but got ${ctx.children.length}`);
+                throw new Error(`Decl_stmt should have 3 or 5 children, but got ${ctx.getChildCount()}`);
         }
 
         return new DeclStatment(type, name, value);
@@ -99,21 +99,15 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
 
     // Single expression, it does not have any side effect (do not change the virtual machine at all)
     visitExpr_stmt = (ctx: Expr_stmtContext) => {
-        if (ctx.children === null) {
-            throw new ParseError("Expr_stmt should have children");
-        }
-        const expr = this.visit(ctx.children[0]) as Expression;
+        const expr = this.visit(ctx.getChild(0)) as Expression;
         return new ExprStatement(expr);
     };
 
     // Assignment:
     // x = 1; a = f(x);
     visitAssign_stmt = (ctx: Assign_stmtContext) => {
-        if (ctx.children === null) {
-            throw new ParseError("Assign_stmt should have children");
-        }
-        const name = ctx.children[0].getText();
-        const expr = this.visit(ctx.children[2]) as Expression;
+        const name = ctx.getChild(0).getText();
+        const expr = this.visit(ctx.getChild(2)) as Expression;
 
         return new AssignStatement(name, expr);
     };
@@ -125,26 +119,56 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         // child0: "if", child1: "x", child2: ...
         // Example: if (x) { ... } else { ... }
         // child0: "if", child1: "x", child2: ... , child3: "else", child4: ...
-        if (ctx.children === null) {
-            throw new ParseError("If_stmt should have children");
-        }
 
-        const condition = this.visit(ctx.children[1]) as Expression;
-        const if_block = this.visit(ctx.children[2]) as Block;
-        let else_block = new Block();
+        const condition = this.visit(ctx.getChild(1)) as Expression;
+        assert(ctx.getChild(2).getText() === "{", `If condition should be wrapped by {}: ${ctx.getChild(4).getText()}`);
+        const if_block = this.visit(ctx.getChild(3)) as Program;
+        assert(ctx.getChild(4).getText() === "}", `If condition should be wrapped by {}: ${ctx.getChild(4).getText()}`);
+        let else_block = new Program();
 
-        if (ctx.children.length === 5) {
-            else_block = this.visit(ctx.children[4]) as Block;
+        if (ctx.getChildCount() === 9) {
+            assert(ctx.getChild(5).getText() === "else", "Else should be followed by else");
+            assert(ctx.getChild(6).getText() === "{", "Else condition should be wrapped by {}");
+            else_block = this.visit(ctx.getChild(7)) as Program;
+            assert(ctx.getChild(8).getText() === "}", "Else condition should be wrapped by {}");
         }
 
         const ifstmt = new IfStatement(condition, if_block, else_block);
         return ifstmt;
     };
 
-    visitExpr = (ctx: ExprContext) => {
-        if (ctx.children === null) {
-            throw new ParseError("Expr should have children");
+    visitLoop_stmt = (ctx: Loop_stmtContext) => {
+        if (ctx.getChildCount() !== 7) {
+            throw new ParseError("loop_stmt should have 7 children");
         }
+
+        const currentName = ctx.getChild(1).getText();
+        let loopable: Tloopable;
+
+        assert(ctx.getChild(2).getText() === "in", "Loop should have in");
+
+        switch (ctx.getChild(3).getText()) {
+            case "Crops":
+                loopable = "Crops";
+                break;
+            case "Farms":
+                loopable = "Farms";
+                break;
+            default: {
+                const child3 = ctx.getChild(3);
+                if (!(child3 instanceof TerminalNode) || child3.symbol.type != FarmExprLexer.NAME) throw new Error("Loopable should be a terminal node(Name)");
+                loopable = new NameExpression(child3.getText());
+            }
+        }
+
+        assert(ctx.getChild(4).getText() === "{", "Loop body should be wrapped by {}");
+        const loopBody = this.visit(ctx.getChild(5)) as Program;
+        assert(ctx.getChild(6).getText() === "}", "Loop body should be wrapped by {}");
+
+        return new LoopStatement(currentName, loopable, loopBody);
+    };
+
+    visitExpr = (ctx: ExprContext) => {
         switch (ctx.getChildCount()) {
             // 1. Expr op Expr        op: +, -, *, /, >, >=, <, <=, ==, !=
             // 2. ( Expr )            wrapped by ()
@@ -152,15 +176,15 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
             // 4. Expr . name(Args)   OOP function call
             case 3: {
                 // ( Expr )
-                if (ctx.children[0].getText() === "(") {
-                    assert(ctx.children[2].getText() === ")", "Expr should be wrapped by ()");
-                    return this.visit(ctx.children[1]) as Expression;
+                if (ctx.getChild(0).getText() === "(") {
+                    assert(ctx.getChild(2).getText() === ")", "Expr should be wrapped by ()");
+                    return this.visit(ctx.getChild(1)) as Expression;
                 }
 
                 // Expr op Expr
-                const left = this.visit(ctx.children[0]) as Expression;
-                const right = this.visit(ctx.children[2]) as Expression;
-                const op = ctx.children[1].getText();
+                const left = this.visit(ctx.getChild(0)) as Expression;
+                const right = this.visit(ctx.getChild(2)) as Expression;
+                const op = ctx.getChild(1).getText();
                 switch (op) {
                     case "+":
                         return new BinaryExpression("Add", left, right);
@@ -192,7 +216,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
             // value
             // Call name(Args)
             case 1: {
-                const child = ctx.children[0];
+                const child = ctx.getChild(0);
                 // value
                 if (child instanceof TerminalNode) {
                     switch (child.symbol.type) {
@@ -203,7 +227,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
                         case FarmExprLexer.INT:
                             return new ValueExpression("Num", parseInt(child.getText()));
                         case FarmExprLexer.STRING: {
-                            const unquotedString: string = child.getText().replace(/^"|"$/g, '');
+                            const unquotedString: string = child.getText().replace(/^"|"$/g, "");
                             return new ValueExpression("String", unquotedString);
                         }
                         case FarmExprLexer.NAME:
@@ -213,7 +237,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
                     }
                 }
                 // Call name(Args)
-                return this.visit(ctx.children[0]) as CallExpression;
+                return this.visit(ctx.getChild(0)) as CallExpression;
             }
             default:
                 throw new Error(`Unknown expression ${ctx.getText()}`);
@@ -221,21 +245,18 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     };
 
     visitCall_expr = (ctx: Call_exprContext) => {
-        if (ctx.children === null) throw new ParseError("Expr should have children");
-
         // Name of the function
-        const name = ctx.children[0].getText();
-        if (ctx.children.length === 4) // Witharguments
-        {
-            if (ctx.children[1].getText() !== "(" && ctx.children[3].getText() !== ")") {
+        const name = ctx.getChild(0).getText();
+        if (ctx.getChildCount() === 4) {
+            // Witharguments
+            if (ctx.getChild(1).getText() !== "(" && ctx.getChild(3).getText() !== ")") {
                 throw new ParseError("Call_expr should have ( and )");
             }
-            const args = this.visit(ctx.children[2]) as Args;
+            const args = this.visit(ctx.getChild(2)) as Args;
             return new CallExpression(name, args.args);
-        }
-        else // Without arguments
-        {
-            if (ctx.children[1].getText() !== "(" && ctx.children[2].getText() !== ")") {
+        } // Without arguments
+        else {
+            if (ctx.getChild(1).getText() !== "(" && ctx.getChild(2).getText() !== ")") {
                 throw new ParseError("Call_expr should have ( and )");
             }
             return new CallExpression(name, [] as Expression[]);
@@ -246,13 +267,10 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     // composed of multiple expressions
     visitArgs = (ctx: ArgsContext) => {
         const args = new Args();
-        if (ctx.children === null) {
-            return args;
-        }
 
         // it has "," between each expression
         for (let i = 0; i < ctx.getChildCount(); i += 2) {
-            const arg = this.visit(ctx.children[i]) as Expression;
+            const arg = this.visit(ctx.getChild(i)) as Expression;
             // if (ctx.children[i + 1].getText() !== ",") throw new Error("Args shoule be separated by ,");
             args.addArg(arg);
         }
@@ -263,12 +281,9 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     // composed of multiple pairs
     visitPairs = (ctx: PairsContext) => {
         const pairs = new Pairs();
-        if (ctx.children === null) {
-            return pairs;
-        }
 
         for (let i = 1; i < ctx.getChildCount(); i += 2) {
-            const pair = this.visit(ctx.children[i]) as Pair;
+            const pair = this.visit(ctx.getChild(i)) as Pair;
             // if (ctx.children[i + 1].getText() !== ",") throw new Error("Args shoule be separated by ,");
             pairs.addPair(pair);
         }
@@ -278,11 +293,8 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
     // Pair: Name: "myFarm"
     // composed of a name and a value (expression)
     visitPair = (ctx: PairContext) => {
-        if (ctx.children === null) {
-            throw new Error("Pair should have children");
-        }
-        const name = ctx.children[0].getText();
-        const value = this.visit(ctx.children[2]) as Expression;
+        const name = ctx.getChild(0).getText();
+        const value = this.visit(ctx.getChild(2)) as Expression;
         return new Pair(name, value);
     };
 }

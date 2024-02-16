@@ -5,11 +5,9 @@ import {Statement} from "./Statement";
 
 export class Program implements ASTNode {
     stmts: Statement[];
-    // local_context: Context;
 
     constructor() {
         this.stmts = [];
-        // this.local_context = new Context();
     }
     addStatement(stmt: Statement) {
         this.stmts.push(stmt);
@@ -19,6 +17,11 @@ export class Program implements ASTNode {
     }
 
     eval(ctx: Context): Result {
+        // Register all functions
+        // TODO: this would be ok since the root program is only evaluated once,
+        // but if we have a program that can be evaluated multiple times, it will
+        // thow an error since the function is already registered
+
         let lastResult = new Result("Null", null);
 
         this.stmts.forEach((stmt) => {
