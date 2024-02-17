@@ -90,7 +90,7 @@ describe("transProgram", () => {
 
     it("OOP function call for Farm and Crop is ok", () => {
         const input = `
-        Farm farm = [Name: "myFarm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
+        Farm farm = [Name: \"myFarm\", Height: 10, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: \"Summer\"];
         farm.OOPCallTest();
         `;
         const tree = parseProgram(input, false);
@@ -98,7 +98,7 @@ describe("transProgram", () => {
         expect(result.eval(new Context()).value).to.equal(114514);
 
         const input2 = `
-        Crop crop = [Name: "elderberry", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110];
+        Crop crop = [Name: "elderberry", Season: "Summer", WaterRequirement: 45, Yield: 75, SellPrice: 110];
         crop.OOPCallTest();
         `;
         const tree2 = parseProgram(input2, false);
@@ -108,7 +108,7 @@ describe("transProgram", () => {
 
     it("OOP function call for function not exist isn't ok", () => {
         const input = `
-        Farm farm = [Name: "myFarm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
+        Farm farm = [Name: \"myFarm\", Height: 10, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: \"Summer\"];
         farm.noThisFunction();
         `;
         const tree = parseProgram(input, false);
@@ -116,7 +116,7 @@ describe("transProgram", () => {
         expect(() => result.eval(new Context())).to.throw(/Function * does not exist in Farm class/);
 
         const input2 = `
-        Crop crop = [Name: "elderberry", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110];
+        Crop crop = [Name: "elderberry", Season: "Summer", WaterRequirement: 45, Yield: 75, SellPrice: 110];
         crop.noThisFunction();
         `;
         const tree2 = parseProgram(input2, false);
