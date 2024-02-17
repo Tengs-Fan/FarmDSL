@@ -68,8 +68,8 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         // child0: "Num", child1: "x", child2: "=", child3: "1", child4: ";"
         // Exmaple: Farm y;
         // child0: "Farm", child1: "y", child2: ";"
-        // Example: Farm myFarm = [Name: "myFarm", Area: 1200];
-        // child0: "Farm", child1: "myFarm", child2: "=",  child3: [Name: "myFarm", Area: 1200], child4: ;
+        // Example: Farm myFarm = [Name: "myFarm", Height: 1200];
+        // child0: "Farm", child1: "myFarm", child2: "=",  child3: [Name: "myFarm", Height: 1200], child4: ;
 
         const type = ctx.getChild(0).getText() as TypeStr;
         const name = ctx.getChild(1).getText();
@@ -277,7 +277,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
         return args;
     };
 
-    // Pairs: [Name: "myFarm", Area: 1200]
+    // Pairs: [Name: "myFarm", Height: 1200]
     // composed of multiple pairs
     visitPairs = (ctx: PairsContext) => {
         const pairs = new Pairs();

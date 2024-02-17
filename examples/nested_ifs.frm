@@ -1,4 +1,4 @@
-Farm myFarm = [Name: "myFarm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Fall"];
+Farm myFarm = [Name: "myFarm", Height: 10, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Fall"];
 
 if myFarm.isCropPlantable(Beet) {
     if myFarm.isCropPlantable(Cranberry) {
@@ -12,13 +12,13 @@ if myFarm.isCropPlantable(Beet) {
                     myFarm.plantFarm(Beet, 10);
                     myFarm.plantFarm(Cranberry, 10);
                     myFarm.plantFarm(Yam, 10);
-                    if (myFarm.cropQuantity(Grape) > 1000) {
-                        myFarm.plantFarm(Grape, myFarm.cropQuantity(Grape));
+                    if (myFarm.cropCapacity(Grape) > 1000) {
+                        myFarm.plantFarm(Grape, myFarm.cropCapacity(Grape));
                     } else {
                         if myFarm.isCropPlantable(Pumpkin) {
-                            myFarm.plantFarm(Pumpkin, myFarm.cropQuantity(Pumpkin));
+                            myFarm.plantFarm(Pumpkin, myFarm.cropCapacity(Pumpkin));
                         } else {
-                            myFarm.plantFarm(Yam, myFarm.cropQuantity(Yam));
+                            myFarm.plantFarm(Yam, myFarm.cropCapacity(Yam));
                         }
                     }
             }
@@ -26,7 +26,7 @@ if myFarm.isCropPlantable(Beet) {
     }
 }
  }else {
-    myFarm.plantFarm(Watermelon, myFarm.cropQuantity(Watermelon));
+    myFarm.plantFarm(Watermelon, myFarm.cropCapacity(Watermelon));
 }
 myFarm.displayFarm();
 
