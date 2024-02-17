@@ -16,9 +16,7 @@ describe("Farm tests", () => {
         it("farm planting is successful due to polyculture being true and multiple crop types planted", () => {
             const corn: Crop = new Crop({Name: "corn", Season: "Summer", WaterRequirement: 45, Yield: 75, SellPrice: 110});
             const apple: Crop = new Crop({Name: "apple", Season: "Summer", WaterRequirement: 45, Yield: 75, SellPrice: 110});
-            const farm: Farm = new Farm({Name: "farm", Height
-                    : 10
-                , Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"});
+            const farm: Farm = new Farm({Name: "farm", Height: 10, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"});
             const resultCorn = farm.plantFarm(corn, 5);
             const resultApple = farm.plantFarm(apple, 5);
             // expect(resultCorn).to.equal(true);
@@ -49,9 +47,7 @@ describe("Farm tests", () => {
         it("farm planting is not successful due to farm and crop having incompatible seasons", () => {
             const peach: Crop = new Crop({Name: "peach", Season: "Winter", WaterRequirement: 45, Yield: 75, SellPrice: 110});
             const apple: Crop = new Crop({Name: "apple", Season: "Summer", WaterRequirement: 45, Yield: 75, SellPrice: 110});
-            const farm: Farm = new Farm({Name: "farm", Height
-                    : 10
-                , Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"});
+            const farm: Farm = new Farm({Name: "farm", Height: 10, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"});
             let resultApple: boolean | Error | Farm;
             let resultPeach: boolean | Error | Farm;
 
@@ -69,7 +65,9 @@ describe("Farm tests", () => {
 
             expect(farm.Crops[0][0]).to.equal(apple);
             expect(resultPeach).to.be.an.instanceOf(Error);
-            expect((resultPeach as Error).message.trim()).to.equal("The farm and crop have incompatible seasons. peach's season is Winter, farm's season is Summer");
+            expect((resultPeach as Error).message.trim()).to.equal(
+                "The farm and crop have incompatible seasons. peach's season is Winter, farm's season is Summer",
+            );
             expect(farm.Crops[0][6]).to.equal(null);
         });
 
@@ -120,9 +118,7 @@ describe("Farm tests", () => {
     describe("Quantity of Crops", () => {
         it("farm quantity reduced by water budget", () => {
             const corn: Crop = new Crop({Name: "corn", Season: "Summer", WaterRequirement: 45, Yield: 75, SellPrice: 110});
-            const farm: Farm = new Farm({Name: "farm", Height
-                    : 10
-                , Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"});
+            const farm: Farm = new Farm({Name: "farm", Height: 10, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"});
             const quantity = farm.cropCapacity(corn);
             expect(quantity).to.equal(33);
             farm.plantFarm(corn, 10);
@@ -131,9 +127,7 @@ describe("Farm tests", () => {
         });
         it("farm quantity reduced by available space", () => {
             const corn: Crop = new Crop({Name: "corn", Season: "Summer", WaterRequirement: 4, Yield: 75, SellPrice: 110});
-            const farm: Farm = new Farm({Name: "farm", Height
-                    : 10
-                , Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"});
+            const farm: Farm = new Farm({Name: "farm", Height: 10, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"});
             const quantity = farm.cropCapacity(corn);
             expect(quantity).to.equal(100);
             farm.plantFarm(corn, 10);
@@ -145,9 +139,7 @@ describe("Farm tests", () => {
     describe("Possible Crop", () => {
         it("Polyculture false. Same Crop Planted. Season compatible", () => {
             const corn: Crop = new Crop({Name: "corn", Season: "Summer", WaterRequirement: 45, Yield: 75, SellPrice: 110});
-            const farm: Farm = new Farm({Name: "farm", Height
-                    : 10
-                , Width: 10, Polyculture: false, MaxWaterUsage: 1500, Season: "Summer"});
+            const farm: Farm = new Farm({Name: "farm", Height: 10, Width: 10, Polyculture: false, MaxWaterUsage: 1500, Season: "Summer"});
             const result = farm.isCropPlantable(corn);
             expect(result).to.equal(true);
             farm.plantFarm(corn, 10);
@@ -156,9 +148,7 @@ describe("Farm tests", () => {
         });
         it("Polyculture false. A Different Crop Planted. Season compatible", () => {
             const corn: Crop = new Crop({Name: "corn", Season: "Summer", WaterRequirement: 45, Yield: 75, SellPrice: 110});
-            const farm: Farm = new Farm({Name: "farm", Height
-                    : 10
-                , Width: 10, Polyculture: false, MaxWaterUsage: 1500, Season: "Summer"});
+            const farm: Farm = new Farm({Name: "farm", Height: 10, Width: 10, Polyculture: false, MaxWaterUsage: 1500, Season: "Summer"});
             const result = farm.isCropPlantable(corn);
             expect(result).to.equal(true);
             farm.plantFarm(corn, 10);
@@ -243,11 +233,7 @@ describe("Farm tests", () => {
                 padding + (padding + topBottomBorderVal.repeat(expectedMiddleCellLength - 2) + padding).repeat(farm.Width) + padding;
             const expectedCropCell = padding + corn.Name + padding;
             const firstCropRow =
-                leftRightBorderVal +
-                expectedCropCell +
-                expectedCropCell +
-                padding.repeat(expectedMiddleCellLength).repeat(farm.Width - 2) +
-                leftRightBorderVal;
+                leftRightBorderVal + expectedCropCell + expectedCropCell + padding.repeat(expectedMiddleCellLength).repeat(farm.Width - 2) + leftRightBorderVal;
             const remainingCropRows = Array.from(
                 {length: farm.Width - 1},
                 () => leftRightBorderVal + padding.repeat(expectedMiddleCellLength).repeat(farm.Width) + leftRightBorderVal,

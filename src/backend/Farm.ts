@@ -45,7 +45,9 @@ export class Farm {
 
         // If crop and farm seasonality do not match
         if (this.Season !== plantingCrop.Season) {
-            throw new Error(`The farm and crop have incompatible seasons. ${plantingCrop.Name}'s season is ${plantingCrop.Season}, ${this.Name}'s season is ${this.Season}`);
+            throw new Error(
+                `The farm and crop have incompatible seasons. ${plantingCrop.Name}'s season is ${plantingCrop.Season}, ${this.Name}'s season is ${this.Season}`,
+            );
         }
 
         // If farm does not have space
