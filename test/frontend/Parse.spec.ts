@@ -1,4 +1,4 @@
-import {expect, use} from "chai";
+import {expect} from "chai";
 
 import {parseProgram} from "../../src/frontend/Parse";
 

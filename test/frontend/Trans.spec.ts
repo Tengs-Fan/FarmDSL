@@ -1,7 +1,6 @@
-import {expect, use} from "chai";
+import {expect} from "chai";
 import fs from "fs";
 import path from "path";
-
 import {FunctionError} from "../../src/Error";
 import {Context} from "../../src/vm/Context";
 import {parseProgram} from "../../src/frontend/Parse";
