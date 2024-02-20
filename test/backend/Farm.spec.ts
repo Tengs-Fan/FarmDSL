@@ -189,20 +189,13 @@ describe("Farm tests", () => {
         const corn: Crop = new Crop({Name: "corn", Season: "Summer", WaterRequirement: 1, Yield: 75, SellPrice: 110});
         const strawberry: Crop = new Crop({Name: "strawberry", Season: "Summer", WaterRequirement: 1, Yield: 75, SellPrice: 110});
 
-        let farm: Farm, expectedTitle: string, expectedFarmMetadata: string;
+        let farm: Farm, expectedTitle: string;
 
         beforeEach(() => {
             logSpy = sinon.spy(console, "log");
 
             farm = new Farm({Name: "farm", Height: 10, Width: 10, Polyculture: true, MaxWaterUsage: 2500, Season: "Summer"});
             expectedTitle = `Name: ${farm.Name}`;
-            expectedFarmMetadata = [
-                `Height: ${farm.Height}`,
-                `Width: ${farm.Width}`,
-                `Max Water Usage: ${farm.MaxWaterUsage}`,
-                `Polyculture: ${farm.Polyculture}`,
-                `Season: ${farm.Season}`,
-            ].join("\n");
         });
 
         afterEach(() => {
@@ -218,6 +211,15 @@ describe("Farm tests", () => {
                 {length: farm.Width},
                 () => leftRightBorderVal + padding.repeat(defaultCellLength).repeat(farm.Width) + leftRightBorderVal,
             ).join("\n");
+            const expectedFarmMetadata = [
+                `Available Space: ${farm.AvailableSpace()}`,
+                `Height: ${farm.Height}`,
+                `Width: ${farm.Width}`,
+                `Current Water Usage: ${farm.getWaterUsageOfFarm()}`,
+                `Max Water Usage: ${farm.MaxWaterUsage}`,
+                `Polyculture: ${farm.Polyculture}`,
+                `Season: ${farm.Season}`,
+            ].join("\n");
             const expectedResult = [expectedTitle, expectedTopBottomBorder, expectedCropRows, expectedTopBottomBorder, expectedFarmMetadata].join("\n");
 
             farm.displayFarm();
@@ -238,6 +240,15 @@ describe("Farm tests", () => {
                 {length: farm.Width - 1},
                 () => leftRightBorderVal + padding.repeat(expectedMiddleCellLength).repeat(farm.Width) + leftRightBorderVal,
             ).join("\n");
+            const expectedFarmMetadata = [
+                `Available Space: ${farm.AvailableSpace()}`,
+                `Height: ${farm.Height}`,
+                `Width: ${farm.Width}`,
+                `Current Water Usage: ${farm.getWaterUsageOfFarm()}`,
+                `Max Water Usage: ${farm.MaxWaterUsage}`,
+                `Polyculture: ${farm.Polyculture}`,
+                `Season: ${farm.Season}`,
+            ].join("\n");
             const expectedResult = [
                 expectedTitle,
                 expectedTopBottomBorder,
@@ -279,6 +290,15 @@ describe("Farm tests", () => {
                 {length: farm.Width - 1},
                 () => leftRightBorderVal + padding.repeat(expectedMiddleCellLength).repeat(farm.Width) + leftRightBorderVal,
             ).join("\n");
+            const expectedFarmMetadata = [
+                `Available Space: ${farm.AvailableSpace()}`,
+                `Height: ${farm.Height}`,
+                `Width: ${farm.Width}`,
+                `Current Water Usage: ${farm.getWaterUsageOfFarm()}`,
+                `Max Water Usage: ${farm.MaxWaterUsage}`,
+                `Polyculture: ${farm.Polyculture}`,
+                `Season: ${farm.Season}`,
+            ].join("\n");
             const expectedResult = [
                 expectedTitle,
                 expectedTopBottomBorder,
@@ -318,7 +338,15 @@ describe("Farm tests", () => {
             const expectedStrawberryRows = Array.from({length: strawberryNumRows}, () =>
                 [leftRightBorderVal, expectedStrawberryCropCell.repeat(farm.Width), leftRightBorderVal].join(""),
             ).join("\n");
-
+            const expectedFarmMetadata = [
+                `Available Space: ${farm.AvailableSpace()}`,
+                `Height: ${farm.Height}`,
+                `Width: ${farm.Width}`,
+                `Current Water Usage: ${farm.getWaterUsageOfFarm()}`,
+                `Max Water Usage: ${farm.MaxWaterUsage}`,
+                `Polyculture: ${farm.Polyculture}`,
+                `Season: ${farm.Season}`,
+            ].join("\n");
             const expectedResult = [
                 expectedTitle,
                 expectedTopBottomBorder,
