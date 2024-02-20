@@ -2,6 +2,8 @@ import {Type} from "../ast/Type";
 import {Crop} from "./Crop";
 import {FunctionError} from "../Error";
 import logger from "../Log";
+import * as path from "path";
+import Jimp from "jimp";
 
 export class Farm {
     static propertiesMetadata = {
@@ -189,6 +191,23 @@ export class Farm {
         } else {
             throw new FunctionError(`Function ${funcName} does not exist in Farm class`);
         }
+    }
+
+    async displayFarmImage() {
+        const pathBase = "static";
+        const imagePaths = [`${pathBase}/strawberry.png`, `${pathBase}/horizontal-fence.png`];
+        const outputFilePath = `${pathBase}/farm.png`;
+
+        const images = imagePaths.map(async (img) => {
+            const image = await Jimp.read(img);
+            image.resize(10, 10);
+            return image;
+        });
+        const finalImage = new Jimp(1000, 1000);
+        for (const img of images) {
+            finalImage.composite(await img, 0, 0);
+        }
+        await finalImage.writeAsync(outputFilePath);
     }
 
     displayFarm() {
