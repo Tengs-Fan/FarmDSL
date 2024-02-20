@@ -28,7 +28,7 @@ describe("Farm tests", () => {
             const corn: Crop = new Crop({Name: "corn", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
             const apple: Crop = new Crop({Name: "apple", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110});
             const farm: Farm = new Farm({Name: "farm", Area: 1200, GridLength: 10, Polyculture: false, MaxWaterUsage: 1500, Season: "Summer"});
-            farm.plantFarm(corn, 5)
+            farm.plantFarm(corn, 5);
             expect(farm.Crops[0][0]).to.equal(corn);
             let resultApple: boolean | Error | Farm;
             try {
