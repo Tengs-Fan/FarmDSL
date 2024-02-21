@@ -1,5 +1,5 @@
-Farm mySummerFarm = [Name: "mySummerFarm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
-Farm myFallFarm = [Name: "myFallFarm", Area: 1200, GridLength: 8, Polyculture: true, MaxWaterUsage: 1500, Season: "Fall"];
+Farm mySummerFarm = [Name: "mySummerFarm", Height: 10, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
+Farm myFallFarm = [Name: "myFallFarm", Height: 10, Width: 8, Polyculture: true, MaxWaterUsage: 1500, Season: "Fall"];
 
 
 if myFallFarm.isCropPlantable(Beet) {
@@ -14,7 +14,7 @@ if myFallFarm.isCropPlantable(Strawberry) {
 } else {
     myFallFarm.plantFarm(Yam, 5);
 }
-Num pumpkinNum = myFallFarm.cropQuantity(Pumpkin);
+Num pumpkinNum = myFallFarm.cropCapacity(Pumpkin);
 myFallFarm.plantFarm(Pumpkin, pumpkinNum);
 
 
@@ -31,7 +31,7 @@ if mySummerFarm.isCropPlantable(Corn) {
     }
     mySummerFarm.plantFarm(Corn, 12);
 }
-Num melonQuant = mySummerFarm.cropQuantity(Watermelon);
+Num melonQuant = mySummerFarm.cropCapacity(Watermelon);
 if melonQuant > 10 {
     mySummerFarm.plantFarm(Watermelon, melonQuant);
 }

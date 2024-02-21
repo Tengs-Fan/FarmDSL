@@ -29,7 +29,7 @@ describe("transProgram", () => {
     });
 
     it("Instantiate a farm with valid parameters", () => {
-        const input = 'Farm farm = [Name: "myFarm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];';
+        const input = 'Farm farm = [Name: "myFarm", Height: 100, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];';
         const tree = parseProgram(input, false);
         const result = transProgram(tree, false);
         const context = new Context();
@@ -38,49 +38,49 @@ describe("transProgram", () => {
     });
 
     it("Instantiate a farm with missing Name", () => {
-        const input = 'Farm farm = [Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];';
+        const input = 'Farm farm = [Height: 100, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];';
         const tree = parseProgram(input, false);
         const result = transProgram(tree, false);
         expect(() => result.eval(new Context())).to.throw(/property Name is required/);
     });
 
-    it("Instantiate a farm with missing Area", () => {
-        const input = 'Farm farm = [Name: "myFarm", GridLength: 10, MaxWaterUsage: 1500, Season: "Summer"];';
+    it("Instantiate a farm with missing Height", () => {
+        const input = 'Farm farm = [Name: "myFarm", Width: 10, MaxWaterUsage: 1500, Season: "Summer"];';
         const tree = parseProgram(input, false);
         const result = transProgram(tree, false);
-        expect(() => result.eval(new Context())).to.throw(/property Area is required/);
+        expect(() => result.eval(new Context())).to.throw(/property Height is required/);
     });
 
-    it("Instantiate a farm with missing GridLength", () => {
-        const input = 'Farm farm = [Name: "myFarm", Area: 1200, MaxWaterUsage: 1500, Season: "Summer"];';
+    it("Instantiate a farm with missing Width", () => {
+        const input = 'Farm farm = [Name: "myFarm", Height: 120, MaxWaterUsage: 1500, Season: "Summer"];';
         const tree = parseProgram(input, false);
         const result = transProgram(tree, false);
-        expect(() => result.eval(new Context())).to.throw(/property GridLength is required/);
+        expect(() => result.eval(new Context())).to.throw(/property Width is required/);
     });
 
     it("Instantiate a farm with missing Polyculture", () => {
-        const input = 'Farm farm = [Name: "myFarm", Area: 1200, GridLength: 10, MaxWaterUsage: 1500, Season: "Summer"];';
+        const input = 'Farm farm = [Name: "myFarm", Height: 100, Width: 10, MaxWaterUsage: 1500, Season: "Summer"];';
         const tree = parseProgram(input, false);
         const result = transProgram(tree, false);
         expect(() => result.eval(new Context())).to.throw(/property Polyculture is required/);
     });
 
     it("Instantiate a farm with missing MaxWaterUsage", () => {
-        const input = 'Farm farm = [Name: "myFarm", Area: 1200, GridLength: 10, Polyculture: true, Season: "Summer"];';
+        const input = 'Farm farm = [Name: "myFarm", Height: 100, Width: 10, Polyculture: true, Season: "Summer"];';
         const tree = parseProgram(input, false);
         const result = transProgram(tree, false);
         expect(() => result.eval(new Context())).to.throw(/property MaxWaterUsage is required/);
     });
 
     it("Instantiate a farm with missing Season", () => {
-        const input = 'Farm farm = [Name: "myFarm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500];';
+        const input = 'Farm farm = [Name: "myFarm", Height: 100, Width: 10, Polyculture: true, MaxWaterUsage: 1500];';
         const tree = parseProgram(input, false);
         const result = transProgram(tree, false);
         expect(() => result.eval(new Context())).to.throw(/property Season is required/);
     });
 
     it("Instantiate a crop with valid parameters", () => {
-        const input = 'Crop crop = [Name: "elderberry", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110];';
+        const input = 'Crop crop = [Name: "elderberry", Season: "Summer", WaterRequirement: 45, Yield: 75, SellPrice: 110];';
         const tree = parseProgram(input, false);
         const result = transProgram(tree, false);
         const context = new Context();
@@ -90,7 +90,7 @@ describe("transProgram", () => {
 
     it("OOP function call for Farm and Crop is ok", () => {
         const input = `
-        Farm farm = [Name: "myFarm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
+        Farm farm = [Name: \"myFarm\", Height: 10, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: \"Summer\"];
         farm.OOPCallTest();
         `;
         const tree = parseProgram(input, false);
@@ -98,7 +98,7 @@ describe("transProgram", () => {
         expect(result.eval(new Context()).value).to.equal(114514);
 
         const input2 = `
-        Crop crop = [Name: "elderberry", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110];
+        Crop crop = [Name: "elderberry", Season: "Summer", WaterRequirement: 45, Yield: 75, SellPrice: 110];
         crop.OOPCallTest();
         `;
         const tree2 = parseProgram(input2, false);
@@ -108,7 +108,7 @@ describe("transProgram", () => {
 
     it("OOP function call for function not exist isn't ok", () => {
         const input = `
-        Farm farm = [Name: "myFarm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
+        Farm farm = [Name: \"myFarm\", Height: 10, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: \"Summer\"];
         farm.noThisFunction();
         `;
         const tree = parseProgram(input, false);
@@ -116,7 +116,7 @@ describe("transProgram", () => {
         expect(() => result.eval(new Context())).to.throw(/Function * does not exist in Farm class/);
 
         const input2 = `
-        Crop crop = [Name: "elderberry", Season: "Summer", Water: 45, Yield: 75, SellPrice: 110];
+        Crop crop = [Name: "elderberry", Season: "Summer", WaterRequirement: 45, Yield: 75, SellPrice: 110];
         crop.noThisFunction();
         `;
         const tree2 = parseProgram(input2, false);

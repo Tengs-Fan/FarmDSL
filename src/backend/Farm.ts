@@ -6,8 +6,8 @@ import logger from "../Log";
 export class Farm {
     static propertiesMetadata = {
         Name: {type: "String", required: true},
-        Area: {type: "Num", required: true},
-        GridLength: {type: "Num", required: true},
+        Height: {type: "Num", required: true},
+        Width: {type: "Num", required: true},
         Polyculture: {type: "Bool", required: true},
         MaxWaterUsage: {type: "Num", required: true},
         Season: {type: "String", required: true},
@@ -18,8 +18,8 @@ export class Farm {
     static properties = Object.keys(Farm.propertiesMetadata);
 
     Name: string;
-    Area: number;
-    GridLength: number;
+    Height: number;
+    Width: number;
     Polyculture: boolean;
     MaxWaterUsage: number;
     Season: "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
@@ -27,12 +27,12 @@ export class Farm {
 
     constructor(props: {[key: string]: Type}) {
         this.Name = props.Name as string;
-        this.Area = props.Area as number;
-        this.GridLength = props.GridLength as number;
+        this.Height = props.Height as number;
+        this.Width = props.Width as number;
         this.Polyculture = props.Polyculture as boolean;
         this.MaxWaterUsage = props.MaxWaterUsage as number;
         this.Season = props.Season as "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
-        this.Crops = Array.from({length: this.GridLength}, () => Array(this.GridLength).fill(null));
+        this.Crops = Array.from({length: this.Height}, () => Array(this.Width).fill(null));
     }
 
     getSeason(): "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None" {
@@ -41,7 +41,7 @@ export class Farm {
 
     plantFarm(plantingCrop: Crop, quantity: number): Farm {
         //If proposed plantation would exceed farm water capacity
-        const waterRequirementOfCrop: number = plantingCrop.Water * quantity;
+        const waterRequirementOfCrop: number = plantingCrop.WaterRequirement * quantity;
         const remainingWaterCapacity: number = this.MaxWaterUsage - this.getWaterUsageOfFarm();
         if (waterRequirementOfCrop > remainingWaterCapacity) {
             throw new Error(`The proposed planting would exceed farm's water capacity by ${waterRequirementOfCrop - remainingWaterCapacity}`);
@@ -49,12 +49,14 @@ export class Farm {
 
         // If crop and farm seasonality do not match
         if (this.Season !== plantingCrop.Season) {
-            throw new Error(`The farm and crop have incompatible seasons. Crop season is ${plantingCrop.Season}, Farm season is ${this.Season}`);
+            throw new Error(
+                `The farm and crop have incompatible seasons. ${plantingCrop.Name}'s season is ${plantingCrop.Season}, ${this.Name}'s season is ${this.Season}`,
+            );
         }
 
         // If farm does not have space
-        if (this.getEmptySlotCount() < quantity) {
-            throw new Error(`The farm does not have enough space. There are only ${this.getEmptySlotCount()} spaces available.`);
+        if (this.AvailableSpace() < quantity) {
+            throw new Error(`The farm does not have enough space. There are only ${this.AvailableSpace()} spaces available.`);
         }
 
         // If polyculture is false and another crop is already planted, throw error.
@@ -71,8 +73,8 @@ export class Farm {
 
     AvailableSpace(): number {
         let count: number = 0;
-        for (let x = 0; x < this.GridLength; x++) {
-            for (let y = 0; y < this.GridLength; y++) {
+        for (let x = 0; x < this.Height; x++) {
+            for (let y = 0; y < this.Width; y++) {
                 if (this.Crops[x][y] == null) {
                     count++;
                 }
@@ -95,20 +97,20 @@ export class Farm {
         return true;
     }
 
-    cropQuantity(plantingCrop: Crop): number {
-        const emptySlotsAvailable = this.getEmptySlotCount();
+    cropCapacity(plantingCrop: Crop): number {
+        const emptySlotsAvailable = this.AvailableSpace();
         const remainingWaterCapacity: number = this.MaxWaterUsage - this.getWaterUsageOfFarm();
-        const possibleQuantity = Math.floor(remainingWaterCapacity / plantingCrop.Water);
+        const possibleQuantity = Math.floor(remainingWaterCapacity / plantingCrop.WaterRequirement);
         const cropQuantity = Math.min(emptySlotsAvailable, possibleQuantity);
         return cropQuantity;
     }
 
     getWaterUsageOfFarm(): number {
         let waterUsage: number = 0;
-        for (let x = 0; x < this.GridLength; x++) {
-            for (let y = 0; y < this.GridLength; y++) {
+        for (let x = 0; x < this.Height; x++) {
+            for (let y = 0; y < this.Width; y++) {
                 if (this.Crops[x][y] != null) {
-                    waterUsage += this.Crops[x][y].Water;
+                    waterUsage += this.Crops[x][y].WaterRequirement;
                 }
             }
         }
@@ -117,8 +119,8 @@ export class Farm {
 
     private getUniqueCrops(): Crop[] {
         const uniqueCrops: Crop[] = [];
-        for (let x = 0; x < this.GridLength; x++) {
-            for (let y = 0; y < this.GridLength; y++) {
+        for (let x = 0; x < this.Height; x++) {
+            for (let y = 0; y < this.Width; y++) {
                 const currentCrop = this.Crops[x][y];
                 if (currentCrop !== null && !uniqueCrops.some((crop) => crop.Name === currentCrop.Name)) {
                     uniqueCrops.push(currentCrop);
@@ -126,18 +128,6 @@ export class Farm {
             }
         }
         return uniqueCrops;
-    }
-
-    private getEmptySlotCount(): number {
-        let emptyCount: number = 0;
-        for (let x = 0; x < this.GridLength; x++) {
-            for (let y = 0; y < this.GridLength; y++) {
-                if (this.Crops[x][y] == null) {
-                    emptyCount++;
-                }
-            }
-        }
-        return emptyCount;
     }
 
     private plantIfEmpty(x: number, y: number, aCrop: Crop): boolean {
@@ -156,8 +146,8 @@ export class Farm {
             throw new Error("Crop quantity cannot be negative.");
         }
         let quantityLeft: number = quantity;
-        for (let x = 0; x < this.GridLength; x++) {
-            for (let y = 0; y < this.GridLength; y++) {
+        for (let x = 0; x < this.Height; x++) {
+            for (let y = 0; y < this.Width; y++) {
                 if (quantityLeft == 0) {
                     return this;
                 }
@@ -178,12 +168,12 @@ export class Farm {
     }
 
     displayFarm() {
-        const farmLength: number = this.Crops[0].length;
-        const farmWidth: number = this.Crops.length;
+        const farmHeight: number = this.Crops.length;
+        const farmWidth: number = this.Crops[0].length;
 
-        const initialFarm: string[][] = Array.from({length: farmWidth}, () =>
+        const initialFarm: string[][] = Array.from({length: farmHeight}, () =>
             Array.from(
-                {length: farmLength + 2}, // Extra 2 cols for left-right borders
+                {length: farmWidth + 2}, // Extra 2 cols for left-right borders
                 () => "",
             ),
         );
@@ -228,9 +218,10 @@ export class Farm {
         // Format farm metadata
         const title: string = `Name: ${this.Name}`;
         const farmInfo: string = [
-            `Available Space: ${this.getEmptySlotCount()}`,
-            `Area: ${this.Area}`,
-            `Grid Length: ${this.GridLength}`,
+            `Available Space: ${this.AvailableSpace()}`,
+            `Height: ${this.Height}`,
+            `Width: ${this.Width}`,
+            `Current Water Usage: ${this.getWaterUsageOfFarm()}`,
             `Max Water Usage: ${this.MaxWaterUsage}`,
             `Polyculture: ${this.Polyculture}`,
             `Season: ${this.Season}`,
