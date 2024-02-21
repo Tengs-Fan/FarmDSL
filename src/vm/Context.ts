@@ -82,6 +82,14 @@ export class Context {
         return variable;
     }
 
+    removeVariable(name: string) {
+        const variable = this.variables.get(name);
+        if (variable === undefined) {
+            throw new VariableError(`The Variable ${name} to be deleted does not exist`);
+        }
+        this.variables.delete(name);
+    }
+
     private getAllInstaceOfType(type: TypeStr): Type[] {
         const allVarOfType: Type[] = [];
 
