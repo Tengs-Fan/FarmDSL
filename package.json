@@ -7,9 +7,15 @@
       "license": "MIT",
       "dependencies": {
             "@types/antlr4": "^4.11.6",
+            "@types/merge-images": "^1.2.4",
+            "@types/mocha": "^10.0.6",
             "@types/node": "^20.11.16",
             "@types/yargs": "^17.0.32",
             "antlr4": "^4.13.1",
+            "canvas": "^2.11.2",
+            "merge-images": "^2.0.0",
+            "prettier": "^3.2.4",
+            "split2": "^4.2.0",
             "winston": "^3.11.0",
             "yargs": "^17.7.2"
       },
