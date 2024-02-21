@@ -281,7 +281,7 @@ export class TransVisitor extends FarmExprVisitor<ASTNode> {
                         return new BinaryExpression("Or", left, right);
                     case ".":
                         if (!(right instanceof CallExpression)) throw new Error("Right expression should be CallExpression");
-                        return new OOPCallExpression(left, (right as CallExpression).name, (right as CallExpression).args);
+                        return new OOPCallExpression(new NameExpression(ctx.getChild(0).getText()), (right as CallExpression).name, (right as CallExpression).args);
                     default:
                         throw new Error(`Unknown operator ${op}`);
                 }
