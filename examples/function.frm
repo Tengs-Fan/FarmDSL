@@ -1,4 +1,4 @@
-Farm myFarm = [Name: "myFarm", Area: 1200, GridLength: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
+Farm myFarm = [Name: "myFarm", Height: 100, Width: 20, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
 
 def isOkToPlant(c: Crop, f: Farm) -> Bool {
     Bool canPlant = false;

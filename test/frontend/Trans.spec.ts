@@ -121,7 +121,7 @@ describe("transProgram", () => {
         `;
         const tree2 = parseProgram(input2, false);
         const result2 = transProgram(tree2, false);
-        expect(() => result2.eval(new Context())).to.throw(/Function * does not exist in Farm class/);
+        expect(() => result2.eval(new Context())).to.throw(/Function * does not exist in Crop class/);
     });
 
     it("OOP function fro other type isn't ok ", () => {
