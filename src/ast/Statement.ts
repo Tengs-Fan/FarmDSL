@@ -167,6 +167,8 @@ export class LoopStatement implements ASTNode {
             this.loopBody.eval(ctx);
         });
 
+        ctx.removeVariable(this.current);
+
         return new Result("Null", null);
     }
 }

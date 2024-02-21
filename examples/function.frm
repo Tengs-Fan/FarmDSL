@@ -15,4 +15,12 @@ for c in Crops {
     }
 }
 
+Num totalYield = 0;
+
+for c in myFarm {
+    totalYield = totalYield + c.getYield();
+}
+
+echo(totalYield);
+
 myFarm.displayFarm();
