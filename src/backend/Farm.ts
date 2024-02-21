@@ -2,8 +2,10 @@ import {Type} from "../ast/Type";
 import {Crop} from "./Crop";
 import {FunctionError} from "../Error";
 import logger from "../Log";
-import * as path from "path";
-import Jimp from "jimp";
+import mergeImages from "merge-images";
+import {createCanvas, loadImage, Canvas, Image} from "canvas";
+import fs from "fs";
+import path from "path";
 
 export class Farm {
     static propertiesMetadata = {
@@ -193,21 +195,80 @@ export class Farm {
         }
     }
 
-    async displayFarmImage() {
-        const pathBase = "static";
-        const imagePaths = [`${pathBase}/strawberry.png`, `${pathBase}/horizontal-fence.png`];
-        const outputFilePath = `${pathBase}/farm.png`;
-
-        const images = imagePaths.map(async (img) => {
-            const image = await Jimp.read(img);
-            image.resize(10, 10);
-            return image;
+    private createBackground(imagesDir: string, imageWidth: number, imageHeight: number) {
+        const canvas = createCanvas(imageWidth, imageHeight);
+        const context = canvas.getContext("2d");
+        loadImage(path.join(imagesDir, "original-background.png")).then((img) => {
+            context.drawImage(img, 0, 0, imageWidth, imageHeight);
+            const buffer = canvas.toBuffer("image/png");
+            fs.writeFileSync(path.join(imagesDir, "background.png"), buffer);
         });
-        const finalImage = new Jimp(1000, 1000);
-        for (const img of images) {
-            finalImage.composite(await img, 0, 0);
+    }
+
+    displayFarmImage() {
+        const farmLength: number = this.Crops[0].length;
+        const farmWidth: number = this.Crops.length;
+        const imagesDir = path.join(__dirname, "../static");
+        const images: Set<string> = new Set(fs.readdirSync(imagesDir));
+        const barnOffset: number = 2;
+        const fenceOffset: number = 1;
+
+        // Extra 2 for top-bottom fences
+        // Extra 2 for barn
+        const imageWidth = (farmWidth + barnOffset + 2 * fenceOffset) * 100;
+        // Extra 2 for top-bottom fences
+        const imageHeight = (farmLength + barnOffset + 2 * fenceOffset) * 100;
+
+        const barn = {
+            src: path.join(imagesDir, "barn.png"),
+            x: 0,
+            y: 0,
+        };
+        const plantedCrops = this.Crops.map((row, r) =>
+            row.map((col, c) => {
+                const imageName = `${this.Crops[r][c] === null ? "empty" : this.Crops[r][c].Name.toLowerCase()}.png`;
+                const imagePath = path.join(imagesDir, images.has(imageName) ? imageName : "custom.png");
+                return {
+                    src: imagePath,
+                    x: (c + fenceOffset) * 100,
+                    y: (r + fenceOffset + barnOffset) * 100,
+                };
+            }),
+        );
+
+        const horizontalFences = [];
+        for (let i = 0; i < 2; i++) {
+            for (let j = 1; j < farmLength + fenceOffset; j++) {
+                horizontalFences.push({
+                    src: path.join(imagesDir, `${i == 0 ? "top" : "bottom"}-horizontal-fence.png`),
+                    x: j * 100,
+                    y: i == 0 ? barnOffset * 100 : (farmWidth + fenceOffset + barnOffset) * 100,
+                });
+            }
         }
-        await finalImage.writeAsync(outputFilePath);
+
+        const verticalFences = [];
+        for (let i = 0; i < 2; i++) {
+            for (let j = 1; j < farmWidth + fenceOffset; j++) {
+                verticalFences.push({
+                    src: path.join(imagesDir, `${i == 0 ? "left" : "right"}-vertical-fence.png`),
+                    x: i == 0 ? 0 : (farmLength + fenceOffset) * 100,
+                    y: (j + barnOffset) * 100,
+                });
+            }
+        }
+        const outputFilePath = `${imagesDir}/farm.png`;
+        const imagePaths = [barn, ...plantedCrops.flat(), ...horizontalFences.flat(), ...verticalFences.flat()];
+        mergeImages(imagePaths, {
+            Canvas: Canvas,
+            Image: Image,
+            width: imageWidth,
+            height: imageHeight,
+        }).then((b64) => {
+            const data = b64.split(",")[1];
+            const binaryData = Buffer.from(data, "base64");
+            fs.writeFileSync(outputFilePath, binaryData);
+        });
     }
 
     displayFarm() {
