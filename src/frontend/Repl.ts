@@ -45,7 +45,6 @@ function toggleVerbose(oldVerbose: boolean): boolean {
 
 export function runRepl(verbose = false) {
     loadHistory();
-
     rl.question("> ", (input) => {
         switch (input) {
             case "exit":

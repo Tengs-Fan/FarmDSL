@@ -1,4 +1,4 @@
-import {expect, use} from "chai";
+import {expect} from "chai";
 import {Context} from "../../src/vm/Context";
 import {parseProgram} from "../../src/frontend/Parse";
 import {transProgram} from "../../src/frontend/Trans";
