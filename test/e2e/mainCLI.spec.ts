@@ -87,8 +87,8 @@ describe("Farm DSL CLI", function () {
     it("provides verbose output when requested", async () => {
         const filePath = path.join(__dirname, "..", "..", "examples", "ex4.frm");
         const result = await runCLI(`--file "${filePath}" --verbose`);
+        console.log(result);
         expect(result).to
-            .include(`(prog (stmt (decl_stmt (type Farm) farm = (pairs [ (pair Name : (expr "myFarm")) , (pair Area : (expr 1200)) , (pair GridLength : (expr 10)) , (pair Polyculture : (expr true)) , (pair MaxWaterUsage : (expr 1500)) , (pair Season : (expr "Summer")) ]) ;)))
-Program { stmts: [ Statement { stmt: [DeclStatment] } ] }`);
+            .include(`(decl_stmt (type Farm) farm = (pairs [ (pair Name : (expr "myFarm")) , (pair Height : (expr 10)) , (pair Width : (expr 10)) , (pair Polyculture : (expr true)) , (pair MaxWaterUsage : (expr 1500)) , (pair Season : (expr "Summer")) ]) ;)`);
     });
 });

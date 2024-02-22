@@ -85,7 +85,7 @@ export class Context {
     private getAllInstaceOfType(type: TypeStr): Type[] {
         const allVarOfType: Type[] = [];
 
-        for (const [_, variable] of this.variables) {
+        for (const [, variable] of this.variables) {
             if (variable.type === type) {
                 allVarOfType.push(variable.value);
             }

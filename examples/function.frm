@@ -1,16 +1,18 @@
+Farm myFarm = [Name: "myFarm", Height: 100, Width: 20, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
 
-def whatever(number: Num) -> Num {
-    return number * 2;
+def isOkToPlant(c: Crop, f: Farm) -> Bool {
+    Bool canPlant = false;
+    if (c.getYield() > 3) and (c.getSeason() == f.getSeason()) {
+        canPlant = true;
+    }
+    return canPlant;
 }
 
-def however() {
-    Num a = 1;
-    a = a * 2;
+
+for c in Crops {
+    if isOkToPlant(c, myFarm) {
+        myFarm.plantFarm(c, 8);
+    }
 }
 
-def whatsoever(name: Num, number: Num, ok: Bool) -> Bool {
-    return false;
-}
-
-Farm myFarm = [Name: "myFarm", Height: 10, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
-Crop myCrop = [Name: "elderberry", Season: "Summer", WaterRequirement: 45, Yield: 75, SellPrice: 110];
+myFarm.displayFarm();

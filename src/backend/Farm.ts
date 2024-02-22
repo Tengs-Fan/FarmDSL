@@ -35,6 +35,10 @@ export class Farm {
         this.Crops = Array.from({length: this.Height}, () => Array(this.Width).fill(null));
     }
 
+    getSeason(): "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None" {
+        return this.Season;
+    }
+
     plantFarm(plantingCrop: Crop, quantity: number): Farm {
         //If proposed plantation would exceed farm water capacity
         const waterRequirementOfCrop: number = plantingCrop.WaterRequirement * quantity;

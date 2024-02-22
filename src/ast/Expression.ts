@@ -31,7 +31,7 @@ export class OOPCallExpression extends Expression {
     }
 
     eval(ctx: Context): Result {
-        const obj = this.varName.eval(ctx).value as Type;
+        const obj = this.varName.eval(ctx).value;
         if (obj === null) {
             throw new ExprError("The object is null");
         } else if (typeof obj === "string" || typeof obj === "number" || typeof obj === "boolean") {
@@ -158,6 +158,10 @@ export class BinaryExpression extends Expression {
                 return new Result("Bool", leftResult.value < rightResult.value);
             case "Lte":
                 return new Result("Bool", leftResult.value <= rightResult.value);
+            case "And":
+                return new Result("Bool", leftResult.value && rightResult.value);
+            case "Or":
+                return new Result("Bool", leftResult.value || rightResult.value);
             default:
                 throw new ExprError("Unknown binary expression type: " + this.type);
         }

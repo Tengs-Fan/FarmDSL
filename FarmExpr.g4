@@ -1,7 +1,11 @@
 grammar FarmExpr;
 
+func: 'def' NAME '(' (parameter)? (',' parameter)* ')' ('->' type)? '{' prog '}' ;
+
+parameter: NAME ':' type ;
+
 // A program is a bunch of statements
-prog: stmt* ;
+prog: (stmt | func)* ;
 
 stmt: decl_stmt
     | if_stmt
@@ -45,18 +49,19 @@ type: 'Num'
 // Function call
 call_expr: NAME '(' args? ')' ;
 
-expr:   expr '.' call_expr
-      | expr op=( 'and' | 'or' | 'not' ) expr
+
+expr: '(' expr ')'
+      | expr op=( 'and' | 'or' ) expr
       | expr op=('*'|'/') expr
       | expr op=('+'|'-') expr
       | expr op=( '!=' | '==' | '>=' | '<=' | '<' | '>' ) expr
       | call_expr
+      | NAME '.' call_expr
       | BOOL
       | INT
       | FLOAT
       | NAME
       | STRING
-      | '(' expr ')'
       ;
 
 // Tokens
