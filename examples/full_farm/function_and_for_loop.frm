@@ -1,4 +1,4 @@
-Farm myFarm = [Name: "myFarm", Height: 100, Width: 20, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
+Farm myFarm = [Name: "myFarm", Height: 10, Width: 20, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
 
 def isOkToPlant(c: Crop, f: Farm) -> Bool {
     Bool canPlant = false;
@@ -15,4 +15,10 @@ for c in Crops {
     }
 }
 
+Num totalYield = 0;
+for d in myFarm {
+    totalYield = totalYield + d.getYield();
+}
+
 myFarm.displayFarm();
+echo(totalYield);
