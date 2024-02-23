@@ -6,6 +6,8 @@ import mergeImages from "merge-images";
 import {createCanvas, loadImage, Canvas, Image} from "canvas";
 import fs from "fs";
 import path from "path";
+import {exec} from "child_process";
+import {platform} from "os";
 
 export class Farm {
     static propertiesMetadata = {
@@ -205,7 +207,7 @@ export class Farm {
         });
     }
 
-    displayFarmImage() {
+    displayFarm() {
         const farmLength: number = this.Crops[0].length;
         const farmWidth: number = this.Crops.length;
         const imagesDir = path.join(__dirname, "../static");
@@ -221,44 +223,15 @@ export class Farm {
 
         const barn = {
             src: path.join(imagesDir, "barn.png"),
-            x: 0,
-            y: 0,
+            x: 50,
+            y: 50,
         };
-        const plantedCrops = this.Crops.map((row, r) =>
-            row.map((col, c) => {
-                const imageName = `${this.Crops[r][c] === null ? "empty" : this.Crops[r][c].Name.toLowerCase()}.png`;
-                const imagePath = path.join(imagesDir, images.has(imageName) ? imageName : "custom.png");
-                return {
-                    src: imagePath,
-                    x: (c + fenceOffset) * 100,
-                    y: (r + fenceOffset + barnOffset) * 100,
-                };
-            }),
-        );
-
-        const horizontalFences = [];
-        for (let i = 0; i < 2; i++) {
-            for (let j = 1; j < farmLength + fenceOffset; j++) {
-                horizontalFences.push({
-                    src: path.join(imagesDir, `${i == 0 ? "top" : "bottom"}-horizontal-fence.png`),
-                    x: j * 100,
-                    y: i == 0 ? barnOffset * 100 : (farmWidth + fenceOffset + barnOffset) * 100,
-                });
-            }
-        }
-
-        const verticalFences = [];
-        for (let i = 0; i < 2; i++) {
-            for (let j = 1; j < farmWidth + fenceOffset; j++) {
-                verticalFences.push({
-                    src: path.join(imagesDir, `${i == 0 ? "left" : "right"}-vertical-fence.png`),
-                    x: i == 0 ? 0 : (farmLength + fenceOffset) * 100,
-                    y: (j + barnOffset) * 100,
-                });
-            }
-        }
-        const outputFilePath = `${imagesDir}/farm.png`;
+        const plantedCrops = this.getPlantedCropImages(imagesDir, images, fenceOffset, barnOffset);
+        const horizontalFences = this.getHorizontalFenceImages(farmLength, fenceOffset, imagesDir, barnOffset, farmWidth);
+        const verticalFences = this.getVerticalFenceImages(farmWidth, fenceOffset, imagesDir, farmLength, barnOffset);
+        const outputFilePath = path.join(imagesDir, "farm.png");
         const imagePaths = [barn, ...plantedCrops.flat(), ...horizontalFences.flat(), ...verticalFences.flat()];
+
         mergeImages(imagePaths, {
             Canvas: Canvas,
             Image: Image,
@@ -269,9 +242,77 @@ export class Farm {
             const binaryData = Buffer.from(data, "base64");
             fs.writeFileSync(outputFilePath, binaryData);
         });
+        this.openImage(outputFilePath);
     }
 
-    displayFarm() {
+    private getVerticalFenceImages(farmWidth: number, fenceOffset: number, imagesDir: string, farmLength: number, barnOffset: number) {
+        const verticalFences = [];
+        for (let i = 0; i < 2; i++) {
+            for (let j = 1; j < farmWidth + fenceOffset; j++) {
+                verticalFences.push({
+                    src: path.join(imagesDir, `${i == 0 ? "left" : "right"}-vertical-fence.png`),
+                    x: i == 0 ? 0 : (farmLength + fenceOffset) * 100,
+                    y: (j + barnOffset) * 100,
+                });
+            }
+        }
+        return verticalFences;
+    }
+
+    private getHorizontalFenceImages(farmLength: number, fenceOffset: number, imagesDir: string, barnOffset: number, farmWidth: number) {
+        const horizontalFences = [];
+        for (let i = 0; i < 2; i++) {
+            for (let j = 1; j < farmLength + fenceOffset; j++) {
+                horizontalFences.push({
+                    src: path.join(imagesDir, `${i == 0 ? "top" : "bottom"}-horizontal-fence.png`),
+                    x: j * 100,
+                    y: i == 0 ? barnOffset * 100 : (farmWidth + fenceOffset + barnOffset) * 100,
+                });
+            }
+        }
+        return horizontalFences;
+    }
+
+    private getPlantedCropImages(imagesDir: string, images: Set<string>, fenceOffset: number, barnOffset: number) {
+        return this.Crops.map((row, r) =>
+            row.map((col, c) => {
+                const imageName = `${this.Crops[r][c] === null ? "empty" : this.Crops[r][c].Name.toLowerCase()}.png`;
+                const imagePath = path.join(imagesDir, images.has(imageName) ? imageName : "custom.png");
+                return {
+                    src: imagePath,
+                    x: (c + fenceOffset) * 100,
+                    y: (r + fenceOffset + barnOffset) * 100,
+                };
+            }),
+        );
+    }
+
+    private openImage(imagePath: string) {
+        let command;
+        switch (platform()) {
+            case "win32": // Windows
+                command = `start ${imagePath}`;
+                break;
+            case "darwin": // macOS
+                command = `open ${imagePath}`;
+                break;
+            case "linux": // Linux
+                command = `xdg-open ${imagePath}`;
+                break;
+            default:
+                throw new Error(`Unsupported platform: ${platform()}`);
+        }
+
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                logger.error(`Error opening image: ${error.message}`);
+                return;
+            }
+            logger.info(`Image opened: ${stdout}`);
+        });
+    }
+
+    displayFarmConsole() {
         const farmHeight: number = this.Crops.length;
         const farmWidth: number = this.Crops[0].length;
 
@@ -292,22 +333,7 @@ export class Farm {
         const padding = " ";
 
         // Format crop cells and left-right borders
-        const formattedFarm = initialFarm
-            .map((row, r) =>
-                row
-                    .map((col, c) => {
-                        if (c === 0 || c === farmWidth + 1) {
-                            return "|";
-                        } else {
-                            const val = this.Crops[r][c - 1] === null ? "" : this.Crops[r][c - 1]!.Name;
-                            const leftPadding = padding.repeat(Math.floor((middleCellLength - val.length) / 2));
-                            const rightPadding = padding.repeat(middleCellLength - val.length - leftPadding.length);
-                            return leftPadding + val + rightPadding;
-                        }
-                    })
-                    .join(""),
-            )
-            .join("\n");
+        const formattedFarm = this.getFormattedFarm(initialFarm, farmWidth, padding, middleCellLength);
 
         // Format top-bottom borders
         const topBottomBorder: string = Array.from({length: farmWidth + 2}, (row, i) => {
@@ -333,6 +359,25 @@ export class Farm {
 
         // Join everything together
         console.log([title, topBottomBorder, formattedFarm, topBottomBorder, farmInfo].join("\n"));
+    }
+
+    private getFormattedFarm(initialFarm: string[][], farmWidth: number, padding: string, middleCellLength: number) {
+        return initialFarm
+            .map((row, r) =>
+                row
+                    .map((col, c) => {
+                        if (c === 0 || c === farmWidth + 1) {
+                            return "|";
+                        } else {
+                            const val = this.Crops[r][c - 1] === null ? "" : this.Crops[r][c - 1]!.Name;
+                            const leftPadding = padding.repeat(Math.floor((middleCellLength - val.length) / 2));
+                            const rightPadding = padding.repeat(middleCellLength - val.length - leftPadding.length);
+                            return leftPadding + val + rightPadding;
+                        }
+                    })
+                    .join(""),
+            )
+            .join("\n");
     }
 
     OOPCallTest(): number {
