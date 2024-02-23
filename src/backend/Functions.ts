@@ -5,7 +5,7 @@ import {Context} from "../vm/Context";
 import {Farm} from "./Farm";
 import {Crop} from "./Crop";
 
-function show(obj: Farm | Crop | boolean) {
+function show(obj: Farm | Crop | boolean | string) {
     console.log(obj);
 }
 
@@ -61,6 +61,16 @@ const functions: {
     ),
     showCrop: new InlineFunction(
         ["Crop"], // Args
+        "Null", // Return
+        show,
+    ),
+    showStr: new InlineFunction(
+        ["String"], // Args
+        "Null", // Return
+        show,
+    ),
+    showNum: new InlineFunction(
+        ["Num"], // Args
         "Null", // Return
         show,
     ),
