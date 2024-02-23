@@ -4,7 +4,6 @@ import {parseProgram} from "../../src/frontend/Parse";
 import {transProgram} from "../../src/frontend/Trans";
 
 describe("Loop", () => {
-
     it("Should be able to define a function with a for loop", () => {
         const text = `
             Farm myFarm = [Name: "myFarm", Height: 10, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
@@ -38,5 +37,4 @@ describe("Loop", () => {
         const result = program.eval(context);
         expect(result.value).to.equal(672);
     });
-
 });
