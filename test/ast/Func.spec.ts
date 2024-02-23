@@ -82,5 +82,4 @@ describe("transProgram", () => {
         const result = program.eval(context);
         expect(result.value).to.equal(3);
     });
-
 });
