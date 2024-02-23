@@ -222,13 +222,13 @@ describe("Farm tests", () => {
             ].join("\n");
             const expectedResult = [expectedTitle, expectedTopBottomBorder, expectedCropRows, expectedTopBottomBorder, expectedFarmMetadata].join("\n");
 
-            farm.displayFarm();
+            farm.displayFarmConsole();
             expect(logSpy.firstCall.args[0]).to.equal(expectedResult);
         });
 
         it("Should display farm with one crop type planted correctly", () => {
             farm.plantFarm(corn, 2);
-            farm.displayFarm();
+            farm.displayFarmConsole();
             const expectedMiddleCellLength = corn.Name.length + 2;
 
             const expectedTopBottomBorder =
@@ -267,7 +267,7 @@ describe("Farm tests", () => {
 
             farm.plantFarm(corn, cornQuantity);
             farm.plantFarm(strawberry, strawberryQuantity);
-            farm.displayFarm();
+            farm.displayFarmConsole();
 
             const expectedMiddleCellLength = Math.max(strawberry.Name.length, corn.Name.length) + 2;
 
@@ -319,7 +319,7 @@ describe("Farm tests", () => {
 
             farm.plantFarm(corn, cornQuantity);
             farm.plantFarm(strawberry, strawberryQuantity);
-            farm.displayFarm();
+            farm.displayFarmConsole();
 
             const expectedMiddleCellLength = Math.max(strawberry.Name.length, corn.Name.length) + 2;
 
