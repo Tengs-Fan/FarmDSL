@@ -13,14 +13,14 @@ export class Crop {
     static properties = Object.keys(Crop.propertiesMetadata);
 
     Name: string;
-    Season: "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
+    Season: "Spring" | "Summer" | "Fall" | "Winter" | "All";
     WaterRequirement: number;
     Yield: number;
     SellPrice: number;
 
     constructor(props: {[key: string]: Type}) {
         this.Name = props.Name as string;
-        this.Season = props.Season as "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
+        this.Season = props.Season as "Spring" | "Summer" | "Fall" | "Winter" | "All";
         this.WaterRequirement = props.WaterRequirement as number;
         this.Yield = props.Yield as number;
         this.SellPrice = props.SellPrice as number;
@@ -30,7 +30,19 @@ export class Crop {
         return this.Yield;
     }
 
-    getSeason(): "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None" {
+    getName(): string {
+        return this.Name;
+    }
+
+    getWater(): number {
+        return this.WaterRequirement;
+    }
+
+    getPrice(): number {
+        return this.SellPrice;
+    }
+
+    getSeason(): "Spring" | "Summer" | "Fall" | "Winter" | "All" {
         return this.Season;
     }
 

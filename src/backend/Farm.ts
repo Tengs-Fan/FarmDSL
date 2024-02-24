@@ -22,7 +22,7 @@ export class Farm {
     Width: number;
     Polyculture: boolean;
     MaxWaterUsage: number;
-    Season: "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
+    Season: "Spring" | "Summer" | "Fall" | "Winter" | "All";
     Crops: Crop[][];
 
     constructor(props: {[key: string]: Type}) {
@@ -31,12 +31,36 @@ export class Farm {
         this.Width = props.Width as number;
         this.Polyculture = props.Polyculture as boolean;
         this.MaxWaterUsage = props.MaxWaterUsage as number;
-        this.Season = props.Season as "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
+        this.Season = props.Season as "Spring" | "Summer" | "Fall" | "Winter" | "All";
         this.Crops = Array.from({length: this.Height}, () => Array(this.Width).fill(null));
     }
 
-    getSeason(): "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None" {
+    getSeason(): "Spring" | "Summer" | "Fall" | "Winter" | "All" {
         return this.Season;
+    }
+
+    getName(): string {
+        return this.Name;
+    }
+
+    getHeight(): number {
+        return this.Height;
+    }
+
+    getWidth(): number {
+        return this.Width;
+    }
+
+    getPolyculture(): boolean {
+        return this.Polyculture;
+    }
+
+    getMaxWaterCapacity(): number {
+        return this.MaxWaterUsage;
+    }
+
+    getCrops(): Crop[][] {
+        return this.Crops;
     }
 
     plantFarm(plantingCrop: Crop, quantity: number): Farm {
@@ -55,8 +79,8 @@ export class Farm {
         }
 
         // If farm does not have space
-        if (this.AvailableSpace() < quantity) {
-            throw new Error(`The farm does not have enough space. There are only ${this.AvailableSpace()} spaces available.`);
+        if (this.availableSpace() < quantity) {
+            throw new Error(`The farm does not have enough space. There are only ${this.availableSpace()} spaces available.`);
         }
 
         // If polyculture is false and another crop is already planted, throw error.
@@ -71,7 +95,7 @@ export class Farm {
         return result;
     }
 
-    AvailableSpace(): number {
+    availableSpace(): number {
         let count: number = 0;
         for (let x = 0; x < this.Height; x++) {
             for (let y = 0; y < this.Width; y++) {
@@ -98,7 +122,7 @@ export class Farm {
     }
 
     cropCapacity(plantingCrop: Crop): number {
-        const emptySlotsAvailable = this.AvailableSpace();
+        const emptySlotsAvailable = this.availableSpace();
         const remainingWaterCapacity: number = this.MaxWaterUsage - this.getWaterUsageOfFarm();
         const possibleQuantity = Math.floor(remainingWaterCapacity / plantingCrop.WaterRequirement);
         const cropQuantity = Math.min(emptySlotsAvailable, possibleQuantity);
@@ -218,7 +242,7 @@ export class Farm {
         // Format farm metadata
         const title: string = `Name: ${this.Name}`;
         const farmInfo: string = [
-            `Available Space: ${this.AvailableSpace()}`,
+            `Available Space: ${this.availableSpace()}`,
             `Height: ${this.Height}`,
             `Width: ${this.Width}`,
             `Current Water Usage: ${this.getWaterUsageOfFarm()}`,
