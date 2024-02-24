@@ -9,6 +9,12 @@ import path from "path";
 import {exec} from "child_process";
 import {platform} from "os";
 
+type MergeImageSrc = {
+    src: string;
+    x: number;
+    y: number;
+};
+
 export class Farm {
     static propertiesMetadata = {
         Name: {type: "String", required: true},
@@ -197,55 +203,52 @@ export class Farm {
         }
     }
 
-    private createBackground(imagesDir: string, imageWidth: number, imageHeight: number) {
-        const canvas = createCanvas(imageWidth, imageHeight);
-        const context = canvas.getContext("2d");
-        loadImage(path.join(imagesDir, "original-background.png")).then((img) => {
-            context.drawImage(img, 0, 0, imageWidth, imageHeight);
-            const buffer = canvas.toBuffer("image/png");
-            fs.writeFileSync(path.join(imagesDir, "background.png"), buffer);
-        });
-    }
-
     displayFarm() {
-        const farmLength: number = this.Crops[0].length;
-        const farmWidth: number = this.Crops.length;
-        const imagesDir = path.join(__dirname, "../static");
-        const images: Set<string> = new Set(fs.readdirSync(imagesDir));
-        const barnOffset: number = 2;
-        const fenceOffset: number = 1;
-
-        // Extra 2 for top-bottom fences
-        // Extra 2 for barn
-        const imageWidth = (farmWidth + barnOffset + 2 * fenceOffset) * 100;
-        // Extra 2 for top-bottom fences
-        const imageHeight = (farmLength + barnOffset + 2 * fenceOffset) * 100;
-
-        const barn = {
-            src: path.join(imagesDir, "barn.png"),
-            x: 50,
-            y: 50,
-        };
-        const plantedCrops = this.getPlantedCropImages(imagesDir, images, fenceOffset, barnOffset);
-        const horizontalFences = this.getHorizontalFenceImages(farmLength, fenceOffset, imagesDir, barnOffset, farmWidth);
-        const verticalFences = this.getVerticalFenceImages(farmWidth, fenceOffset, imagesDir, farmLength, barnOffset);
-        const outputFilePath = path.join(imagesDir, "farm.png");
-        const imagePaths = [barn, ...plantedCrops.flat(), ...horizontalFences.flat(), ...verticalFences.flat()];
-
-        mergeImages(imagePaths, {
+        const srcDir = path.join(__dirname, "../static");
+        const outputConfig = this.getDisplayFarmOutputConfig(srcDir);
+        const outputPath = path.join(srcDir, "farm.png");
+        mergeImages(outputConfig.srcList, {
             Canvas: Canvas,
             Image: Image,
-            width: imageWidth,
-            height: imageHeight,
+            width: outputConfig.outputWidth,
+            height: outputConfig.outputHeight,
         }).then((b64) => {
             const data = b64.split(",")[1];
             const binaryData = Buffer.from(data, "base64");
-            fs.writeFileSync(outputFilePath, binaryData);
+            fs.writeFileSync(outputPath, binaryData);
         });
-        this.openImage(outputFilePath);
+        this.openImage(outputPath);
     }
 
-    private getVerticalFenceImages(farmWidth: number, fenceOffset: number, imagesDir: string, farmLength: number, barnOffset: number) {
+    public getDisplayFarmOutputConfig(srcDir: string) {
+        const farmHeight: number = this.Crops[0].length;
+        const farmWidth: number = this.Crops.length;
+        const barnOffset = 2;
+        const fenceOffset = 1;
+        const outputWidth: number = (farmWidth + barnOffset + 2 * fenceOffset) * 100;
+        const outputHeight: number = (farmHeight + barnOffset + 2 * fenceOffset) * 100;
+
+        const srcPaths: Set<string> = new Set(fs.readdirSync(srcDir));
+        const barn: MergeImageSrc = {
+            src: path.join(srcDir, "barn.png"),
+            x: 50,
+            y: 50,
+        };
+        const plantedCrops = this.getPlantedCropSrcList(srcDir, srcPaths, fenceOffset, barnOffset);
+        const horizontalFences = this.getHorizontalFenceSrcList(farmHeight, fenceOffset, srcDir, barnOffset, farmWidth);
+        const verticalFences = this.getVerticalFenceSrcList(farmWidth, fenceOffset, srcDir, farmHeight, barnOffset);
+        return {
+            farmHeight,
+            farmWidth,
+            barnOffset,
+            fenceOffset,
+            outputWidth,
+            outputHeight,
+            srcList: [barn, ...plantedCrops.flat(), ...horizontalFences.flat(), ...verticalFences.flat()],
+        };
+    }
+
+    private getVerticalFenceSrcList(farmWidth: number, fenceOffset: number, imagesDir: string, farmLength: number, barnOffset: number): MergeImageSrc[] {
         const verticalFences = [];
         for (let i = 0; i < 2; i++) {
             for (let j = 1; j < farmWidth + fenceOffset; j++) {
@@ -259,7 +262,7 @@ export class Farm {
         return verticalFences;
     }
 
-    private getHorizontalFenceImages(farmLength: number, fenceOffset: number, imagesDir: string, barnOffset: number, farmWidth: number) {
+    private getHorizontalFenceSrcList(farmLength: number, fenceOffset: number, imagesDir: string, barnOffset: number, farmWidth: number): MergeImageSrc[] {
         const horizontalFences = [];
         for (let i = 0; i < 2; i++) {
             for (let j = 1; j < farmLength + fenceOffset; j++) {
@@ -273,11 +276,11 @@ export class Farm {
         return horizontalFences;
     }
 
-    private getPlantedCropImages(imagesDir: string, images: Set<string>, fenceOffset: number, barnOffset: number) {
+    private getPlantedCropSrcList(imagesDir: string, srcPaths: Set<string>, fenceOffset: number, barnOffset: number): MergeImageSrc[][] {
         return this.Crops.map((row, r) =>
             row.map((col, c) => {
                 const imageName = `${this.Crops[r][c] === null ? "empty" : this.Crops[r][c].Name.toLowerCase()}.png`;
-                const imagePath = path.join(imagesDir, images.has(imageName) ? imageName : "custom.png");
+                const imagePath = path.join(imagesDir, srcPaths.has(imageName) ? imageName : "custom.png");
                 return {
                     src: imagePath,
                     x: (c + fenceOffset) * 100,
