@@ -1,0 +1,1 @@
+Farm myFarm = [Name: "myFarm", H: 10, W: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
