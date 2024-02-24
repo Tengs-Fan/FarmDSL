@@ -11,14 +11,18 @@ def isOkToPlant(c: Crop, f: Farm) -> Bool {
 
 for c in Crops {
     if isOkToPlant(c, myFarm) {
-        myFarm.plantFarm(c, 8);
+        myFarm.plantFarm(c, 1);
     }
 }
 
 Num totalYield = 0;
-for d in myFarm {
-    totalYield = totalYield + d.getYield();
+
+for c in myFarm {
+    totalYield = totalYield + c.getYield();
 }
 
+showNum(totalYield);
+
+showStr(Carrot.getSeason());
+
 myFarm.displayFarm();
-echo(totalYield);

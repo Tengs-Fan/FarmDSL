@@ -212,7 +212,7 @@ describe("Farm tests", () => {
                 () => leftRightBorderVal + padding.repeat(defaultCellLength).repeat(farm.Width) + leftRightBorderVal,
             ).join("\n");
             const expectedFarmMetadata = [
-                `Available Space: ${farm.AvailableSpace()}`,
+                `Available Space: ${farm.availableSpace()}`,
                 `Height: ${farm.Height}`,
                 `Width: ${farm.Width}`,
                 `Current Water Usage: ${farm.getWaterUsageOfFarm()}`,
@@ -241,7 +241,7 @@ describe("Farm tests", () => {
                 () => leftRightBorderVal + padding.repeat(expectedMiddleCellLength).repeat(farm.Width) + leftRightBorderVal,
             ).join("\n");
             const expectedFarmMetadata = [
-                `Available Space: ${farm.AvailableSpace()}`,
+                `Available Space: ${farm.availableSpace()}`,
                 `Height: ${farm.Height}`,
                 `Width: ${farm.Width}`,
                 `Current Water Usage: ${farm.getWaterUsageOfFarm()}`,
@@ -291,7 +291,7 @@ describe("Farm tests", () => {
                 () => leftRightBorderVal + padding.repeat(expectedMiddleCellLength).repeat(farm.Width) + leftRightBorderVal,
             ).join("\n");
             const expectedFarmMetadata = [
-                `Available Space: ${farm.AvailableSpace()}`,
+                `Available Space: ${farm.availableSpace()}`,
                 `Height: ${farm.Height}`,
                 `Width: ${farm.Width}`,
                 `Current Water Usage: ${farm.getWaterUsageOfFarm()}`,
@@ -339,7 +339,7 @@ describe("Farm tests", () => {
                 [leftRightBorderVal, expectedStrawberryCropCell.repeat(farm.Width), leftRightBorderVal].join(""),
             ).join("\n");
             const expectedFarmMetadata = [
-                `Available Space: ${farm.AvailableSpace()}`,
+                `Available Space: ${farm.availableSpace()}`,
                 `Height: ${farm.Height}`,
                 `Width: ${farm.Width}`,
                 `Current Water Usage: ${farm.getWaterUsageOfFarm()}`,
