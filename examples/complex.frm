@@ -5,7 +5,7 @@ Num totalIncome = 0;
 Crop firstPlantedCrop;
 Crop secondPlantedCrop;
 
-// I want to plant two kinds of crops in my summer plant. I want to make sure the planted crops are seasonally compatible with the farm
+// I want to plant two kinds of crops in my summer farm. I want to make sure the planted crops are seasonally compatible with the farm
 // and I want to have low water usage but still make a decent income. My strategy will therefore be to use
 // half of my farm's capacity to plant the low water usage crop and fill the rest with a high yield crop.
 
@@ -32,7 +32,7 @@ def lowestWaterCropForMyFarmButNotStrawberry(myFarm2: Farm) -> Crop {
 // Now I use my custom function and the pre-defined functions in the DSL to plant the "least water usage crop" in my farm.
 // The pre-defined functions in the DSL also check if the crop found is compatible with my farm in terms of water usage/space/seasonality/polyculture requirements.
 
-    if (myFarm.AvailableSpace() > 0) {
+    if (myFarm.availableSpace() > 0) {
     Crop lowWaterCrop = lowestWaterCropForMyFarm(myFarm);
     if (myFarm.isCropPlantable(lowWaterCrop)) {
     Num quantityOfLowYieldCrop = myFarm.cropQuantity(lowWaterCrop)/2;
@@ -62,7 +62,7 @@ def lowestWaterCropForMyFarmButNotStrawberry(myFarm2: Farm) -> Crop {
 
     // Plant the remaining capacity on my farm with the crop that has the most yield
     // and is seasonally compatible with my farm and can be planted on my farm
-        if (myFarm.AvailableSpace() > 0) {
+        if (myFarm.availableSpace() > 0) {
         Crop HighYieldCrop = HighestYieldCropForMyFarm(myFarm);
         if (myFarm.isCropPlantable(HighYieldCrop)) {
         if (HighYieldCrop != Coffee) {
@@ -84,8 +84,14 @@ def lowestWaterCropForMyFarmButNotStrawberry(myFarm2: Farm) -> Crop {
     }
 
     // Now I printout my farm's total yield, total income and total water usage.
+    string printMSG = "The farm yield is: ";
+    showStr(printMSG);
     showNum(totalYield);
+
+    printMSG = "The farm total income is: ";
+    showStr(printMSG);
     showNum(totalIncome);
+
     showNum(myFarm.getWaterUsageOfFarm());
 
     // Now I display the farm
