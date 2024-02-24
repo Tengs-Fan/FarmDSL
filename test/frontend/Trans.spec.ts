@@ -158,8 +158,8 @@ describe("transProgram", () => {
             const filesInFolder = fs.readdirSync(path.join("examples/should_pass/", foldername));
             filesInFolder.forEach((filename) => {
                 filenames.push(path.join("examples/should_pass/", foldername, filename));
-            })
-        })
+            });
+        });
 
         filenames.forEach((filename) => {
             if (fs.statSync(filename).isFile()) {
