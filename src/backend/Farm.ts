@@ -3,11 +3,10 @@ import {Crop} from "./Crop";
 import {FunctionError} from "../Error";
 import logger from "../Log";
 import mergeImages from "merge-images";
-import {createCanvas, loadImage, Canvas, Image} from "canvas";
+import {Canvas, Image} from "canvas";
+import {openImage} from "../Util";
 import fs from "fs";
 import path from "path";
-import {exec} from "child_process";
-import {platform} from "os";
 
 export type MergeImageSrc = {
     src: string;
@@ -213,7 +212,7 @@ export class Farm {
     }
 
     displayFarm() {
-        const srcDir = path.join(__dirname, "../static");
+        const srcDir = "assets";
         const outputConfig = this.getDisplayFarmOutputConfig(srcDir);
         const outputPath = path.join(srcDir, "farm.png");
         mergeImages(outputConfig.srcList, {
@@ -226,7 +225,7 @@ export class Farm {
             const binaryData = Buffer.from(data, "base64");
             fs.writeFileSync(outputPath, binaryData);
         });
-        this.openImage(outputPath);
+        openImage(outputPath);
     }
 
     private getDisplayFarmDimensions(): DisplayFarmDimensions {
@@ -245,19 +244,41 @@ export class Farm {
         };
     }
 
+    private tileBackgroundImage(backgroundSrc: string, dim: DisplayFarmDimensions): MergeImageSrc[] {
+        const tiles = [];
+        const tileSize = 200; // the background image is 1000x1000 pixels
+        for (let y = 0; y < dim.outputHeight; y += tileSize) {
+            for (let x = 0; x < dim.outputWidth; x += tileSize) {
+                tiles.push({
+                    src: backgroundSrc,
+                    x: x,
+                    y: y
+                });
+            }
+        }
+        return tiles;
+    }
+
     public getDisplayFarmOutputConfig(srcDir: string) {
+        
         const dim = this.getDisplayFarmDimensions();
-        const srcPaths: Set<string> = new Set(fs.readdirSync(srcDir));
+        const backgroundSrc = path.join(srcDir, "background.png"); // Replace with your background image file
+        const backgroundTiles = this.tileBackgroundImage(backgroundSrc, dim);
+
         const barn: MergeImageSrc = {
             src: path.join(srcDir, "barn.png"),
             x: 50,
             y: 50,
         };
+
+        const srcPaths: Set<string> = new Set(fs.readdirSync(srcDir));
+
         const plantedCrops = this.getPlantedCropSrcList(srcDir, srcPaths, dim);
         const horizontalFences = this.getHorizontalFenceSrcList(srcDir, dim);
         const verticalFences = this.getVerticalFenceSrcList(srcDir, dim);
+
         return {
-            srcList: [barn, ...plantedCrops.flat(), ...horizontalFences.flat(), ...verticalFences.flat()],
+            srcList: [...backgroundTiles, barn, ...plantedCrops.flat(), ...horizontalFences.flat(), ...verticalFences.flat()],
             ...dim,
         };
     }
@@ -302,31 +323,6 @@ export class Farm {
                 };
             }),
         );
-    }
-
-    private openImage(imagePath: string) {
-        let command;
-        switch (platform()) {
-            case "win32": // Windows
-                command = `start ${imagePath}`;
-                break;
-            case "darwin": // macOS
-                command = `open ${imagePath}`;
-                break;
-            case "linux": // Linux
-                command = `xdg-open ${imagePath}`;
-                break;
-            default:
-                throw new Error(`Unsupported platform: ${platform()}`);
-        }
-
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                logger.error(`Error opening image: ${error.message}`);
-                return;
-            }
-            logger.info(`Image opened: ${stdout}`);
-        });
     }
 
     displayFarmConsole() {

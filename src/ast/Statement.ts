@@ -1,4 +1,4 @@
-import {Result, typeToString} from "./Type";
+import {Result} from "./Type";
 import {Context} from "../vm/Context";
 import {ASTNode} from "./Ast";
 import {Variable} from "../vm/Variable";
