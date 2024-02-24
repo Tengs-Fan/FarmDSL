@@ -5,6 +5,7 @@ import {FunctionError} from "../../src/Error";
 import {Context} from "../../src/vm/Context";
 import {parseProgram} from "../../src/frontend/Parse";
 import {transProgram} from "../../src/frontend/Trans";
+import {string} from "yargs";
 
 describe("transProgram", () => {
     it("Default function call is ok", () => {
@@ -149,14 +150,20 @@ describe("transProgram", () => {
         expect(result.eval(new Context()).value).to.equal("Summer");
     });
 
-    it("All exmples should pass", () => {
+    it("All passing examples should pass", () => {
         // read input from examples folder
-        const filenames = fs.readdirSync("examples/");
+        const foldernames = fs.readdirSync("examples/should_pass/");
+        var filenames: string[] = [];
+        foldernames.forEach((foldername) => {
+            const filesInFolder = fs.readdirSync(path.join("examples/should_pass/", foldername));
+            filesInFolder.forEach((filename) => {
+                filenames.push(path.join("examples/should_pass/", foldername, filename));
+            });
+        });
 
         filenames.forEach((filename) => {
-            const filePath = path.join("examples", filename);
-            if (fs.statSync(filePath).isFile()) {
-                const content = fs.readFileSync(filePath, "utf8");
+            if (fs.statSync(filename).isFile()) {
+                const content = fs.readFileSync(filename, "utf8");
                 const tree = parseProgram(content, false);
                 expect(() => transProgram(tree, false)).to.not.throw();
             }
