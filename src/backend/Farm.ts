@@ -225,6 +225,8 @@ export class Farm {
             const data = b64.split(",")[1];
             const binaryData = Buffer.from(data, "base64");
             fs.writeFileSync(outputPath, binaryData);
+
+            openImage(outputPath);
         });
     }
 
