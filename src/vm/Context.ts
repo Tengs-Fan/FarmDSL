@@ -60,8 +60,9 @@ export class Context {
     }
 
     newVariable(name: string, variable: Variable) {
-        if (variable.type !== typeToString(variable.value) // Check if the type of the variable matches the value
-            && variable.value !== null   // but the type can be Null
+        if (
+            variable.type !== typeToString(variable.value) && // Check if the type of the variable matches the value
+            variable.value !== null // but the type can be Null
         ) {
             throw new VariableError(`Type mismatch for variable ${name}, should be ${variable.type}, get ${typeToString(variable.value)}`);
         }
