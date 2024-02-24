@@ -1,7 +1,8 @@
 import {expect} from "chai";
 import {Crop} from "../../src/backend/Crop";
-import {Farm} from "../../src/backend/Farm";
+import {DisplayFarmDimensions, Farm, MergeImageSrc} from "../../src/backend/Farm";
 import * as sinon from "sinon";
+import path from "path";
 
 describe("Farm tests", () => {
     describe("plant farm successful", () => {
@@ -179,6 +180,148 @@ describe("Farm tests", () => {
     });
 
     describe("Display Farm", () => {
+        const srcDir = path.join(__dirname, "../../src/static");
+        const farmHeight = 5;
+        const farmWidth = 5;
+
+        const barn = {
+            src: path.join(srcDir, "barn.png"),
+            x: 50,
+            y: 50,
+        };
+        const horizontalFences = [];
+
+        let farm: Farm, dim: DisplayFarmDimensions, expectedHorizontalFences: MergeImageSrc[], expectedVerticalFences: MergeImageSrc[];
+
+        beforeEach(() => {
+            farm = new Farm({Name: "farm", Height: farmHeight, Width: farmWidth, Polyculture: true, MaxWaterUsage: 2500, Season: "Summer"});
+            const barnOffset = 2;
+            const fenceOffset = 1;
+            dim = {
+                farmHeight,
+                farmWidth,
+                barnOffset,
+                fenceOffset,
+                outputWidth: (farmWidth + barnOffset + 2 * fenceOffset) * 100,
+                outputHeight: (farmHeight + barnOffset + 2 * fenceOffset) * 100,
+            };
+            expectedHorizontalFences = getHorizontalFenceSrcList(srcDir, dim);
+            expectedVerticalFences = getVerticalFenceSrcList(srcDir, dim);
+        });
+
+        it("Should return correct config for empty farm", () => {
+            const result = farm.getDisplayFarmOutputConfig(srcDir);
+            const expectedPlantedCrops: MergeImageSrc[][] = farm.Crops.map((row, r) =>
+                row.map((col, c) => {
+                    const imageName = `empty.png`;
+                    const imagePath = path.join(srcDir, imageName);
+                    return {
+                        src: imagePath,
+                        x: (c + dim.fenceOffset) * 100,
+                        y: (r + dim.fenceOffset + dim.barnOffset) * 100,
+                    };
+                }),
+            );
+            const expected = {
+                ...dim,
+                srcList: [barn, ...expectedPlantedCrops.flat(), ...expectedHorizontalFences, ...expectedVerticalFences],
+            };
+            expect(result).to.deep.equal(expected);
+        });
+
+        it("Should return correct config for farm with default crops", () => {
+            const corn: Crop = new Crop({Name: "corn", Season: "Summer", WaterRequirement: 1, Yield: 75, SellPrice: 110});
+            farm.plantFarm(corn, 3);
+            const result = farm.getDisplayFarmOutputConfig(srcDir);
+
+            const expectedPlantedCrops: MergeImageSrc[][] = farm.Crops.map((row, r) =>
+                row.map((col, c) => {
+                    const imageName = farm.Crops[r][c] == null ? "empty.png" : "corn.png";
+                    const imagePath = path.join(srcDir, imageName);
+                    return {
+                        src: imagePath,
+                        x: (c + dim.fenceOffset) * 100,
+                        y: (r + dim.fenceOffset + dim.barnOffset) * 100,
+                    };
+                }),
+            );
+            const expectedSrcList = [barn, ...expectedPlantedCrops.flat(), ...expectedHorizontalFences, ...expectedVerticalFences];
+            expect(result.srcList).to.deep.equal(expectedSrcList);
+            const expected = {
+                ...dim,
+                srcList: expectedSrcList,
+            };
+            expect(result).to.deep.equal(expected);
+        });
+
+        it("Should return correct config for farm with custom crops", () => {
+            const myCrop: Crop = new Crop({Name: "myCrop", Season: "Summer", WaterRequirement: 1, Yield: 75, SellPrice: 110});
+            farm.plantFarm(myCrop, 10);
+            const result = farm.getDisplayFarmOutputConfig(srcDir);
+
+            const expectedPlantedCrops: MergeImageSrc[][] = farm.Crops.map((row, r) =>
+                row.map((col, c) => {
+                    const imageName = farm.Crops[r][c] == null ? "empty.png" : "custom.png";
+                    const imagePath = path.join(srcDir, imageName);
+                    return {
+                        src: imagePath,
+                        x: (c + dim.fenceOffset) * 100,
+                        y: (r + dim.fenceOffset + dim.barnOffset) * 100,
+                    };
+                }),
+            );
+            const expectedSrcList = [barn, ...expectedPlantedCrops.flat(), ...expectedHorizontalFences, ...expectedVerticalFences];
+            expect(result.srcList).to.deep.equal(expectedSrcList);
+            const expected = {
+                ...dim,
+                srcList: expectedSrcList,
+            };
+            expect(result).to.deep.equal(expected);
+        });
+
+        function getHorizontalFenceSrcList(srcDir: string, dim: DisplayFarmDimensions): MergeImageSrc[] {
+            const topHorizontalFences: MergeImageSrc[] = [];
+            for (let j = 1; j < dim.farmHeight + dim.fenceOffset; j++) {
+                topHorizontalFences.push({
+                    src: path.join(srcDir, `top-horizontal-fence.png`),
+                    x: j * 100,
+                    y: dim.barnOffset * 100,
+                });
+            }
+            const bottomHorizontalFences: MergeImageSrc[] = [];
+            for (let j = 1; j < dim.farmHeight + dim.fenceOffset; j++) {
+                bottomHorizontalFences.push({
+                    src: path.join(srcDir, `bottom-horizontal-fence.png`),
+                    x: j * 100,
+                    y: (dim.farmWidth + dim.fenceOffset + dim.barnOffset) * 100,
+                });
+            }
+            return [...topHorizontalFences, ...bottomHorizontalFences];
+        }
+
+        function getVerticalFenceSrcList(srcDir: string, dim: DisplayFarmDimensions): MergeImageSrc[] {
+            const leftVerticalFences: MergeImageSrc[] = [];
+            for (let j = 1; j < dim.farmWidth + dim.fenceOffset; j++) {
+                leftVerticalFences.push({
+                    src: path.join(srcDir, `left-vertical-fence.png`),
+                    x: 0,
+                    y: (j + dim.barnOffset) * 100,
+                });
+            }
+
+            const rightVerticalFences: MergeImageSrc[] = [];
+            for (let j = 1; j < dim.farmWidth + dim.fenceOffset; j++) {
+                rightVerticalFences.push({
+                    src: path.join(srcDir, `right-vertical-fence.png`),
+                    x: (dim.farmHeight + dim.fenceOffset) * 100,
+                    y: (j + dim.barnOffset) * 100,
+                });
+            }
+            return [...leftVerticalFences, ...rightVerticalFences];
+        }
+    });
+
+    describe("Display Farm Console Tests", () => {
         let logSpy: sinon.SinonSpy;
 
         const topBottomBorderVal = "\u2014";
