@@ -60,8 +60,10 @@ export class Context {
     }
 
     newVariable(name: string, variable: Variable) {
-        if (variable.type != typeToString(variable.value)) {
-            throw new VariableError(`Type mismatch for variable ${name}, should be ${variable.type}, get ${typeToString(variable.type)}`);
+        if (variable.type !== typeToString(variable.value) // Check if the type of the variable matches the value
+            && variable.value !== null   // but the type can be Null
+        ) {
+            throw new VariableError(`Type mismatch for variable ${name}, should be ${variable.type}, get ${typeToString(variable.value)}`);
         }
         if (this.variables.has(name)) {
             throw new VariableError(`Variable ${name} already exists`);
@@ -94,9 +96,14 @@ export class Context {
         const allVarOfType: Type[] = [];
 
         for (const [, variable] of this.variables) {
-            if (variable.type === type) {
+            if (variable.type === type && variable.value !== null) {
                 allVarOfType.push(variable.value);
             }
+        }
+
+        if (this.parent !== undefined) {
+            const allVarOfTypeParent = this.parent.getAllInstaceOfType(type);
+            allVarOfType.push(...allVarOfTypeParent);
         }
 
         return allVarOfType;
@@ -119,7 +126,7 @@ export class Context {
                 throw new VariableError(`Variable ${name} does not exist`);
             }
         }
-        if (variable.type !== typeToString(value)) {
+        if (variable.type !== typeToString(value) && variable.value != null) {
             throw new VariableError(`Type mismatch for variable ${name}, should be ${variable.type}, get ${typeToString(value)}`);
         }
         variable.value = value;
