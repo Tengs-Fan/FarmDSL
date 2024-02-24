@@ -169,4 +169,20 @@ describe("transProgram", () => {
             }
         });
     });
+
+    // it("All error examples should throw", () => {
+    //     // read input from examples folder
+    //     const filenames = fs.readdirSync("examples/should_throw_errors/");
+
+    //     filenames.forEach((filename) => {
+    //         const filePath = path.join("examples/should_throw_errors", filename);
+    //         if (fs.statSync(filePath).isFile()) {
+    //             const content = fs.readFileSync(filePath, "utf8");
+    //             const tree = parseProgram(content, false);
+    //             console.log(filename);
+    //             expect(() => transProgram(tree, false)).to.throw();
+    //         }
+    //     });
+
+    // });
 });
