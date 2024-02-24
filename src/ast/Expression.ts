@@ -14,16 +14,19 @@ export class Expression implements ASTNode {
     }
     eval(_ctx: Context): Result {
         void _ctx; // Disable unused variable warning
-        throw new Error("Should not eval Expression directly, use subtypes");
+        if (this.type !== "Null") {
+            throw new Error("Should not eval Expression directly, use subtypes");
+        }
+        return new Result("Null", null);
     }
 }
 
 export class OOPCallExpression extends Expression {
-    varName: Expression;
+    varName: NameExpression;
     funcName: string;
     args: Expression[];
 
-    constructor(varName: Expression, funcName: string, args: Expression[]) {
+    constructor(varName: NameExpression, funcName: string, args: Expression[]) {
         super();
         this.varName = varName;
         this.funcName = funcName;

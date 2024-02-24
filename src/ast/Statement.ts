@@ -1,4 +1,4 @@
-import {Result} from "./Type";
+import {Result, typeToString} from "./Type";
 import {Context} from "../vm/Context";
 import {ASTNode} from "./Ast";
 import {Variable} from "../vm/Variable";
@@ -53,9 +53,14 @@ export class DeclStatment implements ASTNode {
             value = this.initValue.eval(ctx);
         }
 
-        // TODO check undefined
+        // if (value.type !== this.type) {
+        //     console.log(`Type mismatch for variable ${this.name}, should be ${this.type}, get ${typeToString(value.value)}`);
+        //     // throw new ExprError(`Type mismatch for variable ${this.name}, should be ${this.type}, get ${typeToString(value.value)}`);
+        // }
+
+        // TODO check if the Result is what we expect
         const variable: Variable = {
-            type: this.type,
+            type: this.type, //typeToString(value.value),
             value: value.value as Type,
         };
         ctx.newVariable(this.name, variable);
@@ -167,7 +172,7 @@ export class LoopStatement implements ASTNode {
             this.loopBody.eval(ctx);
         });
 
-        ctx.removeVariable(this.current);
+        if (toLoop.length !== 0) ctx.removeVariable(this.current);
 
         return new Result("Null", null);
     }
