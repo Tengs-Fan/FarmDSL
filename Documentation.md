@@ -38,6 +38,18 @@ representation of their farm, based on the crops they planted using the DSL.
 ### Functions
 - **getSeason()**: returns the season of your farm
   - `myFarm.getSeason();` -> "Summer"
+- **getName()**: returns name of farm
+  - `myFarm.getName()` -> 'myFarm'
+- **getHeight()**: returns height of farm
+  - `myFarm.getHeight()` -> 10
+- **getWidth()**: returns width of farm
+  - `myFarm.getWidth()` -> 20
+- **getPolyculture()**: returns whether farm is polycultural
+  - `myFarm.getPolyculture()` -> true
+- **getMaxWaterCapacity()**: returns max water usage of farm
+  - `myFarm.getMaxWaterCapacity()` -> 1500
+- **getCrops()**: returns array of crops on the farm
+  - `myFarm.getCrops()` -> 2D array of the crops
 - **availableSpace()**: returns the number of unplanted tiles on the farm
   - `myFarm.availableSpace();` -> 200
 - **isCropPlantable(Crop c)**: returns true if the Crop c is the same season as the farm and takes into account polyculture constraints
@@ -69,9 +81,13 @@ representation of their farm, based on the crops they planted using the DSL.
 ### Functions
 - **getYield()**: Returns the yield of this crop
   - `myCrop.getYield();` -> 75
+- **getName()**: Returns name of crop
+  - `myCrop.getName();` -> 'elderberry'
+- **getWater()**: Returns water requirement for crop
+  - `myCrop.getWater();` -> 45
 - **getSeason()**: Returns the season of this crop
   - `myCrop.getSeason();` -> "Summer"
-- **getSellPrice()**: Returns the sell price of this crop
+- **getPrice()**: Returns the sell price of this crop
   - `myCrop.getSellPrice();` -> 110
 
 

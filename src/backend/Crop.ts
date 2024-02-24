@@ -46,10 +46,6 @@ export class Crop {
         return this.Season;
     }
 
-    getSellPrice(): number {
-        return this.SellPrice;
-    }
-
     call(funcName: string, args: Type[]): Type {
         if (typeof this[funcName as keyof this] === "function") {
             return (this[funcName as keyof this] as Function)(...args);
