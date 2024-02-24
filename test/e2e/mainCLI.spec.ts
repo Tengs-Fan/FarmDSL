@@ -79,13 +79,13 @@ describe("Farm DSL CLI", function () {
     this.timeout(5000);
 
     it("executes a file with valid DSL code", async () => {
-        const filePath = path.join(__dirname, "..", "..", "examples", "display_empty_farm.frm");
+        const filePath = path.join(__dirname, "..", "..", "examples", "should_pass", "simple_programs", "display_empty_farm.frm");
         const result = await runCLI(`--file "${filePath}"`);
         expect(result).to.include("");
     });
 
     it("provides verbose output when requested", async () => {
-        const filePath = path.join(__dirname, "..", "..", "examples", "display_empty_farm.frm");
+        const filePath = path.join(__dirname, "..", "..", "examples", "should_pass", "simple_programs", "display_empty_farm.frm");
         const result = await runCLI(`--file "${filePath}" --verbose`);
         console.log(result);
         expect(result).to.include(
