@@ -40,6 +40,12 @@ export class Func extends Function implements ASTNode {
             localContext.newVariable(this.params[i][0], {type: this.params[i][1], value: value});
         }
 
-        return this.program.eval(localContext);
+        const result = this.program.eval(localContext);
+
+        if (result.type !== this.return) {
+            throw new FunctionError(`Return type mismatch: expected ${this.return}, got ${result.type}`);
+        }
+
+        return result;
     }
 }
