@@ -1,5 +1,10 @@
 import {Type} from "../ast/Type";
 import {FunctionError} from "../Error";
+import path from "path";
+import fs from "fs";
+import {platform} from "os";
+import {exec} from "child_process";
+import logger from "../Log";
 
 export class Crop {
     static propertiesMetadata = {
@@ -52,6 +57,39 @@ export class Crop {
         } else {
             throw new FunctionError(`Function ${funcName} does not exist in Crop class`);
         }
+    }
+
+    displayCrop() {
+        const srcDir = path.join(__dirname, "../static");
+        const srcPaths: Set<string> = new Set(fs.readdirSync(srcDir));
+        const srcName = `${this.Name.toLowerCase().replace(" ", "_")}.png`;
+        const src = srcPaths.has(srcName) ? srcName : "custom.png";
+        this.openImage(path.join(srcDir, src));
+    }
+
+    private openImage(imagePath: string) {
+        let command;
+        switch (platform()) {
+            case "win32": // Windows
+                command = `start ${imagePath}`;
+                break;
+            case "darwin": // macOS
+                command = `open ${imagePath}`;
+                break;
+            case "linux": // Linux
+                command = `xdg-open ${imagePath}`;
+                break;
+            default:
+                throw new Error(`Unsupported platform: ${platform()}`);
+        }
+
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                logger.error(`Error opening image: ${error.message}`);
+                return;
+            }
+            logger.info(`Image opened: ${stdout}`);
+        });
     }
 
     OOPCallTest(): number {

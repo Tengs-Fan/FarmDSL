@@ -9,10 +9,19 @@ import path from "path";
 import {exec} from "child_process";
 import {platform} from "os";
 
-type MergeImageSrc = {
+export type MergeImageSrc = {
     src: string;
     x: number;
     y: number;
+};
+
+export type DisplayFarmDimensions = {
+    farmHeight: number;
+    farmWidth: number;
+    barnOffset: number;
+    fenceOffset: number;
+    outputWidth: number;
+    outputHeight: number;
 };
 
 export class Farm {
@@ -220,71 +229,76 @@ export class Farm {
         this.openImage(outputPath);
     }
 
-    public getDisplayFarmOutputConfig(srcDir: string) {
-        const farmHeight: number = this.Crops[0].length;
-        const farmWidth: number = this.Crops.length;
+    private getDisplayFarmDimensions(): DisplayFarmDimensions {
+        const farmHeight = this.Height;
+        const farmWidth = this.Width;
+
         const barnOffset = 2;
         const fenceOffset = 1;
-        const outputWidth: number = (farmWidth + barnOffset + 2 * fenceOffset) * 100;
-        const outputHeight: number = (farmHeight + barnOffset + 2 * fenceOffset) * 100;
+        return {
+            farmHeight,
+            farmWidth,
+            barnOffset,
+            fenceOffset,
+            outputWidth: (farmWidth + barnOffset + 2 * fenceOffset) * 100,
+            outputHeight: (farmHeight + barnOffset + 2 * fenceOffset) * 100,
+        };
+    }
 
+    public getDisplayFarmOutputConfig(srcDir: string) {
+        const dim = this.getDisplayFarmDimensions();
         const srcPaths: Set<string> = new Set(fs.readdirSync(srcDir));
         const barn: MergeImageSrc = {
             src: path.join(srcDir, "barn.png"),
             x: 50,
             y: 50,
         };
-        const plantedCrops = this.getPlantedCropSrcList(srcDir, srcPaths, fenceOffset, barnOffset);
-        const horizontalFences = this.getHorizontalFenceSrcList(farmHeight, fenceOffset, srcDir, barnOffset, farmWidth);
-        const verticalFences = this.getVerticalFenceSrcList(farmWidth, fenceOffset, srcDir, farmHeight, barnOffset);
+        const plantedCrops = this.getPlantedCropSrcList(srcDir, srcPaths, dim);
+        const horizontalFences = this.getHorizontalFenceSrcList(srcDir, dim);
+        const verticalFences = this.getVerticalFenceSrcList(srcDir, dim);
         return {
-            farmHeight,
-            farmWidth,
-            barnOffset,
-            fenceOffset,
-            outputWidth,
-            outputHeight,
             srcList: [barn, ...plantedCrops.flat(), ...horizontalFences.flat(), ...verticalFences.flat()],
+            ...dim,
         };
     }
 
-    private getVerticalFenceSrcList(farmWidth: number, fenceOffset: number, imagesDir: string, farmLength: number, barnOffset: number): MergeImageSrc[] {
+    private getVerticalFenceSrcList(srcDir: string, dim: DisplayFarmDimensions): MergeImageSrc[] {
         const verticalFences = [];
         for (let i = 0; i < 2; i++) {
-            for (let j = 1; j < farmWidth + fenceOffset; j++) {
+            for (let j = 1; j < dim.farmHeight + dim.fenceOffset; j++) {
                 verticalFences.push({
-                    src: path.join(imagesDir, `${i == 0 ? "left" : "right"}-vertical-fence.png`),
-                    x: i == 0 ? 0 : (farmLength + fenceOffset) * 100,
-                    y: (j + barnOffset) * 100,
+                    src: path.join(srcDir, `${i == 0 ? "left" : "right"}-vertical-fence.png`),
+                    x: i == 0 ? 0 : (dim.farmWidth + dim.fenceOffset) * 100,
+                    y: (j + dim.barnOffset) * 100,
                 });
             }
         }
         return verticalFences;
     }
 
-    private getHorizontalFenceSrcList(farmLength: number, fenceOffset: number, imagesDir: string, barnOffset: number, farmWidth: number): MergeImageSrc[] {
+    private getHorizontalFenceSrcList(srcDir: string, dim: DisplayFarmDimensions): MergeImageSrc[] {
         const horizontalFences = [];
         for (let i = 0; i < 2; i++) {
-            for (let j = 1; j < farmLength + fenceOffset; j++) {
+            for (let j = 1; j < dim.farmWidth + dim.fenceOffset; j++) {
                 horizontalFences.push({
-                    src: path.join(imagesDir, `${i == 0 ? "top" : "bottom"}-horizontal-fence.png`),
+                    src: path.join(srcDir, `${i == 0 ? "top" : "bottom"}-horizontal-fence.png`),
                     x: j * 100,
-                    y: i == 0 ? barnOffset * 100 : (farmWidth + fenceOffset + barnOffset) * 100,
+                    y: i == 0 ? dim.barnOffset * 100 : (dim.farmHeight + dim.fenceOffset + dim.barnOffset) * 100,
                 });
             }
         }
         return horizontalFences;
     }
 
-    private getPlantedCropSrcList(imagesDir: string, srcPaths: Set<string>, fenceOffset: number, barnOffset: number): MergeImageSrc[][] {
+    private getPlantedCropSrcList(srcDir: string, srcPaths: Set<string>, dim: DisplayFarmDimensions): MergeImageSrc[][] {
         return this.Crops.map((row, r) =>
             row.map((col, c) => {
                 const imageName = `${this.Crops[r][c] === null ? "empty" : this.Crops[r][c].Name.toLowerCase()}.png`;
-                const imagePath = path.join(imagesDir, srcPaths.has(imageName) ? imageName : "custom.png");
+                const imagePath = path.join(srcDir, srcPaths.has(imageName) ? imageName : "custom.png");
                 return {
                     src: imagePath,
-                    x: (c + fenceOffset) * 100,
-                    y: (r + fenceOffset + barnOffset) * 100,
+                    x: (c + dim.fenceOffset) * 100,
+                    y: (r + dim.fenceOffset + dim.barnOffset) * 100,
                 };
             }),
         );
