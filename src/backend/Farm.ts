@@ -22,7 +22,7 @@ export class Farm {
     Width: number;
     Polyculture: boolean;
     MaxWaterUsage: number;
-    Season: "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
+    Season: "Spring" | "Summer" | "Fall" | "Winter" | "All";
     Crops: Crop[][];
 
     constructor(props: {[key: string]: Type}) {
@@ -31,12 +31,36 @@ export class Farm {
         this.Width = props.Width as number;
         this.Polyculture = props.Polyculture as boolean;
         this.MaxWaterUsage = props.MaxWaterUsage as number;
-        this.Season = props.Season as "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None";
+        this.Season = props.Season as "Spring" | "Summer" | "Fall" | "Winter" | "All";
         this.Crops = Array.from({length: this.Height}, () => Array(this.Width).fill(null));
     }
 
-    getSeason(): "Spring" | "Summer" | "Fall" | "Winter" | "All" | "None" {
+    getSeason(): "Spring" | "Summer" | "Fall" | "Winter" | "All" {
         return this.Season;
+    }
+
+    getName(): string {
+        return this.Name;
+    }
+
+    getHeight(): number {
+        return this.Height;
+    }
+
+    getWidth(): number {
+        return this.Width;
+    }
+
+    getPolyculture(): boolean {
+        return this.Polyculture;
+    }
+
+    getMaxWaterCapacity(): number {
+        return this.MaxWaterUsage;
+    }
+
+    getCrops(): Crop[][] {
+        return this.Crops;
     }
 
     plantFarm(plantingCrop: Crop, quantity: number): Farm {
