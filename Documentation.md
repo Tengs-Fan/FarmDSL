@@ -2,25 +2,92 @@
 This DSL allows farmers to plan out their farm and easily experiment with different layouts. Using our DSL, farmers can test out 
 different crop combinations, water requirements, and farm shapes. With our unique displayFarm() feature, they even get to see a visual
 representation of their farm, based on the crops they planted using the DSL.
-# Variable Declaration
-- This is a statically typed language. 
-- Variables are declared by: **\<Type> \<Variable Name> = \<Value>;**
+
+# Type System and Variable Management
+The DSL employs a static type system. This means that the type of every variable is determined at compile time, reducing runtime errors and increasing code clarity.
+
+## Variables
+Variables must be declared with a specific type, which tells the DSL what kind of data the variable will hold. This makes our code easier to understand and debug.
+
+### Declaration
+* To declare a variable without assigning a value immediately, use the following syntax:
+```
+<Type> <VariableName>;
+```
+* To declare a variable and assign it a value at the same time, use this syntax:
+```
+<Type> <VariableName> = <Value>;
+```
+### Assignment
+After declaring a variable, you can assign or reassign its value using the equals (`=`) operator.
+
+Example:
+- `totalYield = 100; // Reassigns the value of totalYield`
+
+## Types
+- `Num` for numerical values,
   - `Num totalYield = 0;`
+- `Bool` for boolean values,
   - `Bool isPlantable = true;`
-  - `Farm myFarm = [Name: "myFarm", Height: 10, Width: 20, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];`
+- `Farm` for farm objects, 
+  See [Farm](#Farm) for more details
+- `Crop` for crop objects.
+  See [Crop](#Crop) for more details
 
-# Classes
+# Functions 
+In the Farm Planner DSL, functions are a versatile tool for performing operations, managing farm and crop data, and customizing your farm planning experience. Functions in this DSL are categorized into three types to cater to various needs and preferences.
 
-### Num, Bool, Farm, Crop
-## Num
-- `Num <name> = <numerical value>;`
-  - `Num totalYield = 0;`
+## 1. Inline Functions
+Inline functions are built directly into the DSL and can be invoked from any part of your code. These functions are designed for general-purpose tasks such as outputting information to the console, making them highly accessible and easy to use.
 
-## Bool
-- `Bool <name> = <true/false>;`
-  - `Bool isPlantable = false;`
+Examples of inline functions include:
+- `showBool(Bool b)`: Displays the value of a boolean variable `b` in the console.
+- `showNum(Num n)`: Prints the numerical value `n` to the console.
+- `showStr(String s)`: Outputs the string `s` to the console.
+- `showFarm(Farm f)`: Visualizes the current state of farm `f`, showing its layout and crops.
+- `showCrop(Crop c)`: Presents details about crop `c`, such as its type, season, and water requirements.
 
-###
+## 2. Object-Oriented Programming (OOP) Style Functions
+These functions behave similarly to methods in object-oriented programming, where each function is associated with a specific class (e.g., `Farm` or `Crop`) and operates on the instance of that class. These pre-defined functions allow for direct manipulation and querying of farm and crop objects, facilitating a more intuitive and structured approach to managing your farm's data.
+
+Examples include:
+- `Farm.getSeason()`: Retrieves the season associated with a farm.
+- `Crop.getYield()`: Returns the yield of a specific crop.
+- `Farm.isCropPlantable(Crop c)`: Determines if crop `c` can be planted on the farm considering various factors like season and water requirements.
+- `Farm.plantFarm(Crop c, Num quantity)`: Plants a specified quantity of crop `c` on the farm.
+
+## 3. User-Defined Functions
+User-defined functions offer the flexibility to replace any repetitive code with a simple function call. These functions can encapsulate any logic you define, from calculating optimal planting strategies to filtering crops based on custom criteria.
+
+Defining a function:
+```dsl
+def <functionName>(<arguments>) -> <returnType> {
+    // Function implementation
+    return <value>;
+}
+```
+- Arguments are declared with their type, and multiple arguments are separated by commas.
+- The return type specifies what type of value the function will return.
+
+Example:
+```dsl
+def isOkToPlant(c: Crop, f: Farm) -> Bool {
+    Bool canPlant = false;
+    if (c.getYield() > 3 and c.getSeason() == f.getSeason()) {
+        canPlant = true;
+    }
+    return canPlant;
+}
+```
+To invoke a user-defined function:
+```dsl
+Bool b = isOkToPlant(Blueberry, myFarm);
+```
+
+This categorization of functions enhances the DSL's usability, allowing users to interact with and manipulate farm data effectively, whether through direct method calls on objects, convenient inline functions, or the creation of bespoke functions for more complex logic.
+
+# Farm & Crop
+
 ## Farm
 ### Parameters
 - **Name** (String): The string name of the farm
@@ -114,30 +181,4 @@ representation of their farm, based on the crops they planted using the DSL.
   - `for d in myFarm {
     totalYield = totalYield + d.getYield();
     }` -> sums the yield of every planted crop on myFarm
-
-# Self-defined Functions
-- You can define your own functions to replace any repetitive code with a simple function call.
-- `def <function name> (<arguments>) -> <return type> { <function implementation> }`
-  - The arguments are formatted as: `<name> : <type>`, with different arguments separated by a comma
-    - `def isOkToPlant(c: Crop, f: Farm)`
-  - The return type is one of the classes defined above
-  - The function implementation must include a return statement in it
-    - return true;
-- Full example:
-  - `def isOkToPlant(c: Crop, f: Farm) -> Bool {
-              Bool canPlant = false;
-              if (c.getYield() > 3) and (c.getSeason() == f.getSeason()) {
-              canPlant = true;
-              }
-              return canPlant;
-              }`
-- When calling the function, use `<function name>(<parameters>)`
-  - `Bool b = isOkToPlant(Blueberry, myFarm);`
-# Show Function
-- These are pre-defined functions allowing users to log variables to the console
-- `showBool(Bool b)` -> prints the value of b to the console
-- `showFarm(Farm f)` -> prints the backend representation of the farm f to the console
-- `showCrop(Crop c)` -> prints the backend representation of crop c to the console
-- `showNum(Num n)` -> prints the number n to the console
-- `showStr(String s)` -> prints the string s to the console
 
