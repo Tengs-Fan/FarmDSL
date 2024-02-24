@@ -1,9 +1,8 @@
 // I want to make a farm for a summer planting
-Farm myFarm = [Name: "myFarm", Height: 100, Width: 20, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
+Farm myFarm = [Name: "myFarm", Height: 10, Width: 10, Polyculture: true, MaxWaterUsage: 1500, Season: "Summer"];
 Num totalYield = 0;
 Num totalIncome = 0;
 Crop firstPlantedCrop;
-Crop secondCrop;
 Crop secondPlantedCrop;
 
 // I want to plant two kinds of crops in my summer farm. I want to make sure the planted crops are seasonally compatible with the farm
@@ -13,12 +12,12 @@ Crop secondPlantedCrop;
 // To start I define my own function that looks through the saved crop database "Crops" to find crops with lowest water usage that are seasonally compatible with my farm,
 // however, since I don't like Strawberries, I don't want to plant strawberries.
 
-def lowestWaterCropForMyFarm(myFarm2: Farm) -> Crop {
+def lowestWaterCropForMyFarm(myFarm: Farm) -> Crop {
     Num waterUsage = 1000;
     Crop leastWaterCrop;
     for c in Crops {
         if (c.getWater() < waterUsage) {
-            if (myFarm2.getSeason() == c.getSeason()) {
+            if (myFarm.getSeason() == c.getSeason()) {
                 if (c != Strawberry) {
                     waterUsage = c.getWater();
                     leastWaterCrop = c;
@@ -26,7 +25,7 @@ def lowestWaterCropForMyFarm(myFarm2: Farm) -> Crop {
             }
         }
     }
-    //showCrop(leastWaterCrop);
+    showCrop(leastWaterCrop);
     return leastWaterCrop;
 }
 
@@ -41,6 +40,9 @@ if (myFarm.availableSpace() > 0) {
         firstPlantedCrop = lowWaterCrop;
     }
 }
+
+// Now I display the farm
+myFarm.displayFarm();
 
 
 // Now I want to define a function that finds the highest yield crop that is different from the crop I have already planted
@@ -58,6 +60,7 @@ def HighestYieldCropForMyFarm(myFarm: Farm) -> Crop {
             }
         }
     }
+    showCrop(HighestYieldCrop);
     return HighestYieldCrop;
 }
 
@@ -67,12 +70,14 @@ def HighestYieldCropForMyFarm(myFarm: Farm) -> Crop {
 if (myFarm.availableSpace() > 0) {
     Crop HighYieldCrop = HighestYieldCropForMyFarm(myFarm);
     if (myFarm.isCropPlantable(HighYieldCrop)) {
-        if (HighYieldCrop != Coffee) {
-            Num quantity2 = myFarm.cropCapacity(HighYieldCrop);
-            secondCrop = HighYieldCrop;
-        }
+            Num quantityOfHighYieldCrop = myFarm.cropCapacity(HighYieldCrop);
+            myFarm.plantFarm(HighYieldCrop,quantityOfHighYieldCrop);
+            secondPlantedCrop = HighYieldCrop;
     }
 }
+
+// Now I display the farm
+myFarm.displayFarm();
 
 
 // Now I calculate the total yield of my farm
