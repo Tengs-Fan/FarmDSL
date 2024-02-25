@@ -1,3 +1,96 @@
+# Installation
+
+To install the FarmDSL project, follow these steps:
+
+1. **Clone the repository**
+
+   ```sh
+   git clone git@github.students.cs.ubc.ca:CPSC410-2023W-T2/Group12Project1.git
+   cd Group12Project1
+   ```
+
+2. **Install dependencies**
+
+   ```sh
+   yarn install
+   ```
+
+   This will install all necessary dependencies
+3. **Install and set up ANTLR**
+    
+    ```sh
+    yarn setup-antlr 
+    yarn lang
+    ```
+
+4. **Build the project**
+
+   ```sh
+   yarn build
+   ```
+
+# Running
+
+After installation, you can use the following commands within the project directory:
+
+- **Start the main application**
+
+  ```sh
+  yarn start
+  ```
+
+- **Run tests**
+
+  ```sh
+  yarn test
+  ```
+
+- **Check code coverage**
+
+  ```sh
+  yarn cover
+  ```
+
+- **Lint the project**
+
+  ```sh
+  yarn lint
+  ```
+
+- **Automatically fix linting issues**
+
+  ```sh
+  yarn fix
+  ```
+
+- **Prettify the code**
+
+  ```sh
+  yarn pretty
+  ```
+
+# Additional Information
+
+- The project's output, including any generated images, will be located in the `output` directory.
+- Logs are written to `application.log` and `error.log` in the project root.
+- The grammar file for the DSL is `FarmExpr.g4` in the project root.
+- Generated parser and lexer files from ANTLR are located in the `lang` directory.
+
+Make sure to check out the `package.json` for additional scripts and project details.
+
+# Git Hooks
+
+This project uses custom Git hooks located in the `.githooks` directory. These are set up automatically when you install the project. Ensure they are executable:
+
+```sh
+chmod +x .githooks/*
+```
+
+The hooks include:
+
+- `post-checkout`: Triggered after a successful `git checkout`.
+- `pre-push`: Runs before pushing changes to the repository.
+
 # Farm Planner DSL
 This DSL allows farmers to plan out their farm and easily experiment with different layouts. Using our DSL, farmers can test out 
 different crop combinations, water requirements, and farm shapes. With our unique displayFarm() feature, they even get to see a visual
@@ -128,8 +221,9 @@ This categorization of functions enhances the DSL's usability, allowing users to
   - `myFarm.getWaterUsageOfFarm();` -> 1240
 - **plantFarm(Crop c, Num quantity)**: Plants the Crop c on \<quantity> number of tiles
   - `myFarm.plantFarm(Blueberry, 10);` -> Plants 10 blueberry crops on myFarm
-- **displayFarm()**: Returns a graphical representation of the farm, based on the crops planted so far. Also includes statistical info about the farm.
-  - `myFarm.displayFarm();` -> Pops up an image representing the farm layout, and logs farm information to the console
+- **displayFarm()**: Returns a graphical representation of the farm, based on the crops planted so far. Generated image can be found in `./out`
+  - `myFarm.displayFarm();` -> Pops up an image representing the farm layout
+- **displayFarmConsole()**: Outputs text-representation of farm to console. Also includes statistical info about the farm.
 
 
 ## Crop
@@ -156,6 +250,8 @@ This categorization of functions enhances the DSL's usability, allowing users to
   - `myCrop.getSeason();` -> "Summer"
 - **getPrice()**: Returns the sell price of this crop
   - `myCrop.getSellPrice();` -> 110
+- **displayCrop()**: Returns a graphical representation of this crop. Custom crops will be given a default image.
+  - `myCrop.displayCrop();` -> Pops up a window displaying a picture of the given crop.
 
 
 # If/Else Statements

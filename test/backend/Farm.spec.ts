@@ -4,21 +4,6 @@ import {DisplayFarmDimensions, Farm, MergeImageSrc} from "../../src/backend/Farm
 import * as sinon from "sinon";
 import path from "path";
 
-function getExpectedBackgroundTiles(srcDir: string, dim: DisplayFarmDimensions): MergeImageSrc[] {
-    const backgroundTiles = [];
-    const tileSize = 320;     // The size of the background tiles is 320x320
-    for (let y = 0; y < dim.outputHeight; y += tileSize) {
-        for (let x = 0; x < dim.outputWidth; x += tileSize) {
-            backgroundTiles.push({
-                src: path.join(srcDir, "background.png"),
-                x: x,
-                y: y
-            });
-        }
-    }
-    return backgroundTiles;
-}
-
 describe("Farm tests", () => {
     describe("plant farm successful", () => {
         it("farm planting is successful", () => {
@@ -199,12 +184,28 @@ describe("Farm tests", () => {
         const farmHeight = 5;
         const farmWidth = 5;
 
+        const seasonalIcons: {[key: string]: string} = {
+            Spring: "flower.png",
+            Summer: "sun.png",
+            Fall: "leaf.png",
+            Winter: "snowman.png",
+        };
+
         const barn = {
             src: path.join(srcDir, "barn.png"),
             x: 50,
             y: 50,
         };
         const horizontalFences = [];
+
+        // Function to get the expected icon based on the season
+        function getExpectedSeasonalIcon(srcDir: string, season: string): MergeImageSrc {
+            return {
+                src: path.join(srcDir, seasonalIcons[season]),
+                x: 300,
+                y: 50,
+            };
+        }
 
         let farm: Farm, dim: DisplayFarmDimensions, expectedHorizontalFences: MergeImageSrc[], expectedVerticalFences: MergeImageSrc[];
 
@@ -224,30 +225,44 @@ describe("Farm tests", () => {
             expectedVerticalFences = getVerticalFenceSrcList(srcDir, dim);
         });
 
-        
-        it("Should return correct config for empty farm", () => {
-            const expectedBackgroundTiles = getExpectedBackgroundTiles(srcDir, dim);
-            const result = farm.getDisplayFarmOutputConfig(srcDir);
-            const expectedPlantedCrops: MergeImageSrc[][] = farm.Crops.map((row, r) =>
-                row.map((col, c) => {
-                    const imageName = `empty.png`;
-                    const imagePath = path.join(srcDir, imageName);
-                    return {
-                        src: imagePath,
-                        x: (c + dim.fenceOffset) * 100,
-                        y: (r + dim.fenceOffset + dim.barnOffset) * 100,
-                    };
-                }),
-            );
-            const expected = {
-                ...dim,
-                srcList: [...expectedBackgroundTiles, barn, ...expectedPlantedCrops.flat(), ...expectedHorizontalFences, ...expectedVerticalFences],
-            };
-            expect(result).to.deep.equal(expected);
+        // Repeat the following test for each season
+        ["Spring", "Summer", "Fall", "Winter"].forEach((season) => {
+            it(`Should return correct config for empty farm with ${season} season`, () => {
+                farm.Season = season as "Spring" | "Summer" | "Fall" | "Winter";
+                const expectedBackgroundTiles = getExpectedBackgroundTiles(srcDir, farm.Season, dim);
+                const expectedIcon = getExpectedSeasonalIcon(srcDir, farm.Season);
+
+                const result = farm.getDisplayFarmOutputConfig(srcDir);
+                const expectedPlantedCrops: MergeImageSrc[][] = farm.Crops.map((row, r) =>
+                    row.map((col, c) => {
+                        const imageName = `empty.png`;
+                        const imagePath = path.join(srcDir, imageName);
+                        return {
+                            src: imagePath,
+                            x: (c + dim.fenceOffset) * 100,
+                            y: (r + dim.fenceOffset + dim.barnOffset) * 100,
+                        };
+                    }),
+                );
+                const expectedSrcList = [
+                    ...expectedBackgroundTiles,
+                    expectedIcon,
+                    barn,
+                    ...expectedPlantedCrops.flat(),
+                    ...expectedHorizontalFences,
+                    ...expectedVerticalFences,
+                ];
+                const expected = {
+                    ...dim,
+                    srcList: expectedSrcList,
+                };
+                expect(result).to.deep.equal(expected);
+            });
         });
 
         it("Should return correct config for farm with default crops", () => {
-            const expectedBackgroundTiles = getExpectedBackgroundTiles(srcDir, dim);
+            const expectedBackgroundTiles = getExpectedBackgroundTiles(srcDir, "Summer", dim);
+            const expectedIcon = getExpectedSeasonalIcon(srcDir, farm.Season);
 
             const corn: Crop = new Crop({Name: "corn", Season: "Summer", WaterRequirement: 1, Yield: 75, SellPrice: 110});
             farm.plantFarm(corn, 3);
@@ -264,7 +279,14 @@ describe("Farm tests", () => {
                     };
                 }),
             );
-            const expectedSrcList = [...expectedBackgroundTiles, barn, ...expectedPlantedCrops.flat(), ...expectedHorizontalFences, ...expectedVerticalFences];
+            const expectedSrcList = [
+                ...expectedBackgroundTiles,
+                expectedIcon,
+                barn,
+                ...expectedPlantedCrops.flat(),
+                ...expectedHorizontalFences,
+                ...expectedVerticalFences,
+            ];
             expect(result.srcList).to.deep.equal(expectedSrcList);
             const expected = {
                 ...dim,
@@ -274,7 +296,8 @@ describe("Farm tests", () => {
         });
 
         it("Should return correct config for farm with custom crops", () => {
-            const expectedBackgroundTiles = getExpectedBackgroundTiles(srcDir, dim);
+            const expectedBackgroundTiles = getExpectedBackgroundTiles(srcDir, "Summer", dim);
+            const icon = getExpectedSeasonalIcon(srcDir, "Summer");
 
             const myCrop: Crop = new Crop({Name: "myCrop", Season: "Summer", WaterRequirement: 1, Yield: 75, SellPrice: 110});
             farm.plantFarm(myCrop, 10);
@@ -291,7 +314,14 @@ describe("Farm tests", () => {
                     };
                 }),
             );
-            const expectedSrcList = [...expectedBackgroundTiles, barn, ...expectedPlantedCrops.flat(), ...expectedHorizontalFences, ...expectedVerticalFences];
+            const expectedSrcList = [
+                ...expectedBackgroundTiles,
+                icon,
+                barn,
+                ...expectedPlantedCrops.flat(),
+                ...expectedHorizontalFences,
+                ...expectedVerticalFences,
+            ];
             expect(result.srcList).to.deep.equal(expectedSrcList);
             const expected = {
                 ...dim,
@@ -299,6 +329,22 @@ describe("Farm tests", () => {
             };
             expect(result).to.deep.equal(expected);
         });
+
+        function getExpectedBackgroundTiles(srcDir: string, season: string, dim: DisplayFarmDimensions): MergeImageSrc[] {
+            const backgroundTiles = [];
+            const tileSize = 320; // The size of the background tiles is 320x320
+            const backgroundFileName = `${season.toLowerCase()}.png`; // Construct the file name based on the season
+            for (let y = 0; y < dim.outputHeight; y += tileSize) {
+                for (let x = 0; x < dim.outputWidth; x += tileSize) {
+                    backgroundTiles.push({
+                        src: path.join(srcDir, backgroundFileName),
+                        x: x,
+                        y: y,
+                    });
+                }
+            }
+            return backgroundTiles;
+        }
 
         function getHorizontalFenceSrcList(srcDir: string, dim: DisplayFarmDimensions): MergeImageSrc[] {
             const topHorizontalFences: MergeImageSrc[] = [];

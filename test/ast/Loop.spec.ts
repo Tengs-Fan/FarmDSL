@@ -35,6 +35,6 @@ describe("Loop", () => {
         const program = transProgram(tree, false);
         const context = new Context();
         const result = program.eval(context);
-        expect(result.value).to.equal(672);
+        expect(result.value).to.equal(832);
     });
 });

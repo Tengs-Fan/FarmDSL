@@ -1,4 +1,5 @@
 import {Type} from "../ast/Type";
+
 import {Crop} from "./Crop";
 import {FunctionError} from "../Error";
 import logger from "../Log";
@@ -51,6 +52,9 @@ export class Farm {
         this.Width = props.Width as number;
         this.Polyculture = props.Polyculture as boolean;
         this.MaxWaterUsage = props.MaxWaterUsage as number;
+        if (props.Season !== "Spring" && props.Season !== "Summer" && props.Season !== "Fall" && props.Season !== "Winter" && props.Season !== "All") {
+            throw new Error("Season must be one of Spring, Summer, Fall, Winter, or All");
+        }
         this.Season = props.Season as "Spring" | "Summer" | "Fall" | "Winter" | "All";
         this.Crops = Array.from({length: this.Height}, () => Array(this.Width).fill(null));
     }
@@ -213,19 +217,30 @@ export class Farm {
 
     displayFarm() {
         const srcDir = "assets";
+        const outDir = "output";
         const outputConfig = this.getDisplayFarmOutputConfig(srcDir);
-        const outputPath = path.join(srcDir, "farm.png");
+        const outputPath = path.join(outDir, "farm.png");
+
+        // Check if outDir exists, create it if not
+        if (!fs.existsSync(outDir)) {
+            fs.mkdirSync(outDir, {recursive: true});
+        }
+
         mergeImages(outputConfig.srcList, {
             Canvas: Canvas,
             Image: Image,
             width: outputConfig.outputWidth,
             height: outputConfig.outputHeight,
-        }).then((b64) => {
-            const data = b64.split(",")[1];
-            const binaryData = Buffer.from(data, "base64");
-            fs.writeFileSync(outputPath, binaryData);
-        });
-        openImage(outputPath);
+        })
+            .then((b64) => {
+                const data = b64.split(",")[1];
+                const binaryData = Buffer.from(data, "base64");
+                fs.writeFileSync(outputPath, binaryData);
+                openImage(outputPath);
+            })
+            .catch((err) => {
+                logger.error(`Error displaying farm: ${err}`);
+            });
     }
 
     private getDisplayFarmDimensions(): DisplayFarmDimensions {
@@ -244,15 +259,39 @@ export class Farm {
         };
     }
 
+    private getSeasonalBackground(season: string, srcDir: string): string {
+        const seasonMap: {[key: string]: string} = {
+            Spring: "spring.png",
+            Summer: "summer.png",
+            Fall: "fall.png",
+            Winter: "winter.png",
+        };
+        return path.join(srcDir, seasonMap[season]);
+    }
+
+    private getSeasonalIcon(season: string, srcDir: string): MergeImageSrc {
+        const iconMap: {[key: string]: string} = {
+            Spring: "flower.png",
+            Summer: "sun.png",
+            Fall: "leaf.png",
+            Winter: "snowman.png",
+        };
+        return {
+            src: path.join(srcDir, iconMap[season]),
+            x: 300,
+            y: 50,
+        };
+    }
+
     private tileBackgroundImage(backgroundSrc: string, dim: DisplayFarmDimensions): MergeImageSrc[] {
         const tiles = [];
-        const tileSize = 200; // the background image is 1000x1000 pixels
+        const tileSize = 320; // the background image is 1000x1000 pixels
         for (let y = 0; y < dim.outputHeight; y += tileSize) {
             for (let x = 0; x < dim.outputWidth; x += tileSize) {
                 tiles.push({
                     src: backgroundSrc,
                     x: x,
-                    y: y
+                    y: y,
                 });
             }
         }
@@ -260,10 +299,11 @@ export class Farm {
     }
 
     public getDisplayFarmOutputConfig(srcDir: string) {
-        
         const dim = this.getDisplayFarmDimensions();
-        const backgroundSrc = path.join(srcDir, "background.png"); // Replace with your background image file
+        const backgroundSrc = this.getSeasonalBackground(this.Season, srcDir);
         const backgroundTiles = this.tileBackgroundImage(backgroundSrc, dim);
+
+        const seasonalIcon = this.getSeasonalIcon(this.Season, srcDir);
 
         const barn: MergeImageSrc = {
             src: path.join(srcDir, "barn.png"),
@@ -278,7 +318,7 @@ export class Farm {
         const verticalFences = this.getVerticalFenceSrcList(srcDir, dim);
 
         return {
-            srcList: [...backgroundTiles, barn, ...plantedCrops.flat(), ...horizontalFences.flat(), ...verticalFences.flat()],
+            srcList: [...backgroundTiles, seasonalIcon, barn, ...plantedCrops.flat(), ...horizontalFences.flat(), ...verticalFences.flat()],
             ...dim,
         };
     }
