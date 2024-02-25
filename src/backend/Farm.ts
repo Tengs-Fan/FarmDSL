@@ -220,10 +220,10 @@ export class Farm {
         const outDir = "output";
         const outputConfig = this.getDisplayFarmOutputConfig(srcDir);
         const outputPath = path.join(outDir, "farm.png");
-        
+
         // Check if outDir exists, create it if not
         if (!fs.existsSync(outDir)) {
-            fs.mkdirSync(outDir, { recursive: true });
+            fs.mkdirSync(outDir, {recursive: true});
         }
 
         mergeImages(outputConfig.srcList, {
