@@ -5,7 +5,6 @@ import * as sinon from "sinon";
 import path from "path";
 
 describe("Farm tests", () => {
-
     describe("plant farm successful", () => {
         it("farm planting is successful", () => {
             const corn: Crop = new Crop({Name: "corn", Season: "Summer", WaterRequirement: 45, Yield: 75, SellPrice: 110});
@@ -186,10 +185,10 @@ describe("Farm tests", () => {
         const farmWidth = 5;
 
         const seasonalIcons: {[key: string]: string} = {
-            "Spring": "flower.png",
-            "Summer": "sun.png",
-            "Fall": "leaf.png",
-            "Winter": "snowman.png"
+            Spring: "flower.png",
+            Summer: "sun.png",
+            Fall: "leaf.png",
+            Winter: "snowman.png",
         };
 
         const barn = {
@@ -203,11 +202,10 @@ describe("Farm tests", () => {
         function getExpectedSeasonalIcon(srcDir: string, season: string): MergeImageSrc {
             return {
                 src: path.join(srcDir, seasonalIcons[season]),
-                x: 300, 
+                x: 300,
                 y: 50,
             };
         }
-
 
         let farm: Farm, dim: DisplayFarmDimensions, expectedHorizontalFences: MergeImageSrc[], expectedVerticalFences: MergeImageSrc[];
 
@@ -246,7 +244,14 @@ describe("Farm tests", () => {
                         };
                     }),
                 );
-                const expectedSrcList = [...expectedBackgroundTiles, expectedIcon, barn, ...expectedPlantedCrops.flat(), ...expectedHorizontalFences, ...expectedVerticalFences];
+                const expectedSrcList = [
+                    ...expectedBackgroundTiles,
+                    expectedIcon,
+                    barn,
+                    ...expectedPlantedCrops.flat(),
+                    ...expectedHorizontalFences,
+                    ...expectedVerticalFences,
+                ];
                 const expected = {
                     ...dim,
                     srcList: expectedSrcList,
@@ -274,7 +279,14 @@ describe("Farm tests", () => {
                     };
                 }),
             );
-            const expectedSrcList = [...expectedBackgroundTiles,  expectedIcon, barn, ...expectedPlantedCrops.flat(), ...expectedHorizontalFences, ...expectedVerticalFences];
+            const expectedSrcList = [
+                ...expectedBackgroundTiles,
+                expectedIcon,
+                barn,
+                ...expectedPlantedCrops.flat(),
+                ...expectedHorizontalFences,
+                ...expectedVerticalFences,
+            ];
             expect(result.srcList).to.deep.equal(expectedSrcList);
             const expected = {
                 ...dim,
@@ -302,7 +314,14 @@ describe("Farm tests", () => {
                     };
                 }),
             );
-            const expectedSrcList = [...expectedBackgroundTiles, icon, barn,  ...expectedPlantedCrops.flat(), ...expectedHorizontalFences, ...expectedVerticalFences];
+            const expectedSrcList = [
+                ...expectedBackgroundTiles,
+                icon,
+                barn,
+                ...expectedPlantedCrops.flat(),
+                ...expectedHorizontalFences,
+                ...expectedVerticalFences,
+            ];
             expect(result.srcList).to.deep.equal(expectedSrcList);
             const expected = {
                 ...dim,
@@ -326,7 +345,6 @@ describe("Farm tests", () => {
             }
             return backgroundTiles;
         }
-
 
         function getHorizontalFenceSrcList(srcDir: string, dim: DisplayFarmDimensions): MergeImageSrc[] {
             const topHorizontalFences: MergeImageSrc[] = [];
