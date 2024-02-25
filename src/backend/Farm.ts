@@ -52,6 +52,9 @@ export class Farm {
         this.Width = props.Width as number;
         this.Polyculture = props.Polyculture as boolean;
         this.MaxWaterUsage = props.MaxWaterUsage as number;
+        if (props.Season !== "Spring" && props.Season !== "Summer" && props.Season !== "Fall" && props.Season !== "Winter" && props.Season !== "All") {
+            throw new Error("Season must be one of Spring, Summer, Fall, Winter, or All");
+        }
         this.Season = props.Season as "Spring" | "Summer" | "Fall" | "Winter" | "All";
         this.Crops = Array.from({length: this.Height}, () => Array(this.Width).fill(null));
     }
@@ -248,25 +251,25 @@ export class Farm {
 
     private getSeasonalBackground(season: string, srcDir: string): string {
         const seasonMap: {[key: string]: string} = {
-            "Spring": "spring.png",
-            "Summer": "summer.png",
-            "Fall": "fall.png",
-            "Winter": "winter.png"
+            Spring: "spring.png",
+            Summer: "summer.png",
+            Fall: "fall.png",
+            Winter: "winter.png",
         };
         return path.join(srcDir, seasonMap[season]);
     }
 
     private getSeasonalIcon(season: string, srcDir: string): MergeImageSrc {
         const iconMap: {[key: string]: string} = {
-            "Spring": "flower.png",
-            "Summer": "sun.png",
-            "Fall": "leaf.png",
-            "Winter": "snowman.png"
+            Spring: "flower.png",
+            Summer: "sun.png",
+            Fall: "leaf.png",
+            Winter: "snowman.png",
         };
         return {
             src: path.join(srcDir, iconMap[season]),
-            x: 300,  
-            y: 50   
+            x: 300,
+            y: 50,
         };
     }
 
@@ -278,7 +281,7 @@ export class Farm {
                 tiles.push({
                     src: backgroundSrc,
                     x: x,
-                    y: y
+                    y: y,
                 });
             }
         }
@@ -286,7 +289,6 @@ export class Farm {
     }
 
     public getDisplayFarmOutputConfig(srcDir: string) {
-        
         const dim = this.getDisplayFarmDimensions();
         const backgroundSrc = this.getSeasonalBackground(this.Season, srcDir);
         const backgroundTiles = this.tileBackgroundImage(backgroundSrc, dim);

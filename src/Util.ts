@@ -18,7 +18,7 @@ export function openImage(imagePath: string) {
             throw new Error(`Unsupported platform: ${platform()}`);
     }
 
-    exec(command, (error, stdout, ) => {
+    exec(command, (error, stdout) => {
         if (error) {
             logger.error(`Error opening image: ${error.message}`);
             return;
@@ -26,4 +26,3 @@ export function openImage(imagePath: string) {
         logger.info(`Image opened: ${stdout}`);
     });
 }
-
