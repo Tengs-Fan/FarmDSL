@@ -1,6 +1,29 @@
 # Installation
 
-To install the FarmDSL project, follow these steps:
+## Prerequisites
+
+Before installing the FarmDSL project, you need to install some system-level dependencies.
+
+### MacOS
+
+If you are on macOS, use Homebrew to install the required packages:
+
+```sh
+brew install pkg-config cairo pango libpng jpeg giflib librsvg
+```
+
+### Linux (Ubuntu/Debian)
+
+For Linux users on a Debian-based system like Ubuntu, use `apt-get` to install the necessary libraries:
+
+```sh
+sudo apt-get update
+sudo apt-get install pkg-config libcairo2-dev libpango1.0-dev libpng-dev libjpeg-dev giflib-dev librsvg2-dev
+```
+
+## Steps
+
+After installing the system-level dependencies, follow these steps to set up the FarmDSL project:
 
 1. **Clone the repository**
 
