@@ -217,8 +217,14 @@ export class Farm {
 
     displayFarm() {
         const srcDir = "assets";
+        const outDir = "output";
         const outputConfig = this.getDisplayFarmOutputConfig(srcDir);
-        const outputPath = path.join(srcDir, "farm.png");
+        const outputPath = path.join(outDir, "farm.png");
+        
+        // Check if outDir exists, create it if not
+        if (!fs.existsSync(outDir)) {
+            fs.mkdirSync(outDir, { recursive: true });
+        }
 
         mergeImages(outputConfig.srcList, {
             Canvas: Canvas,
