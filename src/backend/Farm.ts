@@ -229,7 +229,7 @@ export class Farm {
             .then((b64) => {
                 const data = b64.split(",")[1];
                 const binaryData = Buffer.from(data, "base64");
-                return fs.writeFileSync(outputPath, binaryData);
+                fs.writeFileSync(outputPath, binaryData);
                 openImage(outputPath);
             })
             .catch((err) => {
