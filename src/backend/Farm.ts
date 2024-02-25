@@ -219,6 +219,7 @@ export class Farm {
         const srcDir = "assets";
         const outputConfig = this.getDisplayFarmOutputConfig(srcDir);
         const outputPath = path.join(srcDir, "farm.png");
+
         mergeImages(outputConfig.srcList, {
             Canvas: Canvas,
             Image: Image,
@@ -227,9 +228,10 @@ export class Farm {
         }).then((b64) => {
             const data = b64.split(",")[1];
             const binaryData = Buffer.from(data, "base64");
-            fs.writeFileSync(outputPath, binaryData);
-
+            return fs.writeFileSync(outputPath, binaryData);
             openImage(outputPath);
+        }).catch((err) => {
+            logger.error(`Error displaying farm: ${err}`);
         });
     }
 

@@ -26,7 +26,11 @@ function executeFile(filename: string, verbose = false) {
         default:
             throw new Error("Unknown result type: " + result.type);
     }
-    process.exit(0);
+    // Wait for the output to finish before exiting the process
+    // This is necessary because the output is asynchronous
+    setTimeout(() => {
+        process.exit(0);
+    }, 1000);
 }
 
 interface MyArguments extends Arguments {
