@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# Target repository URL (replace this with the target repository URL)
+TARGET_REPO="git@github.com:Tengs-Penkwe/FarmDSL.git"
+
+# Check if we're already in the process of pushing to the target repo
+if [ "$PUSHING_TO_TARGET" = "true" ]; then
+    # echo "Already pushing to target repository. Skipping to avoid loop."
+    exit 0
+else 
+    
+    # Run the tests before pushing to the target repository
+    yarn cover
+
+    # Run the prettier to format the code
+    yarn pretty
+
+    printf "\nAlso pushing to the GitHub repo to use the CI tools it provides\n"
+fi
+
+# Get the name of the current branch
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Set an environment variable to prevent recursive triggering
+export PUSHING_TO_TARGET=true
+
+# Push the current branch to the same branch in the target repository
+git push "$TARGET_REPO" "$CURRENT_BRANCH" -f 
+
+# Unset the environment variable after the push
+unset PUSHING_TO_TARGET
+
+# Check if the push was successful
+if [ $? -eq 0 ]; then
+    printf "\nPush to GitHub repository succeeded.\n"
+else
+    printf "\nPush to GitHub repository failed.\n" >&2
+    exit 1
+fi
+

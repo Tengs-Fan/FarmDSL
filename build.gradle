@@ -1,0 +1,99 @@
+plugins {
+    id 'java'
+    id 'checkstyle'
+    id 'com.diffplug.spotless' version '6.25.0'
+}
+
+// Dependencies for the Checkstyle plugin
+repositories {
+    mavenCentral()
+}
+
+task setGitHooks {
+    doLast {
+        // Desired path for the hooks
+        def expectedHookPath = '.githooks'
+        def gitHooksDir = new File(expectedHookPath)
+        def currentHookPath = ''
+        
+        try {
+            // Try to get the current hook path from Git configuration
+            currentHookPath = 'git config --get core.hooksPath'.execute().text.trim()
+        } catch (Exception e) {
+            // Handle the case where the command fails to execute or no path is set
+            println "Error retrieving current Git hooks path: ${e.message}"
+        }
+
+        // Check if the hook path is already set to the expected value
+        if (currentHookPath == expectedHookPath) {
+            println 'Git hooks are already set to the expected path.'
+        } else {
+            // Set the hooksPath if it's not already set to the expected value
+            try {
+                def setHookCommand = "git config core.hooksPath ${expectedHookPath}"
+                setHookCommand.execute()
+                println "Git hooks path set to: ${expectedHookPath}"
+            } catch (Exception e) {
+                println "Error setting Git hooks path: ${e.message}"
+            }
+        }
+
+        if (gitHooksDir.exists()) {
+            gitHooksDir.listFiles().each { file ->
+                if (file.isFile()) {
+                    file.setExecutable(true, false)
+                    println "Made ${file.name} executable."
+                }
+            }
+        } else {
+            println "Git hooks directory '${expectedHookPath}' not found."
+        }
+    }
+}
+
+tasks.compileJava.dependsOn setGitHooks
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << '-Xlint:all' // Enable all compiler warnings
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['app/src/main/java']
+        }
+    }
+}
+
+checkstyle {
+    toolVersion = '10.12.0' // Specify the Checkstyle version
+    showViolations = true
+    ignoreFailures = false
+    config = resources.text.fromFile('config/checkstyle/checkstyle.xml')
+}
+
+// // Ensure spotlessJava depends on compileJava or runs after it
+tasks.withType(com.diffplug.gradle.spotless.SpotlessTask).configureEach {
+    if (name == 'spotlessJava') {
+        // Option 1: Declare a direct dependency
+        dependsOn 'compileJava'
+
+        // Option 2: Ensure it runs after compileJava (choose dependsOn or mustRunAfter, not both)
+        // mustRunAfter 'compileJava'
+    }
+}
+
+spotless {
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/gradle/**'
+        }
+        toggleOffOn()
+        eclipse().configFile 'config/checkstyle/eclipse-formatter.xml'
+        // googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
